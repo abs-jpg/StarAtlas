@@ -3,9 +3,11 @@ using UnityEngine;
 /// <summary>
 /// Main orbit and rotation logic.
 /// </summary>
+[ExecuteAlways]
 public class OrbitMotion : MonoBehaviour
 {
     private const float MinimumPeriodSeconds = 0.0001f;
+    private const float ScaleEpsilon = 0.0001f;
 
     public SolarObject solarObject = new SolarObject();
     public OrbitRenderer orbitRenderer = new OrbitRenderer();
@@ -21,8 +23,19 @@ public class OrbitMotion : MonoBehaviour
     public SpeedOptions movementSpeed;
     public SpeedOptions rotationSpeed;
 
+    [SerializeField, HideInInspector]
+    private Constants.Objects loadedPredefinedType = Constants.Objects.None;
+    [SerializeField, HideInInspector]
+    private bool hasLoadedPredefinedType = false;
+    [SerializeField, HideInInspector]
+    private Vector3 orbitScaleReference = Vector3.one;
+    [SerializeField, HideInInspector]
+    private bool hasOrbitScaleReference = false;
+
     private float simulationSpeedMovementValue = 1f;
     private float simulationSpeedRotationValue = 1f;
+    private Vector3 lastOrbitLocalScale;
+    private bool hasLastOrbitLocalScale = false;
 
     public enum SpeedOptions
     {
@@ -35,23 +48,33 @@ public class OrbitMotion : MonoBehaviour
 
     private void Awake()
     {
-        ConfigureOrbit();
+        ConfigureOrbit(Application.isPlaying);
     }
 
     private void Start()
     {
-        SetPosition();
+        if (Application.isPlaying)
+            SetPosition();
+        else
+            DrawOrbit();
     }
 
     private void Update()
     {
+        if (!Application.isPlaying)
+        {
+            DrawOrbitWhenScaleChanges();
+            return;
+        }
+
         MoveAlongOrbit(Time.deltaTime);
         RotateAroundAxis(Time.deltaTime);
+        DrawOrbitWhenScaleChanges();
     }
 
     private void OnValidate()
     {
-        ConfigureOrbit();
+        ConfigureOrbit(false);
     }
 
     /// <summary>
@@ -66,25 +89,55 @@ public class OrbitMotion : MonoBehaviour
             return;
 
         Vector3 position = solarObject.Evaluate(orbitProgress);
+        position = Vector3.Scale(position, GetOrbitScaleMultiplier());
         transform.localPosition = new Vector3(position.x, 0f, position.z);
     }
 
-    private void ConfigureOrbit()
+    private void ConfigureOrbit(bool updateTransform)
     {
         if (solarObject == null)
             solarObject = new SolarObject();
 
-        LoadPredefinedPlanetValues();
+        LoadPredefinedPlanetValuesIfNeeded();
         ConfigureSimulationSpeed();
         ConfigureRotationDirection();
 
-        transform.rotation = Quaternion.Euler(solarObject.rotationAngle, 0f, 0f);
+        if (updateTransform)
+            transform.localRotation = Quaternion.Euler(solarObject.rotationAngle, 0f, 0f);
 
-        SetPosition();
+        if (updateTransform)
+            SetPosition();
+
         DrawOrbit();
     }
 
-    private void LoadPredefinedPlanetValues()
+    private void LoadPredefinedPlanetValuesIfNeeded()
+    {
+        if (!hasLoadedPredefinedType)
+        {
+            if (solarObject.type == Constants.Objects.None || HasSerializedPlanetValues())
+            {
+                loadedPredefinedType = solarObject.type;
+                hasLoadedPredefinedType = true;
+                return;
+            }
+        }
+
+        if (solarObject.type == Constants.Objects.None)
+        {
+            loadedPredefinedType = Constants.Objects.None;
+            hasLoadedPredefinedType = true;
+            return;
+        }
+
+        if (loadedPredefinedType == solarObject.type)
+            return;
+
+        ApplyPredefinedPlanetValues();
+    }
+
+    [ContextMenu("Apply Predefined Planet Values")]
+    private void ApplyPredefinedPlanetValues()
     {
         if (solarObject.type == Constants.Objects.None)
             return;
@@ -106,6 +159,26 @@ public class OrbitMotion : MonoBehaviour
         solarObject.isRotationClockwise = obj.isRotationClockwise;
         solarObject.isMoving = obj.isMoving;
         solarObject.isRotating = obj.isRotating;
+        loadedPredefinedType = solarObject.type;
+        hasLoadedPredefinedType = true;
+    }
+
+    private bool HasSerializedPlanetValues()
+    {
+        return Mathf.Abs(solarObject.xAxis) > Mathf.Epsilon
+            || Mathf.Abs(solarObject.zAxis) > Mathf.Epsilon
+            || Mathf.Abs(solarObject.orbitPeriodSeconds) > Mathf.Epsilon
+            || Mathf.Abs(solarObject.rotationPeriodSeconds) > Mathf.Epsilon
+            || !Mathf.Approximately(solarObject.orbitPeriodYears, 1f)
+            || !Mathf.Approximately(solarObject.rotationPeriodDays, 1f)
+            || !Mathf.Approximately(solarObject.rotationAngle, 0f)
+            || solarObject.isRotationClockwise
+            || solarObject.realWorldSimulation
+            || Mathf.Abs(solarObject.eccentricity) > Mathf.Epsilon
+            || !Mathf.Approximately(solarObject.longitudeOfPerihelionDegrees, 0f)
+            || !solarObject.drawOrbit
+            || !solarObject.isMoving
+            || !solarObject.isRotating;
     }
 
     private void ConfigureSimulationSpeed()
@@ -154,7 +227,62 @@ public class OrbitMotion : MonoBehaviour
         }
 
         lineRenderer.enabled = true;
-        orbitRenderer.CalculateEllipse(solarObject, lineRenderer, transform.parent);
+        orbitRenderer.CalculateEllipse(solarObject, lineRenderer, GetOrbitScaleMultiplier(), transform.parent);
+        lastOrbitLocalScale = transform.localScale;
+        hasLastOrbitLocalScale = true;
+    }
+
+    [ContextMenu("Use Current Scale As Orbit Reference")]
+    private void UseCurrentScaleAsOrbitReference()
+    {
+        orbitScaleReference = SanitizeReferenceScale(transform.localScale);
+        hasOrbitScaleReference = true;
+        DrawOrbit();
+    }
+
+    private void DrawOrbitWhenScaleChanges()
+    {
+        if (!solarObject.drawOrbit)
+            return;
+
+        if (!hasLastOrbitLocalScale || transform.localScale != lastOrbitLocalScale)
+            DrawOrbit();
+    }
+
+    private Vector3 GetOrbitScaleMultiplier()
+    {
+        EnsureOrbitScaleReference();
+
+        Vector3 reference = SanitizeReferenceScale(orbitScaleReference);
+        Vector3 current = transform.localScale;
+
+        return new Vector3(
+            current.x / reference.x,
+            current.y / reference.y,
+            current.z / reference.z);
+    }
+
+    private void EnsureOrbitScaleReference()
+    {
+        if (hasOrbitScaleReference)
+            return;
+
+        orbitScaleReference = SanitizeReferenceScale(transform.localScale);
+        hasOrbitScaleReference = true;
+    }
+
+    private static Vector3 SanitizeReferenceScale(Vector3 scale)
+    {
+        if (Mathf.Abs(scale.x) < ScaleEpsilon)
+            scale.x = 1f;
+
+        if (Mathf.Abs(scale.y) < ScaleEpsilon)
+            scale.y = 1f;
+
+        if (Mathf.Abs(scale.z) < ScaleEpsilon)
+            scale.z = 1f;
+
+        return scale;
     }
 
     /// <summary>

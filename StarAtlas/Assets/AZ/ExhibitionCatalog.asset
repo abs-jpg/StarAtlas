@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4949777a97fbb82488006f3e3b6b8b01, type: 3}
+  m_Name: ExhibitionCatalog
+  m_EditorClassIdentifier: 
+  entries:
+  - displayName: "\u592A\u9633"
+    prefab: {fileID: 7271790581479100636, guid: 869227db1f0060a4fa1f928f88f2e15d,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u6C34\u661F"
+    prefab: {fileID: 3885845253069203268, guid: 829bfd56a023e354ea56ad97db914d71,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u91D1\u661F"
+    prefab: {fileID: 7979434382999846474, guid: 9390bdf8dffaf5d4aafa08b6abc1d811,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u5730\u7403"
+    prefab: {fileID: 7765523008238663313, guid: 7889a31ca6f6c7049abfddc1b7b9b326,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u706B\u661F"
+    prefab: {fileID: 3981193673885259943, guid: 06039319a8a89cc478f8f99f0bc793e4,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u6728\u661F"
+    prefab: {fileID: 8936252349162820525, guid: eaf138b85a3d24f4a8bdd0776a2c8ac5,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u571F\u661F"
+    prefab: {fileID: 5754648943945272369, guid: 1b021db6e524b954c83ba6e97b903ce1,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u5929\u738B\u661F"
+    prefab: {fileID: 6428949619592926398, guid: 2e9d0e789375a194cb1440811ef89b7d,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 
+  - displayName: "\u6D77\u738B\u661F"
+    prefab: {fileID: 1487389192617538027, guid: eec6cf8d3e0ffd04b951e4fad49cdab7,
+      type: 3}
+    previewDiameter: 0.08
+    previewEulerAngles: {x: 0, y: 0, z: 0}
+    spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
+    spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    summary: 
+    diameter: 
+    mass: 
+    orbitPeriod: 
+    rotationPeriod: 

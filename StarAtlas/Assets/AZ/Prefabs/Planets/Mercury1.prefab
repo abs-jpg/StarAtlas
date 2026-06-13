@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3885845253069203278}
   - component: {fileID: 3885845253069203279}
   m_Layer: 0
-  m_Name: Mercury
+  m_Name: Mercury1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.017452406, y: 0, z: 0, w: 0.9998477}
   m_LocalPosition: {x: 2.587546, y: 0, z: 11.631114}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 29.600002, y: 0, z: 0}
@@ -115,7 +115,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3885845253069203268}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -415,11 +415,15 @@ MonoBehaviour:
     rotationPeriodDays: 176
     eccentricity: 0.20563594
     longitudeOfPerihelionDegrees: 77.457794
-    drawOrbit: 1
-    isMoving: 1
+    drawOrbit: 0
+    isMoving: 0
     isRotating: 1
   orbitProgress: 0
   isActive: 1
   rotationProgress: 0
   movementSpeed: 0
   rotationSpeed: 0
+  loadedPredefinedType: 2
+  hasLoadedPredefinedType: 1
+  orbitScaleReference: {x: 2.5, y: 2.5, z: 2.5}
+  hasOrbitScaleReference: 1

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1487389192617538025}
   - component: {fileID: 1487389192617538038}
   m_Layer: 0
-  m_Name: Neptune
+  m_Name: Neptune1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,9 +30,9 @@ Transform:
   m_GameObject: {fileID: 1487389192617538027}
   serializedVersion: 2
   m_LocalRotation: {x: 0.25544578, y: 0, z: 0, w: 0.9668234}
-  m_LocalPosition: {x: 35.07317, y: 0, z: 35.030056}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 29.600002, y: 0, z: 0}
@@ -115,7 +115,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1487389192617538027}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -415,11 +415,15 @@ MonoBehaviour:
     rotationPeriodDays: 0.66
     eccentricity: 0.00859048
     longitudeOfPerihelionDegrees: 44.964764
-    drawOrbit: 1
-    isMoving: 1
+    drawOrbit: 0
+    isMoving: 0
     isRotating: 1
   orbitProgress: 0
   isActive: 1
   rotationProgress: 0
   movementSpeed: 0
   rotationSpeed: 0
+  loadedPredefinedType: 9
+  hasLoadedPredefinedType: 1
+  orbitScaleReference: {x: 2.5, y: 2.5, z: 2.5}
+  hasOrbitScaleReference: 1
