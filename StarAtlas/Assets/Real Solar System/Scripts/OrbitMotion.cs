@@ -1,13 +1,14 @@
-﻿using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Main logic and preferences
+/// Main orbit and rotation logic.
 /// </summary>
 public class OrbitMotion : MonoBehaviour
 {
-    public SolarObject solarObject;
-    public OrbitRenderer orbitRenderer;
+    private const float MinimumPeriodSeconds = 0.0001f;
+
+    public SolarObject solarObject = new SolarObject();
+    public OrbitRenderer orbitRenderer = new OrbitRenderer();
 
     [Range(0f, 1f)]
     public float orbitProgress = 0f;
@@ -20,8 +21,8 @@ public class OrbitMotion : MonoBehaviour
     public SpeedOptions movementSpeed;
     public SpeedOptions rotationSpeed;
 
-    private float simulationSpeedMovementValue = 1;
-    private float simulationSpeedRotationValue = 1;
+    private float simulationSpeedMovementValue = 1f;
+    private float simulationSpeedRotationValue = 1f;
 
     public enum SpeedOptions
     {
@@ -32,131 +33,153 @@ public class OrbitMotion : MonoBehaviour
         YearPerSecond
     }
 
-    void Start()
+    private void Awake()
     {
-        StartCoroutine(Movement());
-        StartCoroutine(Rotation());
-
-        rotationProgress = 0;
+        ConfigureOrbit();
     }
 
-    /// <summary>
-    /// Move object along its orbit
-    /// </summary>
-    void SetPosition()
+    private void Start()
     {
-        Vector3 position = solarObject.Evaluate(orbitProgress);
-        transform.localPosition = new Vector3(position.x, 0, position.z);
+        SetPosition();
+    }
+
+    private void Update()
+    {
+        MoveAlongOrbit(Time.deltaTime);
+        RotateAroundAxis(Time.deltaTime);
     }
 
     private void OnValidate()
     {
-        // Load predefined planet values
-        if (solarObject.type != Constants.Objects.None)
-        {
-            SolarObject obj = Constants.GetObjectData(solarObject.type);
-            solarObject.xAxis = obj.xAxis;
-            solarObject.zAxis = obj.zAxis;
-            solarObject.orbitPeriodSeconds = obj.orbitPeriodYears;
-            solarObject.rotationPeriodSeconds = obj.rotationPeriodDays;
-            solarObject.orbitPeriodYears = obj.orbitPeriodYears;
-            solarObject.rotationPeriodDays = obj.rotationPeriodDays;
-            solarObject.rotationAngle = obj.rotationAngle;
-            solarObject.isRotationClockwise = obj.isRotationClockwise;
-            solarObject.isMoving = obj.isMoving;
-            solarObject.isRotating = obj.isRotating;
-        }
+        ConfigureOrbit();
+    }
 
-        // Use real world values
-        if (solarObject.realWorldSimulation)
-        {
-            solarObject.orbitPeriodSeconds = solarObject.orbitPeriodYears * Constants.SECONDS_IN_YEAR;
-            solarObject.rotationPeriodSeconds = solarObject.rotationPeriodDays * Constants.SECONDS_IN_DAY;
+    /// <summary>
+    /// Set planet position from mean anomaly. The parent origin is the Sun focus.
+    /// </summary>
+    private void SetPosition()
+    {
+        Vector3 position = solarObject.Evaluate(orbitProgress);
+        transform.localPosition = new Vector3(position.x, 0f, position.z);
+    }
 
-            // Adjust movement speed boost
-            switch (movementSpeed)
-            {
-                case SpeedOptions.Normal: simulationSpeedMovementValue = 1; break;
-                case SpeedOptions.DayPerSecond: simulationSpeedMovementValue = Constants.SECONDS_IN_DAY; break;
-                case SpeedOptions.WeekPerSecond: simulationSpeedMovementValue = Constants.SECONDS_IN_WEEK; break;
-                case SpeedOptions.MonthPerSecond: simulationSpeedMovementValue = Constants.SECONDS_IN_MONTH; break;
-                case SpeedOptions.YearPerSecond: simulationSpeedMovementValue = Constants.SECONDS_IN_YEAR; break;
-            }
+    private void ConfigureOrbit()
+    {
+        if (solarObject == null)
+            solarObject = new SolarObject();
 
-            // Adjust rotation speed boot
-            switch (rotationSpeed)
-            {
-                case SpeedOptions.Normal: simulationSpeedRotationValue = 1; break;
-                case SpeedOptions.DayPerSecond: simulationSpeedRotationValue = Constants.SECONDS_IN_DAY; break;
-                case SpeedOptions.WeekPerSecond: simulationSpeedRotationValue = Constants.SECONDS_IN_WEEK; break;
-                case SpeedOptions.MonthPerSecond: simulationSpeedRotationValue = Constants.SECONDS_IN_MONTH; break;
-                case SpeedOptions.YearPerSecond: simulationSpeedRotationValue = Constants.SECONDS_IN_YEAR; break;
-            }
-        }
+        LoadPredefinedPlanetValues();
+        ConfigureSimulationSpeed();
+        ConfigureRotationDirection();
 
-        transform.rotation = Quaternion.Euler(solarObject.rotationAngle, 0, 0);
-
-        // Rotate object clockwise or not
-        if (solarObject.isRotationClockwise)
-            rotationDirection = Vector3.up;
-        else
-            rotationDirection = Vector3.down;
-
+        transform.rotation = Quaternion.Euler(solarObject.rotationAngle, 0f, 0f);
 
         SetPosition();
+        DrawOrbit();
+    }
 
-        //Enable or disable orbit ellipse
-        if (GetComponent<LineRenderer>() != null)
+    private void LoadPredefinedPlanetValues()
+    {
+        if (solarObject.type == Constants.Objects.None)
+            return;
+
+        SolarObject obj = Constants.GetObjectData(solarObject.type);
+
+        if (obj == null)
+            return;
+
+        solarObject.xAxis = obj.xAxis;
+        solarObject.zAxis = obj.zAxis;
+        solarObject.orbitPeriodSeconds = obj.orbitPeriodYears;
+        solarObject.rotationPeriodSeconds = obj.rotationPeriodDays;
+        solarObject.orbitPeriodYears = obj.orbitPeriodYears;
+        solarObject.rotationPeriodDays = obj.rotationPeriodDays;
+        solarObject.rotationAngle = obj.rotationAngle;
+        solarObject.eccentricity = obj.eccentricity;
+        solarObject.longitudeOfPerihelionDegrees = obj.longitudeOfPerihelionDegrees;
+        solarObject.isRotationClockwise = obj.isRotationClockwise;
+        solarObject.isMoving = obj.isMoving;
+        solarObject.isRotating = obj.isRotating;
+    }
+
+    private void ConfigureSimulationSpeed()
+    {
+        simulationSpeedMovementValue = 1f;
+        simulationSpeedRotationValue = 1f;
+
+        if (!solarObject.realWorldSimulation)
+            return;
+
+        solarObject.orbitPeriodSeconds = solarObject.orbitPeriodYears * Constants.SECONDS_IN_YEAR;
+        solarObject.rotationPeriodSeconds = solarObject.rotationPeriodDays * Constants.SECONDS_IN_DAY;
+
+        simulationSpeedMovementValue = GetSpeedValue(movementSpeed);
+        simulationSpeedRotationValue = GetSpeedValue(rotationSpeed);
+    }
+
+    private void ConfigureRotationDirection()
+    {
+        rotationDirection = solarObject.isRotationClockwise ? Vector3.up : Vector3.down;
+    }
+
+    private float GetSpeedValue(SpeedOptions speedOption)
+    {
+        switch (speedOption)
         {
-            if (solarObject.drawOrbit)
-            {
-                GetComponent<LineRenderer>().enabled = true;
-                orbitRenderer.CalculateEllipse(solarObject, GetComponent<LineRenderer>());
-            }
-            else
-                GetComponent<LineRenderer>().enabled = false;
+            case SpeedOptions.DayPerSecond: return Constants.SECONDS_IN_DAY;
+            case SpeedOptions.WeekPerSecond: return Constants.SECONDS_IN_WEEK;
+            case SpeedOptions.MonthPerSecond: return Constants.SECONDS_IN_MONTH;
+            case SpeedOptions.YearPerSecond: return Constants.SECONDS_IN_YEAR;
+            default: return 1f;
         }
     }
 
-    /// <summary>
-    /// Calculate movement position during play
-    /// </summary>
-    IEnumerator Movement()
+    private void DrawOrbit()
     {
-        while (true)
+        LineRenderer lineRenderer = GetComponent<LineRenderer>();
+
+        if (lineRenderer == null)
+            return;
+
+        if (!solarObject.drawOrbit)
         {
-            if (isActive && solarObject.isMoving)
-            {
-                float orbitSpeed = 1f / solarObject.orbitPeriodSeconds;
-
-                orbitProgress += Time.deltaTime * orbitSpeed * simulationSpeedMovementValue;
-                orbitProgress %= 1f;
-
-                SetPosition();
-            }
-
-            yield return null;
+            lineRenderer.enabled = false;
+            return;
         }
+
+        lineRenderer.enabled = true;
+        orbitRenderer.CalculateEllipse(solarObject, lineRenderer, transform.parent);
     }
 
     /// <summary>
-    /// Calculate rotation angle during play
+    /// Advances mean anomaly at a constant rate. Kepler's equation converts it to faster motion near the Sun.
     /// </summary>
-    IEnumerator Rotation()
+    private void MoveAlongOrbit(float deltaTime)
     {
-        while (true)
-        {
-            if (isActive && solarObject.isRotating)
-            {
-                float rotationSpeed = 360f / solarObject.rotationPeriodSeconds;
+        if (!isActive || !solarObject.isMoving || solarObject.orbitPeriodSeconds <= 0f)
+            return;
 
-                rotationProgress += Time.deltaTime * rotationSpeed / 360f;
-                rotationProgress %= 1f;
+        float orbitSpeed = 1f / Mathf.Max(MinimumPeriodSeconds, solarObject.orbitPeriodSeconds);
 
-                transform.Rotate(rotationDirection, Time.deltaTime * rotationSpeed * simulationSpeedRotationValue);
-            }
+        orbitProgress += deltaTime * orbitSpeed * simulationSpeedMovementValue;
+        orbitProgress = Mathf.Repeat(orbitProgress, 1f);
 
-            yield return null;
-        }
+        SetPosition();
+    }
+
+    /// <summary>
+    /// Rotates the planet around its tilted axis.
+    /// </summary>
+    private void RotateAroundAxis(float deltaTime)
+    {
+        if (!isActive || !solarObject.isRotating || solarObject.rotationPeriodSeconds <= 0f)
+            return;
+
+        float axialRotationSpeed = 360f / Mathf.Max(MinimumPeriodSeconds, solarObject.rotationPeriodSeconds);
+
+        rotationProgress += deltaTime * axialRotationSpeed / 360f * simulationSpeedRotationValue;
+        rotationProgress = Mathf.Repeat(rotationProgress, 1f);
+
+        transform.Rotate(rotationDirection, deltaTime * axialRotationSpeed * simulationSpeedRotationValue);
     }
 }
