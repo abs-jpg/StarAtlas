@@ -59,6 +59,12 @@ public class OrbitMotion : MonoBehaviour
     /// </summary>
     private void SetPosition()
     {
+        if (!Application.isPlaying && !isActiveAndEnabled)
+            return;
+
+        if (!solarObject.isMoving && solarObject.GetSemiMajorAxis() <= 0f)
+            return;
+
         Vector3 position = solarObject.Evaluate(orbitProgress);
         transform.localPosition = new Vector3(position.x, 0f, position.z);
     }
