@@ -26,9 +26,9 @@ public class SolarSystemPeriodController : MonoBehaviour
 
     [Header("Multiplier Mode")]
     [Min(MinimumPeriodSeconds)]
-    public float orbitPeriodMultiplier = 1f;
+    public float orbitPeriodMultiplier = 7f;
     [Min(MinimumPeriodSeconds)]
-    public float rotationPeriodMultiplier = 1f;
+    public float rotationPeriodMultiplier = 5f;
 
     [Header("Override Mode")]
     [Min(MinimumPeriodSeconds)]
