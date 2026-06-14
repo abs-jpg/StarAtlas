@@ -40,6 +40,13 @@ namespace AZ.Exhibition
         [SerializeField] private bool lockToInteractionPlane = true;
         [SerializeField] private Transform interactionPlaneOverride;
 
+        [Header("Canvas Bounds")]
+        [SerializeField] private bool keepInsideCanvasBounds = true;
+        [SerializeField] private bool flipHorizontalSideAtCanvasEdge = true;
+        [SerializeField] private bool snapOnHorizontalSideFlip = true;
+        [SerializeField] private RectTransform canvasBoundsOverride;
+        [SerializeField] private Vector2 canvasBoundsPadding = Vector2.zero;
+
         private Coroutine fadeRoutine;
         private Transform target;
         private Camera cachedCamera;
@@ -48,6 +55,8 @@ namespace AZ.Exhibition
         private bool hasShown;
         private bool isUpdatingControls;
         private bool registeredCanvasAddedByPanel;
+        private int currentHorizontalSide;
+        private readonly Vector3[] panelWorldCorners = new Vector3[4];
 
         private void Reset()
         {
@@ -112,13 +121,20 @@ namespace AZ.Exhibition
 
             Transform targetTransform = target;
             Camera camera = GetCamera();
-            Vector3 offset = GetFollowOffset(camera);
-            Vector3 desiredPosition = ConstrainToInteractionPlane(targetTransform.position + offset);
+            Vector3 desiredPosition = GetFollowPosition(targetTransform.position, camera, out bool sideChanged);
+            if (sideChanged && snapOnHorizontalSideFlip)
+            {
+                transform.position = desiredPosition;
+            }
+            else
+            {
+                Vector3 nextPosition = Vector3.Lerp(
+                    transform.position,
+                    desiredPosition,
+                    1f - Mathf.Exp(-followLerpSpeed * Time.deltaTime));
+                transform.position = ClampInsideCanvasBounds(nextPosition);
+            }
 
-            transform.position = Vector3.Lerp(
-                transform.position,
-                desiredPosition,
-                1f - Mathf.Exp(-followLerpSpeed * Time.deltaTime));
 
             if (faceMainCamera && camera != null)
             {
@@ -152,6 +168,7 @@ namespace AZ.Exhibition
 
             target = follow;
             controlledItem = follow != null ? follow.GetComponent<ExhibitionSpawnedItem>() : null;
+            currentHorizontalSide = 0;
             SnapToTarget();
             SetText(titleText, entry.displayName);
             SetText(summaryText, entry.summary);
@@ -168,6 +185,7 @@ namespace AZ.Exhibition
         {
             target = null;
             controlledItem = null;
+            currentHorizontalSide = 0;
             FadeTo(false);
         }
 
@@ -176,6 +194,7 @@ namespace AZ.Exhibition
             canvasGroup = EnsureCanvasGroup();
             target = null;
             controlledItem = null;
+            currentHorizontalSide = 0;
 
             if (fadeRoutine != null)
             {
@@ -371,19 +390,91 @@ namespace AZ.Exhibition
             }
 
             Camera camera = GetCamera();
-            transform.position = ConstrainToInteractionPlane(target.position + GetFollowOffset(camera));
+            transform.position = GetFollowPosition(target.position, camera, out _);
         }
 
         private Vector3 GetFollowOffset(Camera camera)
         {
-            if (camera == null)
+            return GetFollowOffset(camera, GetPreferredHorizontalSide());
+        }
+
+        private Vector3 GetFollowOffset(Camera camera, int horizontalSide)
+        {
+            Vector3 offset = worldOffset;
+            if (Mathf.Abs(offset.x) > 0.0001f)
             {
-                return worldOffset;
+                offset.x = Mathf.Abs(offset.x) * Mathf.Sign(horizontalSide == 0 ? GetPreferredHorizontalSide() : horizontalSide);
             }
 
-            return camera.transform.right * worldOffset.x +
-                   camera.transform.up * worldOffset.y +
-                   camera.transform.forward * worldOffset.z;
+            return GetWorldOffset(camera, offset);
+        }
+
+        private Vector3 GetWorldOffset(Camera camera, Vector3 offset)
+        {
+            if (camera == null)
+            {
+                return offset;
+            }
+
+            return camera.transform.right * offset.x +
+                   camera.transform.up * offset.y +
+                   camera.transform.forward * offset.z;
+        }
+
+        private Vector3 GetFollowPosition(Vector3 targetPosition, Camera camera, out bool sideChanged)
+        {
+            sideChanged = false;
+            int preferredSide = GetPreferredHorizontalSide();
+            Vector3 preferredPosition = ConstrainToInteractionPlane(targetPosition + GetFollowOffset(camera, preferredSide));
+            int selectedSide = preferredSide;
+            Vector3 selectedPosition = preferredPosition;
+
+            if (ShouldTryOppositeHorizontalSide(preferredPosition))
+            {
+                int oppositeSide = -preferredSide;
+                Vector3 oppositePosition = ConstrainToInteractionPlane(targetPosition + GetFollowOffset(camera, oppositeSide));
+                if (ShouldUseOppositeHorizontalSide(preferredPosition, oppositePosition))
+                {
+                    selectedSide = oppositeSide;
+                    selectedPosition = oppositePosition;
+                }
+            }
+
+            sideChanged = currentHorizontalSide != 0 && selectedSide != currentHorizontalSide;
+            currentHorizontalSide = selectedSide;
+            return ClampInsideCanvasBounds(selectedPosition);
+        }
+
+        private int GetPreferredHorizontalSide()
+        {
+            return worldOffset.x < 0f ? -1 : 1;
+        }
+
+        private bool ShouldTryOppositeHorizontalSide(Vector3 preferredPosition)
+        {
+            if (!flipHorizontalSideAtCanvasEdge || Mathf.Abs(worldOffset.x) <= 0.0001f)
+            {
+                return false;
+            }
+
+            return TryGetCanvasOverflow(preferredPosition, out Vector2 overflow) && overflow.x > 0.0001f;
+        }
+
+        private bool ShouldUseOppositeHorizontalSide(Vector3 preferredPosition, Vector3 oppositePosition)
+        {
+            if (!TryGetCanvasOverflow(preferredPosition, out Vector2 preferredOverflow) ||
+                !TryGetCanvasOverflow(oppositePosition, out Vector2 oppositeOverflow))
+            {
+                return false;
+            }
+
+            if (oppositeOverflow.x < preferredOverflow.x - 0.0001f)
+            {
+                return true;
+            }
+
+            return oppositeOverflow.x <= 0.0001f &&
+                   oppositeOverflow.y <= preferredOverflow.y + 0.0001f;
         }
 
         private Camera GetCamera()
@@ -439,6 +530,143 @@ namespace AZ.Exhibition
             }
 
             return transform.parent;
+        }
+
+        private Vector3 ClampInsideCanvasBounds(Vector3 desiredPosition)
+        {
+            if (!keepInsideCanvasBounds)
+            {
+                return desiredPosition;
+            }
+
+            if (!TryGetCanvasOverflow(desiredPosition, out _, out Vector2 correction))
+            {
+                return desiredPosition;
+            }
+
+            if (correction == Vector2.zero)
+            {
+                return desiredPosition;
+            }
+
+            RectTransform boundsRect = GetCanvasBoundsRect();
+            return desiredPosition + boundsRect.TransformVector(new Vector3(correction.x, correction.y, 0f));
+        }
+
+        private bool TryGetCanvasOverflow(Vector3 desiredPosition, out Vector2 overflow)
+        {
+            return TryGetCanvasOverflow(desiredPosition, out overflow, out _);
+        }
+
+        private bool TryGetCanvasOverflow(Vector3 desiredPosition, out Vector2 overflow, out Vector2 correction)
+        {
+            overflow = Vector2.zero;
+            correction = Vector2.zero;
+
+            RectTransform panelRect = transform as RectTransform;
+            RectTransform boundsRect = GetCanvasBoundsRect();
+            if (panelRect == null || boundsRect == null)
+            {
+                return false;
+            }
+
+            Rect paddedRect = GetPaddedBoundsRect(boundsRect.rect);
+            Vector3 candidateOffset = desiredPosition - panelRect.position;
+            panelRect.GetWorldCorners(panelWorldCorners);
+
+            bool hasCorners = false;
+            Vector2 min = Vector2.zero;
+            Vector2 max = Vector2.zero;
+
+            for (int i = 0; i < panelWorldCorners.Length; i++)
+            {
+                Vector3 localCorner = boundsRect.InverseTransformPoint(panelWorldCorners[i] + candidateOffset);
+                Vector2 corner2D = new Vector2(localCorner.x, localCorner.y);
+
+                if (!hasCorners)
+                {
+                    min = corner2D;
+                    max = corner2D;
+                    hasCorners = true;
+                }
+                else
+                {
+                    min = Vector2.Min(min, corner2D);
+                    max = Vector2.Max(max, corner2D);
+                }
+            }
+
+            if (!hasCorners)
+            {
+                return false;
+            }
+
+            float panelWidth = max.x - min.x;
+            float panelHeight = max.y - min.y;
+            overflow = new Vector2(
+                Mathf.Max(0f, paddedRect.xMin - min.x) + Mathf.Max(0f, max.x - paddedRect.xMax),
+                Mathf.Max(0f, paddedRect.yMin - min.y) + Mathf.Max(0f, max.y - paddedRect.yMax));
+
+            if (panelWidth > paddedRect.width)
+            {
+                correction.x = paddedRect.center.x - (min.x + max.x) * 0.5f;
+            }
+            else if (min.x < paddedRect.xMin)
+            {
+                correction.x = paddedRect.xMin - min.x;
+            }
+            else if (max.x > paddedRect.xMax)
+            {
+                correction.x = paddedRect.xMax - max.x;
+            }
+
+            if (panelHeight > paddedRect.height)
+            {
+                correction.y = paddedRect.center.y - (min.y + max.y) * 0.5f;
+            }
+            else if (min.y < paddedRect.yMin)
+            {
+                correction.y = paddedRect.yMin - min.y;
+            }
+            else if (max.y > paddedRect.yMax)
+            {
+                correction.y = paddedRect.yMax - max.y;
+            }
+
+            return true;
+        }
+
+        private RectTransform GetCanvasBoundsRect()
+        {
+            if (canvasBoundsOverride != null)
+            {
+                return canvasBoundsOverride;
+            }
+
+            if (registeredCanvas != null && registeredCanvas.transform is RectTransform registeredRect)
+            {
+                return registeredRect;
+            }
+
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null && canvas.transform is RectTransform canvasRect)
+            {
+                return canvasRect;
+            }
+
+            return transform.parent as RectTransform;
+        }
+
+        private Rect GetPaddedBoundsRect(Rect source)
+        {
+            float paddingX = Mathf.Clamp(canvasBoundsPadding.x, 0f, Mathf.Max(0f, source.width * 0.5f));
+            float paddingY = Mathf.Clamp(canvasBoundsPadding.y, 0f, Mathf.Max(0f, source.height * 0.5f));
+
+            source.xMin += paddingX;
+            source.xMax -= paddingX;
+            source.yMin += paddingY;
+            source.yMax -= paddingY;
+            return source;
         }
 
         private void ApplyFontOverride()
