@@ -295,12 +295,12 @@ PrefabInstance:
     - target: {fileID: 7896074619606024515, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074619606024524, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074619606024524, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -3017,6 +3017,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.57189155
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074619606024524, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074619606024524, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074619606024525, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -3030,7 +3040,7 @@ PrefabInstance:
     - target: {fileID: 7896074619765915140, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074619765915140, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -5747,6 +5757,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.66954064
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074619765915140, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074619765915140, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074619765915141, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -5760,7 +5780,7 @@ PrefabInstance:
     - target: {fileID: 7896074619765915163, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620522693052, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -5780,7 +5800,7 @@ PrefabInstance:
     - target: {fileID: 7896074620522693052, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620522693052, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -5795,7 +5815,7 @@ PrefabInstance:
     - target: {fileID: 7896074620522693054, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620522693054, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -8512,6 +8532,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.6159543
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074620522693054, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074620522693054, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074620522693055, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8535,12 +8565,12 @@ PrefabInstance:
     - target: {fileID: 7896074620646931333, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620646931334, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620646931334, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -11257,6 +11287,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.44657737
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074620646931334, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074620646931334, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074620646931335, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -11270,12 +11310,12 @@ PrefabInstance:
     - target: {fileID: 7896074620759400212, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620759400213, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620759400213, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -13992,6 +14032,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.54098296
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074620759400213, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074620759400213, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074620759400214, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -14015,12 +14065,12 @@ PrefabInstance:
     - target: {fileID: 7896074620982723369, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620982723370, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074620982723370, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -16737,6 +16787,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.53262395
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074620982723370, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074620982723370, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074620982723371, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -16750,7 +16810,7 @@ PrefabInstance:
     - target: {fileID: 7896074621321729490, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074621321729490, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -19467,10 +19527,20 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.556293
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074621321729490, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074621321729490, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     - target: {fileID: 7896074621321729491, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074621321729503, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -19575,12 +19645,12 @@ PrefabInstance:
     - target: {fileID: 7896074621575864782, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: solarObject.drawOrbit
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074621575864783, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7896074621575864783, guid: fe7a94622372a46fa81d9d8cfaaddf46,
         type: 3}
@@ -22297,6 +22367,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[180].z
       value: 0.68297875
       objectReference: {fileID: 0}
+    - target: {fileID: 7896074621575864783, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896074621575864783, guid: fe7a94622372a46fa81d9d8cfaaddf46,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.011369005
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22417,10 +22497,57 @@ MonoBehaviour:
   controlMode: 0
   applyOnStart: 1
   applyWhenValuesChange: 1
-  orbitPeriodMultiplier: 10
-  rotationPeriodMultiplier: 5
+  orbitSpeedMultiplier: 0.05
+  rotationSpeedMultiplier: 5
   orbitPeriodSeconds: 1
   rotationPeriodSeconds: 1
+  autoCreateIndividualSpeedControls: 1
+  individualSpeedControls:
+  - type: 1
+    controlOrbitSpeed: 0
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 2
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 3
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 4
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 5
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 6
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 7
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 8
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
+  - type: 9
+    controlOrbitSpeed: 1
+    orbitSpeedMultiplier: 1
+    controlRotationSpeed: 1
+    rotationSpeedMultiplier: 1
 --- !u!114 &1091274012
 MonoBehaviour:
   m_ObjectHideFlags: 0
