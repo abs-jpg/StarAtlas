@@ -61,6 +61,7 @@ public class OrbitMotion : MonoBehaviour
 
     private void Update()
     {
+        DrawOrbit();
         if (!Application.isPlaying)
         {
             DrawOrbitWhenScaleChanges();
