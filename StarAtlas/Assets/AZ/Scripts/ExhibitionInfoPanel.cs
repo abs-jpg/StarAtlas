@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AZ.Exhibition
 {
@@ -15,10 +16,20 @@ namespace AZ.Exhibition
         [SerializeField] private TMP_Text massText;
         [SerializeField] private TMP_Text orbitPeriodText;
         [SerializeField] private TMP_Text rotationPeriodText;
+        [SerializeField] private TMP_Text temperatureText;
         [SerializeField] private TMP_FontAsset fontOverride;
         [SerializeField, Min(0f)] private float fadeDuration = 0.35f;
         [SerializeField] private bool hideOnAwake = true;
         [SerializeField] private bool deactivateWhenHidden = true;
+
+        [Header("Simulation Controls")]
+        [SerializeField] private Slider rotationSpeedSlider;
+        [SerializeField] private Slider orbitSpeedSlider;
+        [SerializeField] private TMP_Text rotationSpeedValueText;
+        [SerializeField] private TMP_Text orbitSpeedValueText;
+        [SerializeField, Min(0.001f)] private float minimumSpeedMultiplier = 0.1f;
+        [SerializeField, Min(0.001f)] private float maximumSpeedMultiplier = 5f;
+        [SerializeField] private bool configureSliderRanges = true;
 
         [Header("Follow")]
         [SerializeField] private bool followTarget = true;
@@ -29,7 +40,9 @@ namespace AZ.Exhibition
         private Coroutine fadeRoutine;
         private Transform target;
         private Camera cachedCamera;
+        private ExhibitionSpawnedItem controlledItem;
         private bool hasShown;
+        private bool isUpdatingControls;
 
         private void Reset()
         {
@@ -40,6 +53,7 @@ namespace AZ.Exhibition
         {
             canvasGroup = EnsureCanvasGroup();
             ApplyFontOverride();
+            HookSliderEvents();
 
             if (hideOnAwake)
             {
@@ -51,6 +65,7 @@ namespace AZ.Exhibition
         {
             canvasGroup = EnsureCanvasGroup();
             ApplyFontOverride();
+            HookSliderEvents();
 
             if (hideOnAwake && !hasShown)
             {
@@ -58,10 +73,16 @@ namespace AZ.Exhibition
             }
         }
 
+        private void OnDestroy()
+        {
+            UnhookSliderEvents();
+        }
+
         private void OnValidate()
         {
             canvasGroup = GetComponent<CanvasGroup>();
             ApplyFontOverride();
+            ConfigureSliderRanges();
 
             if (!Application.isPlaying && hideOnAwake && canvasGroup != null)
             {
@@ -94,6 +115,8 @@ namespace AZ.Exhibition
                     transform.rotation = Quaternion.LookRotation(direction.normalized, camera.transform.up);
                 }
             }
+
+            RefreshSimulationLabels();
         }
 
         public void Show(ExhibitionCatalogEntry entry)
@@ -115,6 +138,7 @@ namespace AZ.Exhibition
             }
 
             target = follow;
+            controlledItem = follow != null ? follow.GetComponent<ExhibitionSpawnedItem>() : null;
             SnapToTarget();
             SetText(titleText, entry.displayName);
             SetText(summaryText, entry.summary);
@@ -122,12 +146,15 @@ namespace AZ.Exhibition
             SetText(massText, FormatStat("\u8d28\u91cf", entry.mass));
             SetText(orbitPeriodText, FormatStat("\u516c\u8f6c\u5468\u671f", entry.orbitPeriod));
             SetText(rotationPeriodText, FormatStat("\u81ea\u8f6c\u5468\u671f", entry.rotationPeriod));
+            RefreshSimulationControls();
+            RefreshSimulationLabels();
             FadeTo(true);
         }
 
         public void Hide()
         {
             target = null;
+            controlledItem = null;
             FadeTo(false);
         }
 
@@ -135,6 +162,7 @@ namespace AZ.Exhibition
         {
             canvasGroup = EnsureCanvasGroup();
             target = null;
+            controlledItem = null;
 
             if (fadeRoutine != null)
             {
@@ -279,6 +307,9 @@ namespace AZ.Exhibition
             ApplyFont(massText);
             ApplyFont(orbitPeriodText);
             ApplyFont(rotationPeriodText);
+            ApplyFont(temperatureText);
+            ApplyFont(rotationSpeedValueText);
+            ApplyFont(orbitSpeedValueText);
         }
 
         private void ApplyFont(TMP_Text text)
@@ -303,6 +334,145 @@ namespace AZ.Exhibition
         private static string FormatStat(string label, string value)
         {
             return string.IsNullOrWhiteSpace(value) ? string.Empty : $"{label}\n{value}";
+        }
+
+        private void HookSliderEvents()
+        {
+            if (rotationSpeedSlider != null)
+            {
+                rotationSpeedSlider.onValueChanged.RemoveListener(HandleRotationSpeedChanged);
+                rotationSpeedSlider.onValueChanged.AddListener(HandleRotationSpeedChanged);
+            }
+
+            if (orbitSpeedSlider != null)
+            {
+                orbitSpeedSlider.onValueChanged.RemoveListener(HandleOrbitSpeedChanged);
+                orbitSpeedSlider.onValueChanged.AddListener(HandleOrbitSpeedChanged);
+            }
+
+            ConfigureSliderRanges();
+        }
+
+        private void UnhookSliderEvents()
+        {
+            if (rotationSpeedSlider != null)
+            {
+                rotationSpeedSlider.onValueChanged.RemoveListener(HandleRotationSpeedChanged);
+            }
+
+            if (orbitSpeedSlider != null)
+            {
+                orbitSpeedSlider.onValueChanged.RemoveListener(HandleOrbitSpeedChanged);
+            }
+        }
+
+        private void ConfigureSliderRanges()
+        {
+            if (!configureSliderRanges)
+            {
+                return;
+            }
+
+            float minValue = Mathf.Max(0.001f, minimumSpeedMultiplier);
+            float maxValue = Mathf.Max(minValue, maximumSpeedMultiplier);
+
+            ConfigureSliderRange(rotationSpeedSlider, minValue, maxValue);
+            ConfigureSliderRange(orbitSpeedSlider, minValue, maxValue);
+        }
+
+        private static void ConfigureSliderRange(Slider slider, float minValue, float maxValue)
+        {
+            if (slider == null)
+            {
+                return;
+            }
+
+            slider.minValue = minValue;
+            slider.maxValue = maxValue;
+            slider.wholeNumbers = false;
+        }
+
+        private void RefreshSimulationControls()
+        {
+            isUpdatingControls = true;
+            ConfigureSliderRanges();
+            bool hasControlledItem = controlledItem != null;
+            bool showRotationControl = hasControlledItem &&
+                                       controlledItem.Entry != null &&
+                                       controlledItem.Entry.rotationSpeedAffectsTemperature;
+            bool showOrbitControl = hasControlledItem &&
+                                    controlledItem.Entry != null &&
+                                    controlledItem.Entry.orbitSpeedAffectsTemperature;
+
+            if (rotationSpeedSlider != null)
+            {
+                rotationSpeedSlider.gameObject.SetActive(showRotationControl);
+                if (showRotationControl)
+                {
+                    rotationSpeedSlider.SetValueWithoutNotify(controlledItem.RotationSpeedMultiplier);
+                }
+            }
+
+            if (orbitSpeedSlider != null)
+            {
+                orbitSpeedSlider.gameObject.SetActive(showOrbitControl);
+                if (showOrbitControl)
+                {
+                    orbitSpeedSlider.SetValueWithoutNotify(controlledItem.OrbitSpeedMultiplier);
+                }
+            }
+
+            isUpdatingControls = false;
+        }
+
+        private void HandleRotationSpeedChanged(float value)
+        {
+            if (isUpdatingControls || controlledItem == null)
+            {
+                return;
+            }
+
+            controlledItem.SetRotationSpeedMultiplier(value);
+            RefreshSimulationLabels();
+        }
+
+        private void HandleOrbitSpeedChanged(float value)
+        {
+            if (isUpdatingControls || controlledItem == null)
+            {
+                return;
+            }
+
+            controlledItem.SetOrbitSpeedMultiplier(value);
+            RefreshSimulationLabels();
+        }
+
+        private void RefreshSimulationLabels()
+        {
+            if (controlledItem == null)
+            {
+                SetText(temperatureText, string.Empty);
+                SetText(rotationSpeedValueText, string.Empty);
+                SetText(orbitSpeedValueText, string.Empty);
+                return;
+            }
+
+            SetText(temperatureText, FormatTemperature(controlledItem.CurrentTemperatureCelsius));
+            SetText(
+                rotationSpeedValueText,
+                controlledItem.Entry != null && controlledItem.Entry.rotationSpeedAffectsTemperature
+                    ? $"\u81ea\u8f6c x{controlledItem.RotationSpeedMultiplier:0.00}"
+                    : string.Empty);
+            SetText(
+                orbitSpeedValueText,
+                controlledItem.Entry != null && controlledItem.Entry.orbitSpeedAffectsTemperature
+                    ? $"\u516c\u8f6c x{controlledItem.OrbitSpeedMultiplier:0.00}"
+                    : string.Empty);
+        }
+
+        private static string FormatTemperature(float celsius)
+        {
+            return $"\u6e29\u5ea6\n{celsius:0.#} \u00b0C";
         }
     }
 }

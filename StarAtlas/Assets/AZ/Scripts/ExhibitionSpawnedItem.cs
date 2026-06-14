@@ -32,6 +32,12 @@ namespace AZ.Exhibition
         private bool rayDragging;
         private Vector3 rayDragPoint;
         private Vector3 rayDragNormal = Vector3.up;
+        private float rotationSpeedMultiplier = 1f;
+        private float orbitSpeedMultiplier = 1f;
+
+        public float RotationSpeedMultiplier => rotationSpeedMultiplier;
+        public float OrbitSpeedMultiplier => orbitSpeedMultiplier;
+        public float CurrentTemperatureCelsius => CalculateTemperatureCelsius();
 
         public void Initialize(
             ExhibitionDock owner,
@@ -63,6 +69,11 @@ namespace AZ.Exhibition
             {
                 ShowInfo();
             }
+        }
+
+        private void Update()
+        {
+            RotateSpawnedVisual();
         }
 
         private void LateUpdate()
@@ -178,6 +189,16 @@ namespace AZ.Exhibition
             }
         }
 
+        public void SetRotationSpeedMultiplier(float multiplier)
+        {
+            rotationSpeedMultiplier = Mathf.Max(0.001f, multiplier);
+        }
+
+        public void SetOrbitSpeedMultiplier(float multiplier)
+        {
+            orbitSpeedMultiplier = Mathf.Max(0.001f, multiplier);
+        }
+
         public void NotifyExternalDragMoved(ExhibitionDockItem dragSource)
         {
             if (returnedToDock)
@@ -270,6 +291,40 @@ namespace AZ.Exhibition
             rayDragPoint = transform.position;
             UpdateReturnPreviewAfterLeavingDock(null);
             StopRigidbody();
+        }
+
+        private void RotateSpawnedVisual()
+        {
+            if (returnedToDock || Entry == null || !Entry.enableSpawnedRotation)
+            {
+                return;
+            }
+
+            float degreesPerSecond = Entry.spawnedRotationDegreesPerSecond * rotationSpeedMultiplier;
+            if (Mathf.Approximately(degreesPerSecond, 0f))
+            {
+                return;
+            }
+
+            transform.Rotate(Vector3.up, degreesPerSecond * Time.deltaTime, Space.Self);
+        }
+
+        private float CalculateTemperatureCelsius()
+        {
+            if (Entry == null)
+            {
+                return 15f;
+            }
+
+            float baseKelvin = Mathf.Max(1f, Entry.defaultTemperatureCelsius + 273.15f);
+            float orbitFactor = Entry.orbitSpeedAffectsTemperature
+                ? Mathf.Pow(Mathf.Max(0.001f, orbitSpeedMultiplier), 1f / 3f)
+                : 1f;
+            float rotationFactor = Entry.rotationSpeedAffectsTemperature
+                ? Mathf.Pow(Mathf.Max(0.001f, rotationSpeedMultiplier), -0.05f)
+                : 1f;
+
+            return Mathf.Max(1f, baseKelvin * orbitFactor * rotationFactor) - 273.15f;
         }
 
         private void ClampPositionToDockFront()

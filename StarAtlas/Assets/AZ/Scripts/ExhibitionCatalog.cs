@@ -33,6 +33,14 @@ namespace AZ.Exhibition
         public string orbitPeriod;
         public string rotationPeriod;
 
+        [Header("Interactive Simulation")]
+        public bool enableSpawnedRotation = true;
+        [Min(0f)]
+        public float spawnedRotationDegreesPerSecond = 20f;
+        public float defaultTemperatureCelsius = 15f;
+        public bool orbitSpeedAffectsTemperature = true;
+        public bool rotationSpeedAffectsTemperature = true;
+
         public bool IsValid => prefab != null;
     }
 }
