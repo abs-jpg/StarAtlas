@@ -277,7 +277,7 @@ PrefabInstance:
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1233148308800772758, guid: 3c20833d81e354626b8365b459274912,
         type: 3}
@@ -437,6 +437,7 @@ MonoBehaviour:
   slotColliderCenter: {x: 0, y: 0, z: 0}
   slotColliderSize: {x: 0.1, y: 0.1, z: 0.08}
   autoAddRayInteractable: 1
+  prepareDockItemsForRokidGrab: 1
   spawnOffsetInWorldUnits: 1
   spawnLocalOffset: {x: 0, y: 0.08, z: 0.18}
   spawnNormalOffset: 0.03
@@ -444,12 +445,19 @@ MonoBehaviour:
   spawnScaleDuration: 0.35
   showInfoWhenSpawned: 1
   prepareSpawnedForRokidGrab: 1
+  prepareSpawnedForRayInteraction: 1
   disableOrbitMotionOnSpawn: 1
   hideOrbitLinesOnSpawn: 1
+  keepSpawnedInFrontOfTray: 1
+  useViewerSideAsFront: 1
+  frontReferenceOverride: {fileID: 0}
+  frontLocalDirection: {x: 0, y: 0, z: 1}
+  frontPlaneLocalOffset: {x: 0, y: 0, z: 0}
+  minimumFrontDistance: 0.02
   allowReturnToTray: 1
   returnHorizontalPadding: 0.12
   returnVerticalRange: 0.18
-  returnDepthRange: 0.16
+  returnDepthRange: 1
 --- !u!1001 &1085223973
 PrefabInstance:
   m_ObjectHideFlags: 0

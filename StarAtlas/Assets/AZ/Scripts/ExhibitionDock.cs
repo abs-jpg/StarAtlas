@@ -9,6 +9,8 @@ namespace AZ.Exhibition
     [DisallowMultipleComponent]
     public sealed class ExhibitionDock : MonoBehaviour
     {
+        private const float RuntimeDestroyDelaySeconds = 0.1f;
+
         [Header("Data")]
         [SerializeField] private ExhibitionCatalog catalog;
         [SerializeField] private Transform slotRoot;
@@ -1067,7 +1069,83 @@ namespace AZ.Exhibition
             }
 #endif
 
-            Destroy(target);
+            PrepareForRuntimeDestroy(target);
+            Destroy(target, RuntimeDestroyDelaySeconds);
+        }
+
+        private static void PrepareForRuntimeDestroy(Object target)
+        {
+            GameObject gameObject = null;
+
+            if (target is GameObject targetGameObject)
+            {
+                gameObject = targetGameObject;
+            }
+            else if (target is Component targetComponent)
+            {
+                gameObject = targetComponent.gameObject;
+            }
+
+            if (gameObject == null)
+            {
+                return;
+            }
+
+            foreach (Collider collider in gameObject.GetComponentsInChildren<Collider>(true))
+            {
+                if (collider != null)
+                {
+                    collider.enabled = false;
+                }
+            }
+
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer != null)
+                {
+                    renderer.enabled = false;
+                    renderer.forceRenderingOff = true;
+                }
+            }
+
+            foreach (RayInteractable rayInteractable in gameObject.GetComponentsInChildren<RayInteractable>(true))
+            {
+                if (rayInteractable != null)
+                {
+                    rayInteractable.enabled = false;
+                }
+            }
+
+            foreach (ColliderSurface surface in gameObject.GetComponentsInChildren<ColliderSurface>(true))
+            {
+                if (surface != null)
+                {
+                    surface.enabled = false;
+                }
+            }
+
+            foreach (GrabInteractable grabInteractable in gameObject.GetComponentsInChildren<GrabInteractable>(true))
+            {
+                if (grabInteractable != null)
+                {
+                    grabInteractable.enabled = false;
+                }
+            }
+
+            foreach (Throwable throwable in gameObject.GetComponentsInChildren<Throwable>(true))
+            {
+                if (throwable != null)
+                {
+                    throwable.enabled = false;
+                }
+            }
+
+            foreach (Rigidbody rigidbody in gameObject.GetComponentsInChildren<Rigidbody>(true))
+            {
+                StopRigidbody(rigidbody);
+                rigidbody.detectCollisions = false;
+                rigidbody.isKinematic = true;
+            }
         }
     }
 }
