@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Rokid.UXR.Interaction;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,6 +32,17 @@ namespace AZ.Exhibition
         [SerializeField] private bool autoAddRayInteractable = true;
         [SerializeField] private bool prepareDockItemsForRokidGrab = true;
 
+        [Header("Tray Labels")]
+        [SerializeField] private bool showDockItemNames = true;
+        [SerializeField] private bool autoPlaceNameUnderPreview = true;
+        [SerializeField] private Vector3 nameLabelLocalOffset = Vector3.zero;
+        [SerializeField, Min(0f)] private float nameLabelBottomPadding = 0.02f;
+        [SerializeField, Min(0.001f)] private float nameLabelWorldHeight = 0.025f;
+        [SerializeField, Min(0.1f)] private float nameLabelFadeSpeed = 10f;
+        [SerializeField] private Color nameLabelColor = Color.white;
+        [SerializeField] private TextAlignmentOptions nameLabelAlignment = TextAlignmentOptions.Center;
+        [SerializeField] private TMP_FontAsset nameLabelFont;
+
         [Header("Spawn")]
         [SerializeField] private bool spawnOffsetInWorldUnits = true;
         [SerializeField] private Vector3 spawnLocalOffset = new Vector3(0f, 0.08f, 0.18f);
@@ -42,6 +54,7 @@ namespace AZ.Exhibition
         [SerializeField] private bool prepareSpawnedForRayInteraction = true;
         [SerializeField] private bool disableOrbitMotionOnSpawn = true;
         [SerializeField] private bool hideOrbitLinesOnSpawn = true;
+        [SerializeField] private bool hidePrefabTextLabelsOnSpawn = true;
 
         [Header("Spawned Bounds")]
         [SerializeField] private bool keepSpawnedInFrontOfTray = true;
@@ -470,7 +483,7 @@ namespace AZ.Exhibition
         {
             GameObject slot = slotPrefab != null
                 ? Instantiate(slotPrefab, root)
-                : new GameObject($"DockItem_{entry.displayName}");
+                : new GameObject($"DockItem_{entry.Title}");
 
             slot.transform.SetParent(root, false);
             slot.transform.localScale = Vector3.one;
@@ -482,10 +495,11 @@ namespace AZ.Exhibition
             }
 
             Transform previewRoot = EnsurePreviewRoot(slot.transform);
+            EnsureTrayTitleLabel(slot, entry);
             ClearChildren(previewRoot);
 
             GameObject preview = Instantiate(entry.prefab, previewRoot);
-            preview.name = $"Preview_{entry.displayName}";
+            preview.name = $"Preview_{entry.Title}";
             preview.transform.localPosition = Vector3.zero;
             preview.transform.localRotation = Quaternion.Euler(entry.previewEulerAngles);
             preview.transform.localScale = Vector3.one;
@@ -497,6 +511,32 @@ namespace AZ.Exhibition
             item.Configure(this, catalogIndex, entry, previewRoot, selectedPreviewScale, true);
             item.SetReturnPreview(false);
             return item;
+        }
+
+        private void EnsureTrayTitleLabel(GameObject slot, ExhibitionCatalogEntry entry)
+        {
+            ExhibitionDockTitleLabel titleLabel = slot.GetComponent<ExhibitionDockTitleLabel>();
+            if (titleLabel == null)
+            {
+                titleLabel = slot.AddComponent<ExhibitionDockTitleLabel>();
+            }
+
+            Vector3 localOffset = nameLabelLocalOffset;
+            if (autoPlaceNameUnderPreview && entry != null)
+            {
+                localOffset.y -= Mathf.Max(0.001f, entry.previewDiameter) * 0.5f + nameLabelBottomPadding;
+            }
+
+            titleLabel.Configure(
+                entry != null ? entry.Title : string.Empty,
+                nameLabelFont,
+                nameLabelWorldHeight,
+                Mathf.Max(slotSpacing, 0.001f),
+                nameLabelColor,
+                nameLabelAlignment,
+                nameLabelFadeSpeed);
+            titleLabel.SetLocalPose(localOffset, Quaternion.identity);
+            titleLabel.SetVisible(showDockItemNames, true);
         }
 
         private ExhibitionDockItem FindReusableItem(
@@ -695,6 +735,11 @@ namespace AZ.Exhibition
 
         private void PrepareSpawnedObject(GameObject spawned)
         {
+            if (hidePrefabTextLabelsOnSpawn)
+            {
+                HideTextLabels(spawned);
+            }
+
             if (disableOrbitMotionOnSpawn)
             {
                 DisableOrbitComponents(spawned);
@@ -946,6 +991,17 @@ namespace AZ.Exhibition
                 {
                     renderer.enabled = false;
                     renderer.forceRenderingOff = true;
+                }
+            }
+        }
+
+        private static void HideTextLabels(GameObject root)
+        {
+            foreach (TMP_Text text in root.GetComponentsInChildren<TMP_Text>(true))
+            {
+                if (text != null)
+                {
+                    text.gameObject.SetActive(false);
                 }
             }
         }

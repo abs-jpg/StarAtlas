@@ -1051,6 +1051,15 @@ MonoBehaviour:
   slotColliderSize: {x: 0.1, y: 0.1, z: 0.08}
   autoAddRayInteractable: 1
   prepareDockItemsForRokidGrab: 1
+  showDockItemNames: 1
+  autoPlaceNameUnderPreview: 1
+  nameLabelLocalOffset: {x: 0, y: -150, z: 0}
+  nameLabelBottomPadding: 0.02
+  nameLabelWorldHeight: 540
+  nameLabelFadeSpeed: 10
+  nameLabelColor: {r: 1, g: 1, b: 1, a: 1}
+  nameLabelAlignment: 514
+  nameLabelFont: {fileID: 11400000, guid: af641c37b3c25a04a9fc06aa25e0735f, type: 2}
   spawnOffsetInWorldUnits: 1
   spawnLocalOffset: {x: 0, y: 0.08, z: 0.18}
   spawnNormalOffset: 0.03
@@ -1061,6 +1070,7 @@ MonoBehaviour:
   prepareSpawnedForRayInteraction: 1
   disableOrbitMotionOnSpawn: 1
   hideOrbitLinesOnSpawn: 1
+  hidePrefabTextLabelsOnSpawn: 1
   keepSpawnedInFrontOfTray: 1
   useViewerSideAsFront: 1
   frontReferenceOverride: {fileID: 0}
@@ -2359,6 +2369,13 @@ MonoBehaviour:
   worldOffset: {x: 0.35, y: 0, z: 0}
   followLerpSpeed: 12
   faceMainCamera: 1
+  lockToInteractionPlane: 1
+  interactionPlaneOverride: {fileID: 0}
+  keepInsideCanvasBounds: 1
+  flipHorizontalSideAtCanvasEdge: 1
+  snapOnHorizontalSideFlip: 1
+  canvasBoundsOverride: {fileID: 0}
+  canvasBoundsPadding: {x: 0, y: 0}
 --- !u!114 &1970975834
 MonoBehaviour:
   m_ObjectHideFlags: 0

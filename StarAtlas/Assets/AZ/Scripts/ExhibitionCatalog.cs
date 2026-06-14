@@ -14,7 +14,10 @@ namespace AZ.Exhibition
     public sealed class ExhibitionCatalogEntry
     {
         public string displayName = "Planet";
+        public string title;
         public GameObject prefab;
+
+        public string Title => string.IsNullOrWhiteSpace(title) ? displayName : title;
 
         [Header("Tray Preview")]
         [Min(0.001f)]

@@ -170,7 +170,7 @@ namespace AZ.Exhibition
             controlledItem = follow != null ? follow.GetComponent<ExhibitionSpawnedItem>() : null;
             currentHorizontalSide = 0;
             SnapToTarget();
-            SetText(titleText, entry.displayName);
+            SetText(titleText, entry.Title);
             SetText(summaryText, entry.summary);
             SetText(diameterText, FormatStat("\u76f4\u5f84", entry.diameter));
             SetText(massText, FormatStat("\u8d28\u91cf", entry.mass));

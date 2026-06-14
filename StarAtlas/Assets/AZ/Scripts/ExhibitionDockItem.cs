@@ -24,6 +24,7 @@ namespace AZ.Exhibition
         private ExhibitionDock dock;
         private int entryIndex = -1;
         private ExhibitionCatalogEntry entry;
+        private ExhibitionDockTitleLabel titleLabel;
         private ExhibitionSpawnedItem draggedItem;
         private Throwable throwable;
         private Rigidbody throwableRigidbody;
@@ -59,6 +60,7 @@ namespace AZ.Exhibition
             targetPreviewScale = normalPreviewScale;
             targetWorldPosition = transform.position;
             targetWorldRotation = transform.rotation;
+            titleLabel = GetComponent<ExhibitionDockTitleLabel>();
         }
 
         private void OnDestroy()
@@ -93,11 +95,13 @@ namespace AZ.Exhibition
             entryIndex = catalogIndex;
             entry = catalogEntry;
             previewRoot = preview != null ? preview : previewRoot;
+            titleLabel = GetComponent<ExhibitionDockTitleLabel>();
             hoverScaleMultiplier = Mathf.Max(1f, selectedScaleMultiplier);
             generatedByDock = isGenerated;
 
             normalPreviewScale = previewRoot != null ? previewRoot.localScale : Vector3.one;
             targetPreviewScale = normalPreviewScale;
+            RefreshTitleLabelVisibility(true);
             RefreshThrowableBindings();
         }
 
@@ -115,6 +119,7 @@ namespace AZ.Exhibition
 
             hovering = true;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
         }
 
         public void OnRayPointerExit(PointerEventData eventData)
@@ -126,6 +131,7 @@ namespace AZ.Exhibition
 
             hovering = false;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
         }
 
         public void OnRayBeginDrag(PointerEventData eventData)
@@ -137,6 +143,7 @@ namespace AZ.Exhibition
 
             dragging = true;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
 
             dragPoint = dock.GetSpawnPosition(this, eventData);
             dragNormal = GetEventNormal(eventData);
@@ -146,6 +153,7 @@ namespace AZ.Exhibition
             {
                 dragging = false;
                 RefreshPreviewScale();
+                RefreshTitleLabelVisibility();
             }
         }
 
@@ -188,6 +196,7 @@ namespace AZ.Exhibition
             draggedItem = null;
             dragging = false;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
 
             if (!returnedToDock)
             {
@@ -225,6 +234,7 @@ namespace AZ.Exhibition
             bool becameReturnPreview = isReturnPreview && !returnPreview;
             returnPreview = isReturnPreview;
             SetInteractionEnabled(!isReturnPreview && !draggingSourceHidden);
+            RefreshTitleLabelVisibility();
 
             if (becameReturnPreview && previewRoot != null)
             {
@@ -264,6 +274,7 @@ namespace AZ.Exhibition
             draggingSourceHidden = hidden;
             SetPreviewVisible(!hidden);
             SetInteractionEnabled(!hidden && !returnPreview);
+            RefreshTitleLabelVisibility();
         }
 
         private void HookThrowableEvents()
@@ -307,6 +318,7 @@ namespace AZ.Exhibition
             hovering = false;
             animatePose = false;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
 
             Vector3 spawnPosition = dock.GetSpawnPosition(this, null);
             throwableSpawnOffset = spawnPosition - transform.position;
@@ -319,6 +331,7 @@ namespace AZ.Exhibition
                 throwableDragging = false;
                 dragging = false;
                 RefreshPreviewScale();
+                RefreshTitleLabelVisibility();
                 StopRigidbody(throwableRigidbody);
                 return;
             }
@@ -359,6 +372,7 @@ namespace AZ.Exhibition
             throwableDragging = false;
             dragging = false;
             RefreshPreviewScale();
+            RefreshTitleLabelVisibility();
             StopRigidbody(throwableRigidbody);
 
             if (!returnedToDock)
@@ -404,6 +418,18 @@ namespace AZ.Exhibition
         {
             bool selected = hovering || dragging;
             targetPreviewScale = selected ? normalPreviewScale * hoverScaleMultiplier : normalPreviewScale;
+            RefreshTitleLabelVisibility();
+        }
+
+        private void RefreshTitleLabelVisibility(bool instant = false)
+        {
+            if (titleLabel == null)
+            {
+                titleLabel = GetComponent<ExhibitionDockTitleLabel>();
+            }
+
+            bool visible = !hovering && !dragging && !returnPreview && !draggingSourceHidden;
+            titleLabel?.SetVisible(visible, instant);
         }
 
         private void SetPreviewVisible(bool visible)
