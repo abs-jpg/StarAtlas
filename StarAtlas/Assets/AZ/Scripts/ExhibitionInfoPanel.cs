@@ -1,4 +1,5 @@
 using System.Collections;
+using Rokid.UXR.Utility;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,13 +37,17 @@ namespace AZ.Exhibition
         [SerializeField] private Vector3 worldOffset = new Vector3(0.35f, 0.12f, 0f);
         [SerializeField, Min(0.1f)] private float followLerpSpeed = 12f;
         [SerializeField] private bool faceMainCamera = true;
+        [SerializeField] private bool lockToInteractionPlane = true;
+        [SerializeField] private Transform interactionPlaneOverride;
 
         private Coroutine fadeRoutine;
         private Transform target;
         private Camera cachedCamera;
         private ExhibitionSpawnedItem controlledItem;
+        private Canvas registeredCanvas;
         private bool hasShown;
         private bool isUpdatingControls;
+        private bool registeredCanvasAddedByPanel;
 
         private void Reset()
         {
@@ -52,7 +57,10 @@ namespace AZ.Exhibition
         private void Awake()
         {
             canvasGroup = EnsureCanvasGroup();
+            AutoAssignSimulationControls();
+            RegisterCanvasForRokidRaycast();
             ApplyFontOverride();
+            PrepareSliderRayAdapters();
             HookSliderEvents();
 
             if (hideOnAwake)
@@ -64,7 +72,10 @@ namespace AZ.Exhibition
         private void OnEnable()
         {
             canvasGroup = EnsureCanvasGroup();
+            AutoAssignSimulationControls();
+            RegisterCanvasForRokidRaycast();
             ApplyFontOverride();
+            PrepareSliderRayAdapters();
             HookSliderEvents();
 
             if (hideOnAwake && !hasShown)
@@ -76,11 +87,13 @@ namespace AZ.Exhibition
         private void OnDestroy()
         {
             UnhookSliderEvents();
+            UnregisterCanvasForRokidRaycast();
         }
 
         private void OnValidate()
         {
             canvasGroup = GetComponent<CanvasGroup>();
+            AutoAssignSimulationControls();
             ApplyFontOverride();
             ConfigureSliderRanges();
 
@@ -100,7 +113,7 @@ namespace AZ.Exhibition
             Transform targetTransform = target;
             Camera camera = GetCamera();
             Vector3 offset = GetFollowOffset(camera);
-            Vector3 desiredPosition = targetTransform.position + offset;
+            Vector3 desiredPosition = ConstrainToInteractionPlane(targetTransform.position + offset);
 
             transform.position = Vector3.Lerp(
                 transform.position,
@@ -261,6 +274,95 @@ namespace AZ.Exhibition
             return group;
         }
 
+        private void RegisterCanvasForRokidRaycast()
+        {
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                return;
+            }
+
+            CanvasRegister.canvasList.RemoveAll(registered => registered == null);
+            if (CanvasRegister.canvasList.Contains(canvas))
+            {
+                registeredCanvas = canvas;
+                registeredCanvasAddedByPanel = false;
+                return;
+            }
+
+            CanvasRegister.canvasList.Add(canvas);
+            registeredCanvas = canvas;
+            registeredCanvasAddedByPanel = true;
+        }
+
+        private void UnregisterCanvasForRokidRaycast()
+        {
+            if (registeredCanvasAddedByPanel && registeredCanvas != null)
+            {
+                CanvasRegister.canvasList.Remove(registeredCanvas);
+            }
+
+            registeredCanvas = null;
+            registeredCanvasAddedByPanel = false;
+        }
+
+        private void AutoAssignSimulationControls()
+        {
+            if (rotationSpeedSlider == null)
+            {
+                rotationSpeedSlider = FindChildSlider("Rotation Speed Slider", "Rotation");
+            }
+
+            if (orbitSpeedSlider == null)
+            {
+                orbitSpeedSlider = FindChildSlider("Orbit Speed Slider", "Orbit");
+            }
+        }
+
+        private Slider FindChildSlider(string exactName, string fallbackNamePart)
+        {
+            Slider[] sliders = GetComponentsInChildren<Slider>(true);
+            for (int i = 0; i < sliders.Length; i++)
+            {
+                if (sliders[i] != null && sliders[i].name == exactName)
+                {
+                    return sliders[i];
+                }
+            }
+
+            for (int i = 0; i < sliders.Length; i++)
+            {
+                if (sliders[i] != null && sliders[i].name.Contains(fallbackNamePart))
+                {
+                    return sliders[i];
+                }
+            }
+
+            return null;
+        }
+
+        private void PrepareSliderRayAdapters()
+        {
+            PrepareSliderRayAdapter(rotationSpeedSlider);
+            PrepareSliderRayAdapter(orbitSpeedSlider);
+        }
+
+        private static void PrepareSliderRayAdapter(Slider slider)
+        {
+            if (slider == null)
+            {
+                return;
+            }
+
+            ExhibitionSliderRayAdapter adapter = slider.GetComponent<ExhibitionSliderRayAdapter>();
+            if (adapter == null)
+            {
+                adapter = slider.gameObject.AddComponent<ExhibitionSliderRayAdapter>();
+            }
+
+            adapter.Initialize(slider);
+        }
+
         private void SnapToTarget()
         {
             if (!followTarget || target == null)
@@ -269,7 +371,7 @@ namespace AZ.Exhibition
             }
 
             Camera camera = GetCamera();
-            transform.position = target.position + GetFollowOffset(camera);
+            transform.position = ConstrainToInteractionPlane(target.position + GetFollowOffset(camera));
         }
 
         private Vector3 GetFollowOffset(Camera camera)
@@ -292,6 +394,51 @@ namespace AZ.Exhibition
             }
 
             return cachedCamera;
+        }
+
+        private Vector3 ConstrainToInteractionPlane(Vector3 desiredPosition)
+        {
+            if (!lockToInteractionPlane)
+            {
+                return desiredPosition;
+            }
+
+            Transform planeTransform = GetInteractionPlaneTransform();
+            if (planeTransform == null)
+            {
+                return desiredPosition;
+            }
+
+            Vector3 planeNormal = planeTransform.forward;
+            if (planeNormal.sqrMagnitude <= 0.0001f)
+            {
+                return desiredPosition;
+            }
+
+            planeNormal.Normalize();
+            float distanceFromPlane = Vector3.Dot(desiredPosition - planeTransform.position, planeNormal);
+            return desiredPosition - planeNormal * distanceFromPlane;
+        }
+
+        private Transform GetInteractionPlaneTransform()
+        {
+            if (interactionPlaneOverride != null)
+            {
+                return interactionPlaneOverride;
+            }
+
+            if (registeredCanvas != null)
+            {
+                return registeredCanvas.transform;
+            }
+
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                return canvas.transform;
+            }
+
+            return transform.parent;
         }
 
         private void ApplyFontOverride()

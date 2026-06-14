@@ -26,9 +26,9 @@ MonoBehaviour:
     orbitPeriod: "\u65E0\uFF0C\u592A\u9633\u7CFB\u4E2D\u5FC3\u5929\u4F53"
     rotationPeriod: "\u7EA626.5 days"
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
-    orbitSpeedAffectsTemperature: 1
+    spawnedRotationDegreesPerSecond: 0.755
+    defaultTemperatureCelsius: 5500
+    orbitSpeedAffectsTemperature: 0
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u6C34\u661F"
     prefab: {fileID: 3885845253069203268, guid: 829bfd56a023e354ea56ad97db914d71,
@@ -43,8 +43,8 @@ MonoBehaviour:
     orbitPeriod: 87.97 days
     rotationPeriod: 58.65 days
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: 0.341
+    defaultTemperatureCelsius: 167
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u91D1\u661F"
@@ -60,8 +60,8 @@ MonoBehaviour:
     orbitPeriod: 224.70 days
     rotationPeriod: 243 days
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: -0.082
+    defaultTemperatureCelsius: 464
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u5730\u7403"
@@ -94,8 +94,8 @@ MonoBehaviour:
     orbitPeriod: 686.98 days
     rotationPeriod: 24.6 hours
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: 19.512
+    defaultTemperatureCelsius: -63
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u6728\u661F"
@@ -111,8 +111,8 @@ MonoBehaviour:
     orbitPeriod: 11.86 years
     rotationPeriod: 9.9 hours
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: 48.485
+    defaultTemperatureCelsius: -108
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u571F\u661F"
@@ -128,8 +128,8 @@ MonoBehaviour:
     orbitPeriod: 29.46 years
     rotationPeriod: 10.7 hours
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: 44.86
+    defaultTemperatureCelsius: -139
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u5929\u738B\u661F"
@@ -145,8 +145,8 @@ MonoBehaviour:
     orbitPeriod: 84.01 years
     rotationPeriod: 17.2 hours
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: -27.907
+    defaultTemperatureCelsius: -197
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
   - displayName: "\u6D77\u738B\u661F"
@@ -162,7 +162,7 @@ MonoBehaviour:
     orbitPeriod: 164.8 years
     rotationPeriod: 16.1 hours
     enableSpawnedRotation: 1
-    spawnedRotationDegreesPerSecond: 20
-    defaultTemperatureCelsius: 15
+    spawnedRotationDegreesPerSecond: 29.814
+    defaultTemperatureCelsius: -201
     orbitSpeedAffectsTemperature: 1
     rotationSpeedAffectsTemperature: 1
