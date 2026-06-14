@@ -27,6 +27,7 @@ namespace AZ.Exhibition
         [SerializeField] private Vector3 slotColliderCenter = Vector3.zero;
         [SerializeField] private Vector3 slotColliderSize = new Vector3(0.1f, 0.1f, 0.08f);
         [SerializeField] private bool autoAddRayInteractable = true;
+        [SerializeField] private bool prepareDockItemsForRokidGrab = true;
 
         [Header("Spawn")]
         [SerializeField] private bool spawnOffsetInWorldUnits = true;
@@ -36,8 +37,17 @@ namespace AZ.Exhibition
         [SerializeField, Min(0f)] private float spawnScaleDuration = 0.35f;
         [SerializeField] private bool showInfoWhenSpawned = true;
         [SerializeField] private bool prepareSpawnedForRokidGrab = true;
+        [SerializeField] private bool prepareSpawnedForRayInteraction = true;
         [SerializeField] private bool disableOrbitMotionOnSpawn = true;
         [SerializeField] private bool hideOrbitLinesOnSpawn = true;
+
+        [Header("Spawned Bounds")]
+        [SerializeField] private bool keepSpawnedInFrontOfTray = true;
+        [SerializeField] private bool useViewerSideAsFront = true;
+        [SerializeField] private Transform frontReferenceOverride;
+        [SerializeField] private Vector3 frontLocalDirection = Vector3.forward;
+        [SerializeField] private Vector3 frontPlaneLocalOffset = Vector3.zero;
+        [SerializeField, Min(0f)] private float minimumFrontDistance = 0.02f;
 
         [Header("Return To Tray")]
         [SerializeField] private bool allowReturnToTray = true;
@@ -90,23 +100,112 @@ namespace AZ.Exhibition
         public Vector3 GetSpawnPosition(ExhibitionDockItem item, PointerEventData eventData)
         {
             Vector3 basePosition = item != null ? item.transform.position : transform.position;
-            Vector3 hitNormal = transform.forward;
 
             if (eventData != null && eventData.pointerCurrentRaycast.gameObject != null)
             {
                 basePosition = eventData.pointerCurrentRaycast.worldPosition;
-
-                if (eventData.pointerCurrentRaycast.worldNormal.sqrMagnitude > 0.0001f)
-                {
-                    hitNormal = eventData.pointerCurrentRaycast.worldNormal.normalized;
-                }
             }
 
+            Vector3 spawnNormal = TryGetSpawnedFrontLimit(out _, out Vector3 frontNormal, out _)
+                ? frontNormal
+                : transform.forward;
             Vector3 spawnOffset = spawnOffsetInWorldUnits
                 ? transform.rotation * spawnLocalOffset
                 : transform.TransformVector(spawnLocalOffset);
 
-            return basePosition + hitNormal * spawnNormalOffset + spawnOffset;
+            float offsetFrontAmount = Vector3.Dot(spawnOffset, spawnNormal);
+            if (offsetFrontAmount < 0f)
+            {
+                spawnOffset -= spawnNormal * offsetFrontAmount * 2f;
+            }
+
+            return ClampSpawnedPosition(basePosition + spawnNormal * spawnNormalOffset + spawnOffset);
+        }
+
+        public Vector3 ClampSpawnedPosition(Vector3 worldPosition)
+        {
+            if (!TryGetSpawnedFrontLimit(out Vector3 planePoint, out Vector3 frontNormal, out float requiredDistance))
+            {
+                return worldPosition;
+            }
+
+            float distanceInFront = Vector3.Dot(worldPosition - planePoint, frontNormal);
+
+            if (distanceInFront >= requiredDistance)
+            {
+                return worldPosition;
+            }
+
+            return worldPosition + frontNormal * (requiredDistance - distanceInFront);
+        }
+
+        public bool TryGetSpawnedFrontLimit(out Vector3 planePoint, out Vector3 frontNormal, out float requiredDistance)
+        {
+            planePoint = transform.position;
+            frontNormal = transform.forward;
+            requiredDistance = 0f;
+
+            if (!keepSpawnedInFrontOfTray)
+            {
+                return false;
+            }
+
+            Transform root = Root;
+            Vector3 frontDirection = frontLocalDirection.sqrMagnitude > 0.0001f
+                ? frontLocalDirection.normalized
+                : Vector3.forward;
+            frontNormal = root.TransformDirection(frontDirection).normalized;
+            Vector3 planeLocalPoint = firstSlotLocalOffset + frontPlaneLocalOffset;
+            planePoint = layoutInWorldUnits
+                ? root.position + root.rotation * planeLocalPoint
+                : root.TransformPoint(planeLocalPoint);
+
+            if (useViewerSideAsFront &&
+                TryGetFrontReferencePosition(out Vector3 frontReferencePosition) &&
+                Vector3.Dot(frontReferencePosition - planePoint, frontNormal) < 0f)
+            {
+                frontNormal = -frontNormal;
+            }
+
+            requiredDistance = Mathf.Max(0f, minimumFrontDistance);
+            return true;
+        }
+
+        private bool TryGetFrontReferencePosition(out Vector3 position)
+        {
+            if (frontReferenceOverride != null)
+            {
+                position = frontReferenceOverride.position;
+                return true;
+            }
+
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                position = mainCamera.transform.position;
+                return true;
+            }
+
+            Camera currentCamera = Camera.current;
+            if (currentCamera != null)
+            {
+                position = currentCamera.transform.position;
+                return true;
+            }
+
+            Camera[] cameras = Camera.allCameras;
+            for (int i = 0; i < cameras.Length; i++)
+            {
+                Camera camera = cameras[i];
+                if (camera != null && camera.isActiveAndEnabled)
+                {
+                    position = camera.transform.position;
+                    return true;
+                }
+            }
+
+            position = default;
+            return false;
         }
 
         public ExhibitionSpawnedItem SpawnFromDock(
@@ -119,7 +218,7 @@ namespace AZ.Exhibition
                 return null;
             }
 
-            ExhibitionSpawnedItem spawnedItem = CreateSpawnedItem(catalogIndex, worldPosition);
+            ExhibitionSpawnedItem spawnedItem = CreateSpawnedItem(catalogIndex, ClampSpawnedPosition(worldPosition));
             if (spawnedItem == null)
             {
                 return null;
@@ -550,29 +649,21 @@ namespace AZ.Exhibition
                 : slotColliderSize;
             boxCollider.isTrigger = false;
 
-            if (!autoAddRayInteractable)
+            if (autoAddRayInteractable)
             {
-                return;
+                EnsureRayInteraction(slot, boxCollider);
             }
 
-            ColliderSurface surface = slot.GetComponent<ColliderSurface>();
-            if (surface == null)
+            if (prepareDockItemsForRokidGrab)
             {
-                surface = slot.AddComponent<ColliderSurface>();
+                EnsureThrowableInteraction(slot);
             }
 
-            SetPrivateField(surface, "_collider", boxCollider);
-
-            RayInteractable rayInteractable = slot.GetComponent<RayInteractable>();
-            if (rayInteractable == null)
+            ExhibitionDockItem dockItem = slot.GetComponent<ExhibitionDockItem>();
+            if (dockItem != null)
             {
-                rayInteractable = slot.AddComponent<RayInteractable>();
+                dockItem.RefreshThrowableBindings();
             }
-
-            SetPrivateField(rayInteractable, "_surface", surface);
-            SetPrivateField(rayInteractable, "_selectSurface", surface);
-            SetPrivateField(rayInteractable, "<Surface>k__BackingField", surface);
-            SetPrivateField(rayInteractable, "SelectSurface", surface);
         }
 
         private void PreparePreviewObject(GameObject preview)
@@ -612,37 +703,26 @@ namespace AZ.Exhibition
                 HideLineRenderers(spawned);
             }
 
+            Collider spawnedCollider = null;
+
+            if (prepareSpawnedForRayInteraction)
+            {
+                spawnedCollider = EnsureColliderForSpawnedObject(spawned);
+                EnsureRayInteraction(spawned, spawnedCollider);
+            }
+
             if (!prepareSpawnedForRokidGrab)
             {
                 return;
             }
 
-            EnsureColliderForSpawnedObject(spawned);
-
-            Rigidbody rigidbody = spawned.GetComponent<Rigidbody>();
-            if (rigidbody == null)
+            if (spawnedCollider == null)
             {
-                rigidbody = spawned.AddComponent<Rigidbody>();
+                EnsureColliderForSpawnedObject(spawned);
             }
 
-            rigidbody.useGravity = false;
-            rigidbody.drag = 4f;
-            rigidbody.angularDrag = 4f;
-            rigidbody.isKinematic = false;
-
-            GrabInteractable grabInteractable = spawned.GetComponent<GrabInteractable>();
-            if (grabInteractable == null)
-            {
-                grabInteractable = spawned.AddComponent<GrabInteractable>();
-            }
-
-            grabInteractable.changeScaleOnHover = false;
-
+            Rigidbody rigidbody = EnsureThrowableInteraction(spawned);
             Throwable throwable = spawned.GetComponent<Throwable>();
-            if (throwable == null)
-            {
-                throwable = spawned.AddComponent<Throwable>();
-            }
 
             throwable.releaseVelocityStyle = ReleaseStyle.NoChange;
             throwable.scaleReleaseVelocity = 0f;
@@ -651,11 +731,12 @@ namespace AZ.Exhibition
             throwable.OnDropDown.AddListener(() => StopRigidbody(rigidbody));
         }
 
-        private void EnsureColliderForSpawnedObject(GameObject spawned)
+        private Collider EnsureColliderForSpawnedObject(GameObject spawned)
         {
-            if (spawned.GetComponentInChildren<Collider>(true) != null)
+            Collider existingCollider = spawned.GetComponentInChildren<Collider>(true);
+            if (existingCollider != null)
             {
-                return;
+                return existingCollider;
             }
 
             SphereCollider collider = spawned.AddComponent<SphereCollider>();
@@ -671,6 +752,64 @@ namespace AZ.Exhibition
                 collider.center = Vector3.zero;
                 collider.radius = 0.15f;
             }
+
+            return collider;
+        }
+
+        private Rigidbody EnsureThrowableInteraction(GameObject target)
+        {
+            Rigidbody rigidbody = target.GetComponent<Rigidbody>();
+            if (rigidbody == null)
+            {
+                rigidbody = target.AddComponent<Rigidbody>();
+            }
+
+            rigidbody.useGravity = false;
+            rigidbody.drag = 4f;
+            rigidbody.angularDrag = 4f;
+            rigidbody.isKinematic = false;
+
+            GrabInteractable grabInteractable = target.GetComponent<GrabInteractable>();
+            if (grabInteractable == null)
+            {
+                grabInteractable = target.AddComponent<GrabInteractable>();
+            }
+
+            grabInteractable.changeScaleOnHover = false;
+
+            if (target.GetComponent<Throwable>() == null)
+            {
+                target.AddComponent<Throwable>();
+            }
+
+            return rigidbody;
+        }
+
+        private void EnsureRayInteraction(GameObject target, Collider collider)
+        {
+            if (target == null || collider == null)
+            {
+                return;
+            }
+
+            ColliderSurface surface = target.GetComponent<ColliderSurface>();
+            if (surface == null)
+            {
+                surface = target.AddComponent<ColliderSurface>();
+            }
+
+            SetPrivateField(surface, "_collider", collider);
+
+            RayInteractable rayInteractable = target.GetComponent<RayInteractable>();
+            if (rayInteractable == null)
+            {
+                rayInteractable = target.AddComponent<RayInteractable>();
+            }
+
+            SetPrivateField(rayInteractable, "_surface", surface);
+            SetPrivateField(rayInteractable, "_selectSurface", surface);
+            SetPrivateField(rayInteractable, "<Surface>k__BackingField", surface);
+            SetPrivateField(rayInteractable, "SelectSurface", surface);
         }
 
         private void FitPreviewToDiameter(Transform preview, float diameter)

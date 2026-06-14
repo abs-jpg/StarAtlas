@@ -25,12 +25,16 @@ namespace AZ.Exhibition
         private int entryIndex = -1;
         private ExhibitionCatalogEntry entry;
         private ExhibitionSpawnedItem draggedItem;
+        private Throwable throwable;
+        private Rigidbody throwableRigidbody;
         private Vector3 normalPreviewScale = Vector3.one;
         private Vector3 targetPreviewScale = Vector3.one;
         private Vector3 dragPoint;
         private Vector3 dragNormal = Vector3.up;
+        private Vector3 throwableSpawnOffset;
         private bool hovering;
         private bool dragging;
+        private bool throwableDragging;
         private bool returnPreview;
         private bool draggingSourceHidden;
         private bool animatePose;
@@ -55,6 +59,11 @@ namespace AZ.Exhibition
             targetPreviewScale = normalPreviewScale;
             targetWorldPosition = transform.position;
             targetWorldRotation = transform.rotation;
+        }
+
+        private void OnDestroy()
+        {
+            UnhookThrowableEvents();
         }
 
         private void Update()
@@ -89,6 +98,12 @@ namespace AZ.Exhibition
 
             normalPreviewScale = previewRoot != null ? previewRoot.localScale : Vector3.one;
             targetPreviewScale = normalPreviewScale;
+            RefreshThrowableBindings();
+        }
+
+        public void RefreshThrowableBindings()
+        {
+            HookThrowableEvents();
         }
 
         public void OnRayPointerEnter(PointerEventData eventData)
@@ -141,9 +156,11 @@ namespace AZ.Exhibition
                 return;
             }
 
-            draggedItem.transform.position += delta;
-            dragPoint = draggedItem.transform.position;
+            draggedItem.transform.position = dock != null
+                ? dock.ClampSpawnedPosition(draggedItem.transform.position + delta)
+                : draggedItem.transform.position + delta;
             draggedItem.NotifyExternalDragMoved(this);
+            dragPoint = draggedItem.transform.position;
         }
 
         public void OnRayDragToTarget(Vector3 targetPoint)
@@ -153,9 +170,11 @@ namespace AZ.Exhibition
                 return;
             }
 
-            draggedItem.transform.position = targetPoint;
-            dragPoint = targetPoint;
+            draggedItem.transform.position = dock != null
+                ? dock.ClampSpawnedPosition(targetPoint)
+                : targetPoint;
             draggedItem.NotifyExternalDragMoved(this);
+            dragPoint = draggedItem.transform.position;
         }
 
         public void OnRayEndDrag(PointerEventData eventData)
@@ -247,6 +266,120 @@ namespace AZ.Exhibition
             SetInteractionEnabled(!hidden && !returnPreview);
         }
 
+        private void HookThrowableEvents()
+        {
+            UnhookThrowableEvents();
+
+            throwable = GetComponent<Throwable>();
+            throwableRigidbody = GetComponent<Rigidbody>();
+
+            if (throwable == null)
+            {
+                return;
+            }
+
+            throwable.OnPickUp.AddListener(HandleThrowablePickUp);
+            throwable.OnHeldUpdate.AddListener(HandleThrowableHeldUpdate);
+            throwable.OnDropDown.AddListener(HandleThrowableDropDown);
+        }
+
+        private void UnhookThrowableEvents()
+        {
+            if (throwable == null)
+            {
+                return;
+            }
+
+            throwable.OnPickUp.RemoveListener(HandleThrowablePickUp);
+            throwable.OnHeldUpdate.RemoveListener(HandleThrowableHeldUpdate);
+            throwable.OnDropDown.RemoveListener(HandleThrowableDropDown);
+        }
+
+        private void HandleThrowablePickUp()
+        {
+            if (dock == null || entry == null || !entry.IsValid || returnPreview || draggingSourceHidden)
+            {
+                return;
+            }
+
+            throwableDragging = true;
+            dragging = true;
+            hovering = false;
+            animatePose = false;
+            RefreshPreviewScale();
+
+            Vector3 spawnPosition = dock.GetSpawnPosition(this, null);
+            throwableSpawnOffset = spawnPosition - transform.position;
+            dragPoint = spawnPosition;
+            dragNormal = transform.up.sqrMagnitude > 0.0001f ? transform.up.normalized : Vector3.up;
+            draggedItem = dock.SpawnFromDock(entryIndex, spawnPosition, this);
+
+            if (draggedItem == null)
+            {
+                throwableDragging = false;
+                dragging = false;
+                RefreshPreviewScale();
+                StopRigidbody(throwableRigidbody);
+                return;
+            }
+
+            SyncThrowableDraggedItem();
+            draggedItem.NotifyExternalDragMoved(this);
+            dragPoint = draggedItem.transform.position;
+        }
+
+        private void HandleThrowableHeldUpdate()
+        {
+            if (!throwableDragging || draggedItem == null)
+            {
+                return;
+            }
+
+            SyncThrowableDraggedItem();
+            draggedItem.NotifyExternalDragMoved(this);
+            dragPoint = draggedItem.transform.position;
+        }
+
+        private void HandleThrowableDropDown()
+        {
+            if (!throwableDragging)
+            {
+                StopRigidbody(throwableRigidbody);
+                return;
+            }
+
+            bool returnedToDock = false;
+            if (draggedItem != null)
+            {
+                SyncThrowableDraggedItem();
+                returnedToDock = draggedItem.NotifyExternalDragEnded(this);
+            }
+
+            draggedItem = null;
+            throwableDragging = false;
+            dragging = false;
+            RefreshPreviewScale();
+            StopRigidbody(throwableRigidbody);
+
+            if (!returnedToDock)
+            {
+                dock?.FinishDockDragSource(this);
+            }
+        }
+
+        private void SyncThrowableDraggedItem()
+        {
+            if (draggedItem == null)
+            {
+                return;
+            }
+
+            dragPoint = dock != null
+                ? dock.ClampSpawnedPosition(transform.position + throwableSpawnOffset)
+                : transform.position + throwableSpawnOffset;
+            draggedItem.transform.position = dragPoint;
+        }
+
         private void UpdatePose()
         {
             if (!animatePose)
@@ -288,9 +421,11 @@ namespace AZ.Exhibition
 
         private void SetInteractionEnabled(bool enabledState)
         {
+            bool keepGrabActive = throwableDragging;
+
             foreach (Collider collider in GetComponents<Collider>())
             {
-                collider.enabled = enabledState;
+                collider.enabled = enabledState || keepGrabActive;
             }
 
             RayInteractable rayInteractable = GetComponent<RayInteractable>();
@@ -304,6 +439,18 @@ namespace AZ.Exhibition
             {
                 surface.enabled = enabledState;
             }
+
+            GrabInteractable grabInteractable = GetComponent<GrabInteractable>();
+            if (grabInteractable != null)
+            {
+                grabInteractable.enabled = enabledState || keepGrabActive;
+            }
+
+            Throwable throwableComponent = GetComponent<Throwable>();
+            if (throwableComponent != null)
+            {
+                throwableComponent.enabled = enabledState || keepGrabActive;
+            }
         }
 
         private static Vector3 GetEventNormal(PointerEventData eventData)
@@ -314,6 +461,21 @@ namespace AZ.Exhibition
             }
 
             return Vector3.up;
+        }
+
+        private static void StopRigidbody(Rigidbody rigidbody)
+        {
+            if (rigidbody == null || rigidbody.isKinematic)
+            {
+                return;
+            }
+
+#if UNITY_6000_0_OR_NEWER
+            rigidbody.linearVelocity = Vector3.zero;
+#else
+            rigidbody.velocity = Vector3.zero;
+#endif
+            rigidbody.angularVelocity = Vector3.zero;
         }
     }
 }
