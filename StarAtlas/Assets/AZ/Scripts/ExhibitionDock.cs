@@ -386,6 +386,13 @@ namespace AZ.Exhibition
                 spawnedItem = spawned.AddComponent<ExhibitionSpawnedItem>();
             }
 
+            ExhibitionTemperatureColorController temperatureColor =
+                spawned.GetComponent<ExhibitionTemperatureColorController>();
+            if (temperatureColor == null)
+            {
+                temperatureColor = spawned.AddComponent<ExhibitionTemperatureColorController>();
+            }
+
             spawnedItem.Initialize(
                 this,
                 catalogIndex,
@@ -394,6 +401,7 @@ namespace AZ.Exhibition
                 finalScale,
                 spawnScaleDuration,
                 showInfoWhenSpawned);
+            temperatureColor.Initialize(spawnedItem);
             return spawnedItem;
         }
 
