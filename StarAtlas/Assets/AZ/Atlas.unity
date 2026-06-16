@@ -389,22 +389,23 @@ MonoBehaviour:
   skyRoot: {fileID: 0}
   useSkyMonitorApi: 1
   skyRefreshSeconds: 15
-  minimumVisibleAltitude: 0
+  minimumVisibleAltitude: -90
   useBuiltInStarsWhenApiFails: 1
   useCompassHeading: 1
   manualNorthYawOffsetDegrees: 0
   compassSmoothing: 0.12
-  skyDistanceAndSizeMultiplier: 0.05
-  starSphereRadius: 30
-  planetSphereRadius: 18
+  skyDistanceAndSizeMultiplier: 2
+  skySphereRadius: 12
+  starSphereRadius: 12
+  planetSphereRadius: 12
   planetScale: 0.12
   useRealDiameterRatios: 1
-  earthDiameterScale: 0.03
-  solarSystemBodySizeMultiplier: 20
-  bodyDiameterRatioStrength: 0.35
+  earthDiameterScale: 0.12
+  bodyDiameterRatioStrength: 0.55
   minimumVisibleBodyScale: 0.012
   includeSun: 1
   includeMoon: 1
+  includeLocalPlanets: 1
   createFallbackSunMoonSpheres: 1
   fallbackSunColor: {r: 1, g: 0.78, b: 0.24, a: 1}
   fallbackMoonColor: {r: 0.76, g: 0.8, b: 0.86, a: 1}
@@ -419,10 +420,24 @@ MonoBehaviour:
   showStarLabels: 1
   showSolarSystemLabels: 1
   labelFont: {fileID: 11400000, guid: af641c37b3c25a04a9fc06aa25e0735f, type: 2}
-  labelWorldHeight: 6
-  labelMaxWidth: 20
-  labelVerticalOffset: 0.5
+  labelWorldHeight: 1
+  labelMaxWidth: 3
+  labelVerticalOffset: 0.22
   labelColor: {r: 1, g: 1, b: 1, a: 0.88}
+  showHorizonGuideLine: 1
+  horizonLineColor: {r: 0.78, g: 0.78, b: 0.78, a: 0.72}
+  horizonDashDegrees: 4
+  horizonGapDegrees: 7
+  horizonLineWidth: 0.018
+  showSunDayPathLine: 1
+  sunDayPathLineColor: {r: 1, g: 0.52, b: 0.08, a: 0.88}
+  sunPathMinimumAltitude: -90
+  sunPathSamples: 144
+  sunPathDashDegrees: 5
+  sunPathGapDegrees: 9
+  sunPathLineWidth: 0.02
+  hideImportedOrbitVisuals: 1
+  disableImportedOrbitMotion: 1
   planetPrefabs:
   - key: mercury
     prefab: {fileID: 3885845253069203268, guid: 829bfd56a023e354ea56ad97db914d71,
@@ -465,7 +480,7 @@ MonoBehaviour:
   baseUrl: https://sky.eunoia.top
   totalLimit: 40
   starMaxMagnitude: 4
-  minAltitudeDegrees: 0
+  minAltitudeDegrees: -90
   includePlanets: 1
   includeDeepSky: 0
 --- !u!114 &1579284920

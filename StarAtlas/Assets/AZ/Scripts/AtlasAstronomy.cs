@@ -118,6 +118,45 @@ namespace AZ.Atlas
             return new EquatorialCoordinate(rightAscension, declination, distanceEarthRadii);
         }
 
+        public static bool TryGetPlanetEquatorial(
+            string planetKey,
+            DateTime utc,
+            out EquatorialCoordinate coordinate)
+        {
+            coordinate = new EquatorialCoordinate();
+
+            double days = JulianDate(utc) - 2451543.5;
+            if (!TryGetPlanetOrbitalElements(planetKey, days, out PlanetOrbitalElements planet)
+                || !TryGetPlanetOrbitalElements("earth", days, out PlanetOrbitalElements earth))
+            {
+                return false;
+            }
+
+            EclipticVector planetPosition = CalculateHeliocentricEclipticPosition(planet);
+            EclipticVector earthPosition = CalculateHeliocentricEclipticPosition(earth);
+
+            double geocentricX = planetPosition.X - earthPosition.X;
+            double geocentricY = planetPosition.Y - earthPosition.Y;
+            double geocentricZ = planetPosition.Z - earthPosition.Z;
+            double obliquity = 23.4393 - 0.0000003563 * days;
+
+            double equatorialX = geocentricX;
+            double equatorialY = geocentricY * CosDeg(obliquity) - geocentricZ * SinDeg(obliquity);
+            double equatorialZ = geocentricY * SinDeg(obliquity) + geocentricZ * CosDeg(obliquity);
+
+            double rightAscension = NormalizeDegrees(Rad2Deg(Math.Atan2(equatorialY, equatorialX)));
+            double declination = Rad2Deg(Math.Atan2(
+                equatorialZ,
+                Math.Sqrt(equatorialX * equatorialX + equatorialY * equatorialY)));
+            double distanceAu = Math.Sqrt(
+                geocentricX * geocentricX
+                + geocentricY * geocentricY
+                + geocentricZ * geocentricZ);
+
+            coordinate = new EquatorialCoordinate(rightAscension, declination, distanceAu);
+            return true;
+        }
+
         public static Vector3 AltAzToLocalDirection(double azimuthDegrees, double altitudeDegrees)
         {
             double az = Deg2Rad(azimuthDegrees);
@@ -194,6 +233,132 @@ namespace AZ.Atlas
             return new EquatorialCoordinate(rightAscension, declination, distance);
         }
 
+        private static EclipticVector CalculateHeliocentricEclipticPosition(
+            PlanetOrbitalElements elements)
+        {
+            double meanAnomalyRadians = Deg2Rad(NormalizeDegrees(elements.MeanAnomalyDegrees));
+            double eccentricAnomaly = meanAnomalyRadians;
+            for (int i = 0; i < 8; i++)
+            {
+                eccentricAnomaly -=
+                    (eccentricAnomaly
+                     - elements.Eccentricity * Math.Sin(eccentricAnomaly)
+                     - meanAnomalyRadians)
+                    / (1.0 - elements.Eccentricity * Math.Cos(eccentricAnomaly));
+            }
+
+            double xv = elements.SemiMajorAxisAu
+                        * (Math.Cos(eccentricAnomaly) - elements.Eccentricity);
+            double yv = elements.SemiMajorAxisAu
+                        * (Math.Sqrt(1.0 - elements.Eccentricity * elements.Eccentricity)
+                           * Math.Sin(eccentricAnomaly));
+            double trueAnomalyDegrees = Rad2Deg(Math.Atan2(yv, xv));
+            double radius = Math.Sqrt(xv * xv + yv * yv);
+            double argument = trueAnomalyDegrees + elements.ArgumentOfPerihelionDegrees;
+
+            double x =
+                radius
+                * (CosDeg(elements.LongitudeOfAscendingNodeDegrees) * CosDeg(argument)
+                   - SinDeg(elements.LongitudeOfAscendingNodeDegrees)
+                   * SinDeg(argument)
+                   * CosDeg(elements.InclinationDegrees));
+            double y =
+                radius
+                * (SinDeg(elements.LongitudeOfAscendingNodeDegrees) * CosDeg(argument)
+                   + CosDeg(elements.LongitudeOfAscendingNodeDegrees)
+                   * SinDeg(argument)
+                   * CosDeg(elements.InclinationDegrees));
+            double z = radius * SinDeg(argument) * SinDeg(elements.InclinationDegrees);
+
+            return new EclipticVector(x, y, z);
+        }
+
+        private static bool TryGetPlanetOrbitalElements(
+            string planetKey,
+            double days,
+            out PlanetOrbitalElements elements)
+        {
+            string key = (planetKey ?? string.Empty).Trim().ToLowerInvariant();
+            switch (key)
+            {
+                case "mercury":
+                    elements = new PlanetOrbitalElements(
+                        48.3313 + 3.24587E-5 * days,
+                        7.0047 + 5.00E-8 * days,
+                        29.1241 + 1.01444E-5 * days,
+                        0.387098,
+                        0.205635 + 5.59E-10 * days,
+                        168.6562 + 4.0923344368 * days);
+                    return true;
+                case "venus":
+                    elements = new PlanetOrbitalElements(
+                        76.6799 + 2.46590E-5 * days,
+                        3.3946 + 2.75E-8 * days,
+                        54.8910 + 1.38374E-5 * days,
+                        0.723330,
+                        0.006773 - 1.302E-9 * days,
+                        48.0052 + 1.6021302244 * days);
+                    return true;
+                case "earth":
+                    elements = new PlanetOrbitalElements(
+                        0.0,
+                        0.0,
+                        282.9404 + 4.70935E-5 * days,
+                        1.000000,
+                        0.016709 - 1.151E-9 * days,
+                        356.0470 + 0.9856002585 * days);
+                    return true;
+                case "mars":
+                    elements = new PlanetOrbitalElements(
+                        49.5574 + 2.11081E-5 * days,
+                        1.8497 - 1.78E-8 * days,
+                        286.5016 + 2.92961E-5 * days,
+                        1.523688,
+                        0.093405 + 2.516E-9 * days,
+                        18.6021 + 0.5240207766 * days);
+                    return true;
+                case "jupiter":
+                    elements = new PlanetOrbitalElements(
+                        100.4542 + 2.76854E-5 * days,
+                        1.3030 - 1.557E-7 * days,
+                        273.8777 + 1.64505E-5 * days,
+                        5.20256,
+                        0.048498 + 4.469E-9 * days,
+                        19.8950 + 0.0830853001 * days);
+                    return true;
+                case "saturn":
+                    elements = new PlanetOrbitalElements(
+                        113.6634 + 2.38980E-5 * days,
+                        2.4886 - 1.081E-7 * days,
+                        339.3939 + 2.97661E-5 * days,
+                        9.55475,
+                        0.055546 - 9.499E-9 * days,
+                        316.9670 + 0.0334442282 * days);
+                    return true;
+                case "uranus":
+                    elements = new PlanetOrbitalElements(
+                        74.0005 + 1.3978E-5 * days,
+                        0.7733 + 1.9E-8 * days,
+                        96.6612 + 3.0565E-5 * days,
+                        19.18171 - 1.55E-8 * days,
+                        0.047318 + 7.45E-9 * days,
+                        142.5905 + 0.011725806 * days);
+                    return true;
+                case "neptune":
+                    elements = new PlanetOrbitalElements(
+                        131.7806 + 3.0173E-5 * days,
+                        1.7700 - 2.55E-7 * days,
+                        272.8461 - 6.027E-6 * days,
+                        30.05826 + 3.313E-8 * days,
+                        0.008606 + 2.15E-9 * days,
+                        260.2471 + 0.005995147 * days);
+                    return true;
+                default:
+                    elements = new PlanetOrbitalElements();
+                    return false;
+            }
+        }
+
         private static double Clamp(double value, double min, double max)
         {
             if (value < min)
@@ -202,6 +367,46 @@ namespace AZ.Atlas
             }
 
             return value > max ? max : value;
+        }
+
+        private struct EclipticVector
+        {
+            public readonly double X;
+            public readonly double Y;
+            public readonly double Z;
+
+            public EclipticVector(double x, double y, double z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+        }
+
+        private struct PlanetOrbitalElements
+        {
+            public readonly double LongitudeOfAscendingNodeDegrees;
+            public readonly double InclinationDegrees;
+            public readonly double ArgumentOfPerihelionDegrees;
+            public readonly double SemiMajorAxisAu;
+            public readonly double Eccentricity;
+            public readonly double MeanAnomalyDegrees;
+
+            public PlanetOrbitalElements(
+                double longitudeOfAscendingNodeDegrees,
+                double inclinationDegrees,
+                double argumentOfPerihelionDegrees,
+                double semiMajorAxisAu,
+                double eccentricity,
+                double meanAnomalyDegrees)
+            {
+                LongitudeOfAscendingNodeDegrees = longitudeOfAscendingNodeDegrees;
+                InclinationDegrees = inclinationDegrees;
+                ArgumentOfPerihelionDegrees = argumentOfPerihelionDegrees;
+                SemiMajorAxisAu = semiMajorAxisAu;
+                Eccentricity = eccentricity;
+                MeanAnomalyDegrees = meanAnomalyDegrees;
+            }
         }
     }
 

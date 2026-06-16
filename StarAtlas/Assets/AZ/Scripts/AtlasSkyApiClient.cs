@@ -12,7 +12,7 @@ namespace AZ.Atlas
         [SerializeField] private string baseUrl = "https://sky.eunoia.top";
         [SerializeField, Range(8, 60)] private int totalLimit = 40;
         [SerializeField, Range(0f, 6f)] private float starMaxMagnitude = 4.0f;
-        [SerializeField, Range(0f, 90f)] private float minAltitudeDegrees = 0f;
+        [SerializeField, Range(-90f, 90f)] private float minAltitudeDegrees = -90f;
         [SerializeField] private bool includePlanets = true;
         [SerializeField] private bool includeDeepSky = false;
 
@@ -75,6 +75,7 @@ namespace AZ.Atlas
             string time = Uri.EscapeDataString(utc.ToUniversalTime().ToString(
                 "yyyy-MM-ddTHH:mm:ssZ",
                 CultureInfo.InvariantCulture));
+            float apiMinAltitudeDegrees = Mathf.Max(0f, minAltitudeDegrees);
 
             return string.Format(
                 CultureInfo.InvariantCulture,
@@ -84,7 +85,7 @@ namespace AZ.Atlas
                 longitude,
                 time,
                 starMaxMagnitude,
-                minAltitudeDegrees,
+                apiMinAltitudeDegrees,
                 totalLimit,
                 includePlanets ? "true" : "false",
                 includeDeepSky ? "true" : "false");
