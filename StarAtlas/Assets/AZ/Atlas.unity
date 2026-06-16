@@ -352,6 +352,158 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc7bf2e56b74d4038af31f75d0b2d024, type: 3}
+--- !u!1 &1579284917
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1579284921}
+  - component: {fileID: 1579284920}
+  - component: {fileID: 1579284919}
+  - component: {fileID: 1579284918}
+  m_Layer: 0
+  m_Name: AtlasSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1579284918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579284917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a18c5538331486bb879f84820e60f93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  observerCamera: {fileID: 2074755075}
+  locationProvider: {fileID: 1579284920}
+  skyApiClient: {fileID: 1579284919}
+  skyRoot: {fileID: 0}
+  useSkyMonitorApi: 1
+  skyRefreshSeconds: 15
+  minimumVisibleAltitude: 0
+  useBuiltInStarsWhenApiFails: 1
+  useCompassHeading: 1
+  manualNorthYawOffsetDegrees: 0
+  compassSmoothing: 0.12
+  skyDistanceAndSizeMultiplier: 0.05
+  starSphereRadius: 30
+  planetSphereRadius: 18
+  planetScale: 0.12
+  useRealDiameterRatios: 1
+  earthDiameterScale: 0.03
+  solarSystemBodySizeMultiplier: 20
+  bodyDiameterRatioStrength: 0.35
+  minimumVisibleBodyScale: 0.012
+  includeSun: 1
+  includeMoon: 1
+  createFallbackSunMoonSpheres: 1
+  fallbackSunColor: {r: 1, g: 0.78, b: 0.24, a: 1}
+  fallbackMoonColor: {r: 0.76, g: 0.8, b: 0.86, a: 1}
+  baseStarSize: 0.04
+  brightStarSize: 0.11
+  starColor: {r: 0.82, g: 0.9, b: 1, a: 1}
+  starMaterial: {fileID: 0}
+  includeFeaturedAsterisms: 1
+  featuredStarSizeMultiplier: 1.35
+  featuredStarColor: {r: 0.95, g: 0.98, b: 1, a: 1}
+  showObjectLabels: 1
+  showStarLabels: 1
+  showSolarSystemLabels: 1
+  labelFont: {fileID: 11400000, guid: af641c37b3c25a04a9fc06aa25e0735f, type: 2}
+  labelWorldHeight: 6
+  labelMaxWidth: 20
+  labelVerticalOffset: 0.5
+  labelColor: {r: 1, g: 1, b: 1, a: 0.88}
+  planetPrefabs:
+  - key: mercury
+    prefab: {fileID: 3885845253069203268, guid: 829bfd56a023e354ea56ad97db914d71,
+      type: 3}
+  - key: venus
+    prefab: {fileID: 7979434382999846474, guid: 9390bdf8dffaf5d4aafa08b6abc1d811,
+      type: 3}
+  - key: mars
+    prefab: {fileID: 3981193673885259943, guid: 06039319a8a89cc478f8f99f0bc793e4,
+      type: 3}
+  - key: jupiter
+    prefab: {fileID: 8936252349162820525, guid: eaf138b85a3d24f4a8bdd0776a2c8ac5,
+      type: 3}
+  - key: saturn
+    prefab: {fileID: 5754648943945272369, guid: 1b021db6e524b954c83ba6e97b903ce1,
+      type: 3}
+  - key: uranus
+    prefab: {fileID: 6428949619592926398, guid: 2e9d0e789375a194cb1440811ef89b7d,
+      type: 3}
+  - key: neptune
+    prefab: {fileID: 1487389192617538027, guid: eec6cf8d3e0ffd04b951e4fad49cdab7,
+      type: 3}
+  - key: sun
+    prefab: {fileID: 7271790581479100636, guid: 869227db1f0060a4fa1f928f88f2e15d,
+      type: 3}
+  - key: moon
+    prefab: {fileID: 995716104177521626, guid: 6f60e2696aee62446be9cca2adffdad2, type: 3}
+--- !u!114 &1579284919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579284917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e167451e7f424deea37744fa06d04665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseUrl: https://sky.eunoia.top
+  totalLimit: 40
+  starMaxMagnitude: 4
+  minAltitudeDegrees: 0
+  includePlanets: 1
+  includeDeepSky: 0
+--- !u!114 &1579284920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579284917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7f2531804374c689331947e7d2b5337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useSystemLocation: 0
+  manualLatitude: 31.2304
+  manualLongitude: 121.4737
+  requestAndroidPermission: 1
+  desiredAccuracyMeters: 10
+  updateDistanceMeters: 1
+  startupTimeoutSeconds: 20
+  useManualLocationWhenRuntimeFails: 0
+  useManualLocationInEditor: 1
+--- !u!4 &1579284921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579284917}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.6518588, y: 0.73540694, z: 25.65937}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1699666525
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -420,6 +572,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa2ab4a52b98844a5beea51c6d5ab85a, type: 3}
+--- !u!20 &2074755075 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 6045076911616643428, guid: bc7bf2e56b74d4038af31f75d0b2d024,
+    type: 3}
+  m_PrefabInstance: {fileID: 1230879629}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -428,3 +586,4 @@ SceneRoots:
   - {fileID: 1699666525}
   - {fileID: 1230879629}
   - {fileID: 570695488}
+  - {fileID: 1579284921}
