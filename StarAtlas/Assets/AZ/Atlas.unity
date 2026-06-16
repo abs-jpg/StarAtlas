@@ -1377,6 +1377,9 @@ MonoBehaviour:
   includeFeaturedAsterisms: 1
   featuredStarSizeMultiplier: 1.35
   featuredStarColor: {r: 0.95, g: 0.98, b: 1, a: 1}
+  showConstellationLines: 1
+  constellationLineColor: {r: 0.56, g: 0.72, b: 1, a: 0.34}
+  constellationLineWidth: 0.012
   showObjectLabels: 1
   showStarLabels: 1
   showSolarSystemLabels: 1

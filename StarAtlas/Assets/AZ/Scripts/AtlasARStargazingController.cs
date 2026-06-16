@@ -59,6 +59,9 @@ namespace AZ.Atlas
         [SerializeField] private bool includeFeaturedAsterisms = true;
         [SerializeField, Min(1f)] private float featuredStarSizeMultiplier = 1.35f;
         [SerializeField] private Color featuredStarColor = new Color(0.95f, 0.98f, 1f, 1f);
+        [SerializeField] private bool showConstellationLines = true;
+        [SerializeField] private Color constellationLineColor = new Color(0.56f, 0.72f, 1f, 0.34f);
+        [SerializeField, Min(0.001f)] private float constellationLineWidth = 0.012f;
 
         [Header("Object Labels")]
         [SerializeField] private bool showObjectLabels = true;
@@ -104,6 +107,7 @@ namespace AZ.Atlas
         private readonly List<Material> runtimeBodyMaterials = new List<Material>();
         private readonly List<LineRenderer> horizonLineSegments = new List<LineRenderer>();
         private readonly List<LineRenderer> sunPathLineSegments = new List<LineRenderer>();
+        private readonly List<LineRenderer> constellationLineSegments = new List<LineRenderer>();
         private readonly List<Vector3> guideLineScratchPoints = new List<Vector3>();
 
         private ParticleSystem starParticles;
@@ -112,6 +116,7 @@ namespace AZ.Atlas
         private Texture2D runtimeStarTexture;
         private Transform horizonGuideLineRoot;
         private Transform sunDayPathLineRoot;
+        private Transform constellationLineRoot;
         private float nextRefreshTime;
         private float currentNorthYawOffsetDegrees;
         private float lastRenderedScaleSignature = -1f;
@@ -379,6 +384,7 @@ namespace AZ.Atlas
         private void RenderLatestObjects()
         {
             RenderStars();
+            RenderConstellationLines();
             RenderGuideLines();
             RenderPlanets();
             RenderLabels();
@@ -579,6 +585,75 @@ namespace AZ.Atlas
             starParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             starParticles.SetParticles(particles.ToArray(), particles.Count);
             starParticles.Play(true);
+        }
+
+        private void RenderConstellationLines()
+        {
+            EnsureGuideLineRoots();
+
+            if (!showConstellationLines || !includeFeaturedAsterisms)
+            {
+                SetLineRenderersActive(constellationLineSegments, 0);
+                return;
+            }
+
+            int usedRenderers = 0;
+            float radius = GetScaledStarSphereRadius();
+            float width = GetScaledGuideLineWidth(constellationLineWidth);
+
+            for (int i = 0; i < ConstellationSegments.Length; i++)
+            {
+                ConstellationSegment segment = ConstellationSegments[i];
+                if (!TryGetStarRenderObject(segment.fromStar, out SkyRenderObject from)
+                    || !TryGetStarRenderObject(segment.toStar, out SkyRenderObject to))
+                {
+                    continue;
+                }
+
+                Vector3 fromPosition = AtlasAstronomy.AltAzToLocalDirection(
+                    from.azimuthDegrees,
+                    from.altitudeDegrees) * radius;
+                Vector3 toPosition = AtlasAstronomy.AltAzToLocalDirection(
+                    to.azimuthDegrees,
+                    to.altitudeDegrees) * radius;
+
+                LineRenderer lineRenderer = GetOrCreateGuideLineRenderer(
+                    constellationLineSegments,
+                    constellationLineRoot,
+                    "Constellation",
+                    usedRenderers);
+                ApplyGuideLineSegment(
+                    lineRenderer,
+                    fromPosition,
+                    toPosition,
+                    constellationLineColor,
+                    width);
+                usedRenderers++;
+            }
+
+            SetLineRenderersActive(constellationLineSegments, usedRenderers);
+        }
+
+        private bool TryGetStarRenderObject(string starName, out SkyRenderObject starObject)
+        {
+            for (int i = 0; i < latestObjects.Count; i++)
+            {
+                SkyRenderObject item = latestObjects[i];
+                if (!string.Equals(item.category, "star", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (string.Equals(item.key, starName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(item.displayName, starName, StringComparison.OrdinalIgnoreCase))
+                {
+                    starObject = item;
+                    return true;
+                }
+            }
+
+            starObject = new SkyRenderObject();
+            return false;
         }
 
         private void RenderGuideLines()
@@ -1248,12 +1323,14 @@ namespace AZ.Atlas
                    + minimumVisibleBodyScale * 10000f
                    + (showHorizonGuideLine ? 100000f : 0f)
                    + (showSunDayPathLine ? 200000f : 0f)
+                   + (showConstellationLines ? 300000f : 0f)
                    + sunPathDashDegrees * 0.03f
                    + sunPathGapDegrees * 0.04f
                    + sunPathMinimumAltitude * 0.05f
                    + horizonLineWidth * 0.06f
                    + sunPathLineWidth * 0.07f
-                   + sunPathSamples * 0.001f;
+                   + sunPathSamples * 0.001f
+                   + constellationLineWidth * 0.08f;
         }
 
         private float GetScaledSkySphereRadius()
@@ -1302,6 +1379,9 @@ namespace AZ.Atlas
             sunDayPathLineRoot = EnsureGuideLineRoot(
                 sunDayPathLineRoot,
                 "Atlas Sun Day Path Line");
+            constellationLineRoot = EnsureGuideLineRoot(
+                constellationLineRoot,
+                "Atlas Constellation Lines");
         }
 
         private Transform EnsureGuideLineRoot(Transform currentRoot, string rootName)
@@ -1717,6 +1797,18 @@ namespace AZ.Atlas
             }
         }
 
+        private struct ConstellationSegment
+        {
+            public string fromStar;
+            public string toStar;
+
+            public ConstellationSegment(string fromStar, string toStar)
+            {
+                this.fromStar = fromStar;
+                this.toStar = toStar;
+            }
+        }
+
         private static readonly string[] LocalPlanetKeys =
         {
             "mercury",
@@ -1760,7 +1852,130 @@ namespace AZ.Atlas
             new BuiltInStar("Megrez", 183.856502, 57.032616, 3.32f),
             new BuiltInStar("Alioth", 193.507290, 55.959823, 1.76f),
             new BuiltInStar("Mizar", 200.981429, 54.925362, 2.23f),
-            new BuiltInStar("Alkaid", 206.885157, 49.313267, 1.85f)
+            new BuiltInStar("Alkaid", 206.885157, 49.313267, 1.85f),
+            new BuiltInStar("Sirius", 101.287155, -16.716116, -1.46f),
+            new BuiltInStar("Rigel", 78.634467, -8.201638, 0.13f),
+            new BuiltInStar("Betelgeuse", 88.792939, 7.407064, 0.42f),
+            new BuiltInStar("Vega", 279.234735, 38.783689, 0.03f),
+            new BuiltInStar("Deneb", 310.357980, 45.280338, 1.25f),
+            new BuiltInStar("Altair", 297.695827, 8.868322, 0.77f),
+            new BuiltInStar("Aldebaran", 68.980163, 16.509302, 0.86f),
+            new BuiltInStar("Antares", 247.351915, -26.432002, 1.06f),
+            new BuiltInStar("Regulus", 152.092962, 11.967209, 1.35f),
+            new BuiltInStar("Castor", 113.649428, 31.888276, 1.58f),
+            new BuiltInStar("Pollux", 116.328958, 28.026199, 1.14f),
+            new BuiltInStar("Adhara", 104.656444, -28.972086, 1.50f),
+            new BuiltInStar("Meissa", 83.784490, 9.934156, 3.39f),
+            new BuiltInStar("Bellatrix", 81.282764, 6.349703, 1.64f),
+            new BuiltInStar("Alnitak", 85.189695, -1.942574, 1.74f),
+            new BuiltInStar("Alnilam", 84.053389, -1.201917, 1.69f),
+            new BuiltInStar("Mintaka", 83.001667, -0.299095, 2.23f),
+            new BuiltInStar("Saiph", 86.939117, -9.669605, 2.07f),
+            new BuiltInStar("Caph", 2.294521, 59.149780, 2.28f),
+            new BuiltInStar("Schedar", 10.126837, 56.537331, 2.24f),
+            new BuiltInStar("Gamma Cas", 14.177215, 60.716740, 2.47f),
+            new BuiltInStar("Ruchbah", 21.454109, 60.235284, 2.68f),
+            new BuiltInStar("Segin", 28.598857, 63.670101, 3.38f),
+            new BuiltInStar("Sadr", 305.557091, 40.256679, 2.23f),
+            new BuiltInStar("Gienah Cygni", 311.552843, 33.970256, 2.48f),
+            new BuiltInStar("Delta Cygni", 296.243659, 45.130809, 2.87f),
+            new BuiltInStar("Albireo", 292.680335, 27.959681, 3.05f),
+            new BuiltInStar("Sheliak", 282.519978, 33.362677, 3.52f),
+            new BuiltInStar("Sulafat", 284.735929, 32.689557, 3.25f),
+            new BuiltInStar("Delta2 Lyrae", 283.626202, 36.898613, 4.30f),
+            new BuiltInStar("Epsilon Lyrae", 281.084737, 39.670122, 4.67f),
+            new BuiltInStar("Acrab", 241.359313, -19.805453, 2.62f),
+            new BuiltInStar("Dschubba", 240.083382, -22.621710, 2.29f),
+            new BuiltInStar("Sargas", 264.329706, -42.997824, 1.86f),
+            new BuiltInStar("Shaula", 263.402167, -37.103824, 1.62f),
+            new BuiltInStar("Lesath", 264.523191, -37.295814, 2.70f),
+            new BuiltInStar("Algieba", 154.993143, 19.841489, 2.08f),
+            new BuiltInStar("Zosma", 168.526718, 20.524033, 2.56f),
+            new BuiltInStar("Denebola", 177.264910, 14.572058, 2.14f),
+            new BuiltInStar("Chertan", 168.560019, 15.429763, 3.33f),
+            new BuiltInStar("Rasalas", 146.462925, 23.774277, 3.88f),
+            new BuiltInStar("Markab", 346.190224, 15.205264, 2.49f),
+            new BuiltInStar("Scheat", 345.943572, 28.082790, 2.42f),
+            new BuiltInStar("Algenib", 3.308958, 15.183616, 2.83f),
+            new BuiltInStar("Alpheratz", 2.096916, 29.090431, 2.06f),
+            new BuiltInStar("Elnath", 81.572971, 28.607451, 1.65f),
+            new BuiltInStar("Zeta Tauri", 84.411189, 21.142592, 3.00f),
+            new BuiltInStar("Ain", 67.154164, 19.180431, 3.53f),
+            new BuiltInStar("Hyadum I", 66.372421, 17.927989, 3.65f),
+            new BuiltInStar("Alhena", 99.427926, 16.399252, 1.93f),
+            new BuiltInStar("Wasat", 110.030748, 21.982316, 3.53f),
+            new BuiltInStar("Mebsuta", 100.982899, 25.131155, 3.06f),
+            new BuiltInStar("Mekbuda", 106.027215, 20.570298, 4.01f),
+            new BuiltInStar("Tarazed", 296.564914, 10.613262, 2.72f),
+            new BuiltInStar("Alshain", 298.828304, 6.406763, 3.71f),
+            new BuiltInStar("Mirzam", 95.674938, -17.955917, 1.98f),
+            new BuiltInStar("Wezen", 107.097858, -26.393199, 1.83f),
+            new BuiltInStar("Aludra", 111.023760, -29.303103, 2.45f)
+        };
+
+        private static readonly ConstellationSegment[] ConstellationSegments =
+        {
+            new ConstellationSegment("Dubhe", "Merak"),
+            new ConstellationSegment("Merak", "Phecda"),
+            new ConstellationSegment("Phecda", "Megrez"),
+            new ConstellationSegment("Megrez", "Dubhe"),
+            new ConstellationSegment("Megrez", "Alioth"),
+            new ConstellationSegment("Alioth", "Mizar"),
+            new ConstellationSegment("Mizar", "Alkaid"),
+            new ConstellationSegment("Betelgeuse", "Meissa"),
+            new ConstellationSegment("Meissa", "Bellatrix"),
+            new ConstellationSegment("Bellatrix", "Mintaka"),
+            new ConstellationSegment("Mintaka", "Alnilam"),
+            new ConstellationSegment("Alnilam", "Alnitak"),
+            new ConstellationSegment("Alnitak", "Saiph"),
+            new ConstellationSegment("Saiph", "Rigel"),
+            new ConstellationSegment("Rigel", "Bellatrix"),
+            new ConstellationSegment("Betelgeuse", "Alnitak"),
+            new ConstellationSegment("Caph", "Schedar"),
+            new ConstellationSegment("Schedar", "Gamma Cas"),
+            new ConstellationSegment("Gamma Cas", "Ruchbah"),
+            new ConstellationSegment("Ruchbah", "Segin"),
+            new ConstellationSegment("Deneb", "Sadr"),
+            new ConstellationSegment("Sadr", "Gienah Cygni"),
+            new ConstellationSegment("Sadr", "Delta Cygni"),
+            new ConstellationSegment("Sadr", "Albireo"),
+            new ConstellationSegment("Vega", "Epsilon Lyrae"),
+            new ConstellationSegment("Epsilon Lyrae", "Delta2 Lyrae"),
+            new ConstellationSegment("Delta2 Lyrae", "Sheliak"),
+            new ConstellationSegment("Sheliak", "Sulafat"),
+            new ConstellationSegment("Sulafat", "Vega"),
+            new ConstellationSegment("Acrab", "Dschubba"),
+            new ConstellationSegment("Dschubba", "Antares"),
+            new ConstellationSegment("Antares", "Sargas"),
+            new ConstellationSegment("Sargas", "Shaula"),
+            new ConstellationSegment("Shaula", "Lesath"),
+            new ConstellationSegment("Regulus", "Algieba"),
+            new ConstellationSegment("Algieba", "Rasalas"),
+            new ConstellationSegment("Algieba", "Zosma"),
+            new ConstellationSegment("Zosma", "Denebola"),
+            new ConstellationSegment("Denebola", "Chertan"),
+            new ConstellationSegment("Chertan", "Regulus"),
+            new ConstellationSegment("Markab", "Scheat"),
+            new ConstellationSegment("Scheat", "Alpheratz"),
+            new ConstellationSegment("Alpheratz", "Algenib"),
+            new ConstellationSegment("Algenib", "Markab"),
+            new ConstellationSegment("Elnath", "Zeta Tauri"),
+            new ConstellationSegment("Zeta Tauri", "Aldebaran"),
+            new ConstellationSegment("Aldebaran", "Ain"),
+            new ConstellationSegment("Aldebaran", "Hyadum I"),
+            new ConstellationSegment("Castor", "Pollux"),
+            new ConstellationSegment("Castor", "Mebsuta"),
+            new ConstellationSegment("Mebsuta", "Wasat"),
+            new ConstellationSegment("Wasat", "Pollux"),
+            new ConstellationSegment("Mebsuta", "Mekbuda"),
+            new ConstellationSegment("Mekbuda", "Alhena"),
+            new ConstellationSegment("Alhena", "Pollux"),
+            new ConstellationSegment("Tarazed", "Altair"),
+            new ConstellationSegment("Altair", "Alshain"),
+            new ConstellationSegment("Mirzam", "Sirius"),
+            new ConstellationSegment("Sirius", "Adhara"),
+            new ConstellationSegment("Adhara", "Wezen"),
+            new ConstellationSegment("Wezen", "Aludra")
         };
     }
 }
