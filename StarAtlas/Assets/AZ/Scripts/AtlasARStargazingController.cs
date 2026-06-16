@@ -73,15 +73,13 @@ namespace AZ.Atlas
         [Header("Guide Lines")]
         [SerializeField] private bool showHorizonGuideLine = true;
         [SerializeField] private Color horizonLineColor = new Color(0.78f, 0.78f, 0.78f, 0.72f);
-        [SerializeField, Range(0.5f, 20f)] private float horizonDashDegrees = 4f;
-        [SerializeField, Range(0.5f, 30f)] private float horizonGapDegrees = 7f;
         [SerializeField, Min(0.001f)] private float horizonLineWidth = 0.018f;
         [SerializeField] private bool showSunDayPathLine = true;
         [SerializeField] private Color sunDayPathLineColor = new Color(1f, 0.52f, 0.08f, 0.88f);
         [SerializeField, Range(-90f, 5f)] private float sunPathMinimumAltitude = -90f;
         [SerializeField, Range(24, 288)] private int sunPathSamples = 144;
-        [SerializeField, Range(0.5f, 20f)] private float sunPathDashDegrees = 5f;
-        [SerializeField, Range(0.5f, 30f)] private float sunPathGapDegrees = 9f;
+        [SerializeField, Range(0.5f, 20f)] private float sunPathDashDegrees = 2f;
+        [SerializeField, Range(0.5f, 30f)] private float sunPathGapDegrees = 3f;
         [SerializeField, Min(0.001f)] private float sunPathLineWidth = 0.02f;
 
         [Header("Solar System Prefabs")]
@@ -619,11 +617,9 @@ namespace AZ.Atlas
                     AtlasAstronomy.AltAzToLocalDirection(azimuth, 0.0) * radius);
             }
 
-            DrawDashedPolyline(
+            DrawSolidPolyline(
                 guideLineScratchPoints,
                 true,
-                DegreesToArcLength(horizonDashDegrees),
-                DegreesToArcLength(horizonGapDegrees),
                 horizonLineColor,
                 GetScaledGuideLineWidth(horizonLineWidth),
                 horizonLineSegments,
@@ -671,6 +667,47 @@ namespace AZ.Atlas
                 sunPathLineSegments,
                 sunDayPathLineRoot,
                 "SunPath");
+        }
+
+        private void DrawSolidPolyline(
+            List<Vector3> points,
+            bool closed,
+            Color color,
+            float width,
+            List<LineRenderer> renderers,
+            Transform root,
+            string segmentNamePrefix)
+        {
+            if (points.Count < 2 || root == null)
+            {
+                SetLineRenderersActive(renderers, 0);
+                return;
+            }
+
+            LineRenderer lineRenderer = GetOrCreateGuideLineRenderer(
+                renderers,
+                root,
+                segmentNamePrefix,
+                0);
+            lineRenderer.gameObject.SetActive(true);
+            lineRenderer.startColor = color;
+            lineRenderer.endColor = color;
+            lineRenderer.startWidth = width;
+            lineRenderer.endWidth = width;
+
+            int pointCount = closed ? points.Count + 1 : points.Count;
+            lineRenderer.positionCount = pointCount;
+            for (int i = 0; i < points.Count; i++)
+            {
+                lineRenderer.SetPosition(i, points[i]);
+            }
+
+            if (closed)
+            {
+                lineRenderer.SetPosition(pointCount - 1, points[0]);
+            }
+
+            SetLineRenderersActive(renderers, 1);
         }
 
         private void DrawDashedPolyline(
@@ -1211,8 +1248,6 @@ namespace AZ.Atlas
                    + minimumVisibleBodyScale * 10000f
                    + (showHorizonGuideLine ? 100000f : 0f)
                    + (showSunDayPathLine ? 200000f : 0f)
-                   + horizonDashDegrees * 0.01f
-                   + horizonGapDegrees * 0.02f
                    + sunPathDashDegrees * 0.03f
                    + sunPathGapDegrees * 0.04f
                    + sunPathMinimumAltitude * 0.05f

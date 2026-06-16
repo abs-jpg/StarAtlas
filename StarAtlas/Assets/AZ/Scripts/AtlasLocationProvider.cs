@@ -155,6 +155,12 @@ namespace AZ.Atlas
 
         public void SetObserverPoint(double latitude, double longitude)
         {
+            useSystemLocation = false;
+            if (Input.location.status == LocationServiceStatus.Running)
+            {
+                Input.location.Stop();
+            }
+
             manualLatitude = Mathf.Clamp((float)latitude, -90f, 90f);
             manualLongitude = Mathf.Clamp((float)longitude, -180f, 180f);
             SetManualLocation();
