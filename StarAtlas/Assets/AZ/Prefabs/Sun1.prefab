@@ -206,6 +206,10 @@ MonoBehaviour:
   rotationProgress: 0
   movementSpeed: 0
   rotationSpeed: 0
+  loadedPredefinedType: 1
+  hasLoadedPredefinedType: 1
+  orbitScaleReference: {x: 1, y: 1, z: 1}
+  hasOrbitScaleReference: 0
 --- !u!114 &-840894975065369424
 MonoBehaviour:
   m_ObjectHideFlags: 0
