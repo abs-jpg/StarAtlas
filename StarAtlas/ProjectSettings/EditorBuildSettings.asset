@@ -4,7 +4,16 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/AZ/Atlas.unity
+    guid: 5700393533360e944859687015681044
+  - enabled: 1
+    path: Assets/AZ/exhibition.unity
+    guid: 1147568d2986938408f0dc19ed80802d
+  - enabled: 1
+    path: Assets/AQY/Main.unity
+    guid: 98a9fc2887b814b4598b33d4e428384b
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 0e2731a6f47f08947b6d05290d2456fb,
       type: 2}
