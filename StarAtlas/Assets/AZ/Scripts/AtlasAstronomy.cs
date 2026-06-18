@@ -133,11 +133,14 @@ namespace AZ.Atlas
             }
 
             EclipticVector planetPosition = CalculateHeliocentricEclipticPosition(planet);
-            EclipticVector earthPosition = CalculateHeliocentricEclipticPosition(earth);
+            // These low-precision Earth elements produce the Sun's apparent
+            // geocentric ecliptic vector. Add it to the planet's heliocentric
+            // vector to obtain the planet's geocentric position.
+            EclipticVector sunGeocentricPosition = CalculateHeliocentricEclipticPosition(earth);
 
-            double geocentricX = planetPosition.X - earthPosition.X;
-            double geocentricY = planetPosition.Y - earthPosition.Y;
-            double geocentricZ = planetPosition.Z - earthPosition.Z;
+            double geocentricX = planetPosition.X + sunGeocentricPosition.X;
+            double geocentricY = planetPosition.Y + sunGeocentricPosition.Y;
+            double geocentricZ = planetPosition.Z + sunGeocentricPosition.Z;
             double obliquity = 23.4393 - 0.0000003563 * days;
 
             double equatorialX = geocentricX;

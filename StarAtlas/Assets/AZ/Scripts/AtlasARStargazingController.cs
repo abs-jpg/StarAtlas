@@ -62,6 +62,11 @@ namespace AZ.Atlas
         [SerializeField] private bool showConstellationLines = true;
         [SerializeField] private Color constellationLineColor = new Color(0.56f, 0.72f, 1f, 0.34f);
         [SerializeField, Min(0.001f)] private float constellationLineWidth = 0.012f;
+        [SerializeField] private bool showConstellationNames = true;
+        [SerializeField, Min(0.01f)] private float constellationNameWorldHeight = 1.15f;
+        [SerializeField, Min(0f)] private float constellationNameVerticalOffset = 0.65f;
+        [SerializeField, Range(-5f, 5f)] private float constellationNameHorizontalOffset;
+        [SerializeField] private Color constellationNameColor = new Color(0.72f, 0.84f, 1f, 0.92f);
 
         [Header("Object Labels")]
         [SerializeField] private bool showObjectLabels = true;
@@ -103,6 +108,8 @@ namespace AZ.Atlas
 
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, TextMeshPro> labelInstances = new Dictionary<string, TextMeshPro>();
+        private readonly Dictionary<string, TextMeshPro> constellationLabelInstances =
+            new Dictionary<string, TextMeshPro>();
         private readonly List<SkyRenderObject> latestObjects = new List<SkyRenderObject>();
         private readonly List<Material> runtimeBodyMaterials = new List<Material>();
         private readonly List<LineRenderer> horizonLineSegments = new List<LineRenderer>();
@@ -326,9 +333,7 @@ namespace AZ.Atlas
                     {
                         key = item.id,
                         category = item.category,
-                        displayName = string.IsNullOrEmpty(item.display_name)
-                            ? item.name_en
-                            : item.display_name,
+                        displayName = GetApiObjectDisplayName(item),
                         azimuthDegrees = item.azimuth_deg,
                         altitudeDegrees = item.altitude_deg,
                         magnitude = item.magnitude
@@ -339,6 +344,34 @@ namespace AZ.Atlas
             AppendLocalSolarSystemObjects(utc);
             AppendFeaturedAsterisms(utc);
             RenderLatestObjects();
+        }
+
+        private static string GetApiObjectDisplayName(AtlasSkyObjectDto item)
+        {
+            if (string.Equals(item.category, "star", StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(item.name_zh))
+            {
+                return item.name_zh.Trim();
+            }
+
+            string displayName = string.IsNullOrEmpty(item.display_name)
+                ? item.name_en
+                : item.display_name;
+
+            if (!string.Equals(item.category, "star", StringComparison.OrdinalIgnoreCase))
+            {
+                return displayName;
+            }
+
+            string chineseName = GetChineseStarDisplayName(displayName);
+            if (!string.IsNullOrEmpty(chineseName)
+                && !string.Equals(chineseName, displayName, StringComparison.Ordinal))
+            {
+                return chineseName;
+            }
+
+            chineseName = GetChineseStarDisplayName(item.name_en);
+            return string.IsNullOrEmpty(chineseName) ? "\u672a\u547d\u540d\u6052\u661f" : chineseName;
         }
 
         private void RenderBuiltInStars(DateTime utc)
@@ -369,7 +402,7 @@ namespace AZ.Atlas
                 {
                     key = star.name,
                     category = "star",
-                    displayName = star.name,
+                    displayName = GetChineseStarDisplayName(star.name),
                     azimuthDegrees = altAz.AzimuthDegrees,
                     altitudeDegrees = altAz.AltitudeDegrees,
                     magnitude = star.magnitude
@@ -388,6 +421,7 @@ namespace AZ.Atlas
             RenderGuideLines();
             RenderPlanets();
             RenderLabels();
+            RenderConstellationLabels();
             lastRenderedScaleSignature = GetScaleSignature();
         }
 
@@ -418,6 +452,28 @@ namespace AZ.Atlas
             }
 
             latestObjects.Add(item);
+        }
+
+        private bool ContainsSkyObject(string category, string key)
+        {
+            string stableKey = GetStableSkyObjectKey(new SkyRenderObject
+            {
+                category = category,
+                key = key
+            });
+
+            for (int i = 0; i < latestObjects.Count; i++)
+            {
+                if (string.Equals(
+                        GetStableSkyObjectKey(latestObjects[i]),
+                        stableKey,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void AppendLocalSolarSystemObjects(DateTime utc)
@@ -462,6 +518,11 @@ namespace AZ.Atlas
             for (int i = 0; i < LocalPlanetKeys.Length; i++)
             {
                 string key = LocalPlanetKeys[i];
+                if (ContainsSkyObject("planet", key))
+                {
+                    continue;
+                }
+
                 if (!AtlasAstronomy.TryGetPlanetEquatorial(key, utc, out EquatorialCoordinate planet))
                 {
                     continue;
@@ -534,7 +595,7 @@ namespace AZ.Atlas
                 {
                     key = star.name,
                     category = "star",
-                    displayName = star.name,
+                    displayName = GetChineseStarDisplayName(star.name),
                     azimuthDegrees = altAz.AzimuthDegrees,
                     altitudeDegrees = altAz.AltitudeDegrees,
                     magnitude = star.magnitude,
@@ -993,6 +1054,134 @@ namespace AZ.Atlas
             }
         }
 
+        private void RenderConstellationLabels()
+        {
+            if (!showConstellationNames || !includeFeaturedAsterisms)
+            {
+                SetAllConstellationLabelsVisible(false);
+                return;
+            }
+
+            HashSet<string> visibleKeys = new HashSet<string>();
+            for (int i = 0; i < ConstellationDefinitions.Length; i++)
+            {
+                ConstellationDefinition definition = ConstellationDefinitions[i];
+                if (!TryGetConstellationLabelPosition(definition, out Vector3 localPosition))
+                {
+                    continue;
+                }
+
+                visibleKeys.Add(definition.key);
+                TextMeshPro label = GetOrCreateConstellationLabel(definition.key);
+                ApplyConstellationLabelStyle(label, definition.displayName);
+                label.gameObject.SetActive(true);
+                label.transform.SetParent(skyRoot, false);
+                label.transform.localPosition = localPosition;
+                label.transform.localScale = Vector3.one * GetConstellationLabelLocalScale();
+                ApplyConstellationLabelRect(label);
+                FaceLabelInstance(label);
+            }
+
+            foreach (KeyValuePair<string, TextMeshPro> pair in constellationLabelInstances)
+            {
+                if (pair.Value != null)
+                {
+                    pair.Value.gameObject.SetActive(visibleKeys.Contains(pair.Key));
+                }
+            }
+        }
+
+        private bool TryGetConstellationLabelPosition(
+            ConstellationDefinition definition,
+            out Vector3 localPosition)
+        {
+            Vector3 directionSum = Vector3.zero;
+            int foundCount = 0;
+            for (int i = 0; i < definition.starNames.Length; i++)
+            {
+                if (!TryGetStarRenderObject(definition.starNames[i], out SkyRenderObject star))
+                {
+                    continue;
+                }
+
+                directionSum += AtlasAstronomy.AltAzToLocalDirection(
+                    star.azimuthDegrees,
+                    star.altitudeDegrees);
+                foundCount++;
+            }
+
+            if (foundCount < 2 || directionSum.sqrMagnitude < 0.0001f)
+            {
+                localPosition = Vector3.zero;
+                return false;
+            }
+
+            Vector3 centerDirection = directionSum.normalized;
+            float scale = GetSkyDistanceAndSizeMultiplier();
+            float verticalOffset = constellationNameVerticalOffset * scale;
+            float horizontalOffset = constellationNameHorizontalOffset * scale;
+            Vector3 horizontalDirection = Vector3.Cross(Vector3.up, centerDirection);
+            if (horizontalDirection.sqrMagnitude < 0.0001f)
+            {
+                horizontalDirection = Vector3.right;
+            }
+            else
+            {
+                horizontalDirection.Normalize();
+            }
+
+            localPosition =
+                centerDirection * GetScaledStarSphereRadius()
+                + Vector3.down * verticalOffset
+                + horizontalDirection * horizontalOffset;
+            return true;
+        }
+
+        private TextMeshPro GetOrCreateConstellationLabel(string key)
+        {
+            if (constellationLabelInstances.TryGetValue(key, out TextMeshPro label) && label != null)
+            {
+                return label;
+            }
+
+            GameObject labelObject = new GameObject(
+                $"Atlas_Constellation_{SanitizeObjectName(key)}");
+            labelObject.transform.SetParent(skyRoot, false);
+            label = labelObject.AddComponent<TextMeshPro>();
+            constellationLabelInstances[key] = label;
+            return label;
+        }
+
+        private void ApplyConstellationLabelStyle(TextMeshPro label, string text)
+        {
+            label.text = text;
+            label.fontSize = LabelBaseFontSize;
+            label.fontStyle = FontStyles.Bold;
+            label.alignment = TextAlignmentOptions.Center;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
+            label.color = constellationNameColor;
+
+            if (labelFont != null)
+            {
+                label.font = labelFont;
+            }
+        }
+
+        private void ApplyConstellationLabelRect(TextMeshPro label)
+        {
+            RectTransform rectTransform = label.GetComponent<RectTransform>();
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            float scale = Mathf.Max(0.0001f, GetConstellationLabelLocalScale());
+            rectTransform.sizeDelta = new Vector2(
+                Mathf.Max(0.01f, labelMaxWidth * 1.5f) / scale,
+                Mathf.Max(0.01f, constellationNameWorldHeight * 2f) / scale);
+        }
+
         private TextMeshPro GetOrCreateLabel(string key)
         {
             if (labelInstances.TryGetValue(key, out TextMeshPro label) && label != null)
@@ -1092,6 +1281,17 @@ namespace AZ.Atlas
             }
         }
 
+        private void SetAllConstellationLabelsVisible(bool visible)
+        {
+            foreach (KeyValuePair<string, TextMeshPro> pair in constellationLabelInstances)
+            {
+                if (pair.Value != null)
+                {
+                    pair.Value.gameObject.SetActive(visible);
+                }
+            }
+        }
+
         private void UpdatePlanetFacing()
         {
             if (observerCamera == null)
@@ -1105,6 +1305,11 @@ namespace AZ.Atlas
             }
 
             foreach (KeyValuePair<string, TextMeshPro> pair in labelInstances)
+            {
+                FaceLabelInstance(pair.Value);
+            }
+
+            foreach (KeyValuePair<string, TextMeshPro> pair in constellationLabelInstances)
             {
                 FaceLabelInstance(pair.Value);
             }
@@ -1324,13 +1529,17 @@ namespace AZ.Atlas
                    + (showHorizonGuideLine ? 100000f : 0f)
                    + (showSunDayPathLine ? 200000f : 0f)
                    + (showConstellationLines ? 300000f : 0f)
+                   + (showConstellationNames ? 400000f : 0f)
                    + sunPathDashDegrees * 0.03f
                    + sunPathGapDegrees * 0.04f
                    + sunPathMinimumAltitude * 0.05f
                    + horizonLineWidth * 0.06f
                    + sunPathLineWidth * 0.07f
                    + sunPathSamples * 0.001f
-                   + constellationLineWidth * 0.08f;
+                   + constellationLineWidth * 0.08f
+                   + constellationNameWorldHeight * 0.09f
+                   + constellationNameVerticalOffset * 0.1f
+                   + constellationNameHorizontalOffset * 0.11f;
         }
 
         private float GetScaledSkySphereRadius()
@@ -1358,6 +1567,14 @@ namespace AZ.Atlas
             return Mathf.Max(
                 0.0001f,
                 labelWorldHeight / LabelBaseFontSize * GetSkyDistanceAndSizeMultiplier());
+        }
+
+        private float GetConstellationLabelLocalScale()
+        {
+            return Mathf.Max(
+                0.0001f,
+                constellationNameWorldHeight / LabelBaseFontSize
+                * GetSkyDistanceAndSizeMultiplier());
         }
 
         private float DegreesToArcLength(float degrees)
@@ -1637,6 +1854,212 @@ namespace AZ.Atlas
             }
         }
 
+        private static string GetChineseStarDisplayName(string englishName)
+        {
+            switch (englishName)
+            {
+                case "Sirius": return "\u5929\u72fc\u661f";
+                case "Canopus": return "\u8001\u4eba\u661f";
+                case "Arcturus": return "\u5927\u89d2\u661f";
+                case "Vega": return "\u7ec7\u5973\u4e00";
+                case "Capella": return "\u4e94\u8f66\u4e8c";
+                case "Rigel": return "\u53c2\u5bbf\u4e03";
+                case "Procyon": return "\u5357\u6cb3\u4e09";
+                case "Betelgeuse": return "\u53c2\u5bbf\u56db";
+                case "Achernar": return "\u6c34\u59d4\u4e00";
+                case "Hadar": return "\u9a6c\u8179\u4e00";
+                case "Altair": return "\u6cb3\u9f13\u4e8c";
+                case "Aldebaran": return "\u6bd5\u5bbf\u4e94";
+                case "Antares": return "\u5fc3\u5bbf\u4e8c";
+                case "Spica": return "\u89d2\u5bbf\u4e00";
+                case "Pollux": return "\u5317\u6cb3\u4e09";
+                case "Fomalhaut": return "\u5317\u843d\u5e08\u95e8";
+                case "Deneb": return "\u5929\u6d25\u56db";
+                case "Regulus": return "\u8f69\u8f95\u5341\u56db";
+                case "Adhara": return "\u5f27\u77e2\u4e03";
+                case "Castor": return "\u5317\u6cb3\u4e8c";
+                case "Dubhe": return "\u5929\u67a2";
+                case "Merak": return "\u5929\u7487";
+                case "Phecda": return "\u5929\u7391";
+                case "Megrez": return "\u5929\u6743";
+                case "Alioth": return "\u7389\u8861";
+                case "Mizar": return "\u5f00\u9633";
+                case "Alkaid": return "\u6447\u5149";
+                case "Meissa": return "\u89dc\u5bbf\u4e00";
+                case "Bellatrix": return "\u53c2\u5bbf\u4e94";
+                case "Alnitak": return "\u53c2\u5bbf\u4e00";
+                case "Alnilam": return "\u53c2\u5bbf\u4e8c";
+                case "Mintaka": return "\u53c2\u5bbf\u4e09";
+                case "Saiph": return "\u53c2\u5bbf\u516d";
+                case "Caph": return "\u738b\u826f\u4e00";
+                case "Schedar": return "\u738b\u826f\u56db";
+                case "Gamma Cas": return "\u7b56";
+                case "Ruchbah": return "\u9601\u9053\u4e09";
+                case "Segin": return "\u9601\u9053\u4e8c";
+                case "Sadr": return "\u5929\u6d25\u4e00";
+                case "Gienah Cygni": return "\u5929\u6d25\u4e5d";
+                case "Delta Cygni": return "\u5929\u6d25\u4e8c";
+                case "Albireo": return "\u8f87\u9053\u589e\u4e03";
+                case "Sheliak": return "\u6e10\u53f0\u4e8c";
+                case "Sulafat": return "\u6e10\u53f0\u4e09";
+                case "Delta2 Lyrae": return "\u6e10\u53f0\u4e00";
+                case "Epsilon Lyrae": return "\u7ec7\u5973\u4e8c";
+                case "Acrab": return "\u623f\u5bbf\u56db";
+                case "Dschubba": return "\u623f\u5bbf\u4e09";
+                case "Sargas": return "\u5c3e\u5bbf\u4e94";
+                case "Shaula": return "\u5c3e\u5bbf\u516b";
+                case "Lesath": return "\u5c3e\u5bbf\u4e5d";
+                case "Algieba": return "\u8f69\u8f95\u5341\u4e8c";
+                case "Zosma": return "\u897f\u4e0a\u76f8";
+                case "Denebola": return "\u4e94\u5e1d\u5ea7\u4e00";
+                case "Chertan": return "\u897f\u6b21\u76f8";
+                case "Rasalas": return "\u8f69\u8f95\u5341";
+                case "Markab": return "\u5ba4\u5bbf\u4e00";
+                case "Scheat": return "\u5ba4\u5bbf\u4e8c";
+                case "Algenib": return "\u58c1\u5bbf\u4e00";
+                case "Alpheratz": return "\u58c1\u5bbf\u4e8c";
+                case "Elnath": return "\u4e94\u8f66\u4e94";
+                case "Zeta Tauri": return "\u5929\u5173";
+                case "Ain": return "\u6bd5\u5bbf\u4e00";
+                case "Hyadum I": return "\u6bd5\u5bbf\u56db";
+                case "Alhena": return "\u4e95\u5bbf\u4e09";
+                case "Wasat": return "\u5929\u6a3d\u4e8c";
+                case "Mebsuta": return "\u4e95\u5bbf\u4e94";
+                case "Mekbuda": return "\u4e95\u5bbf\u4e03";
+                case "Tarazed": return "\u6cb3\u9f13\u4e00";
+                case "Alshain": return "\u6cb3\u9f13\u4e09";
+                case "Mirzam": return "\u519b\u5e02\u4e00";
+                case "Wezen": return "\u5f27\u77e2\u4e00";
+                case "Aludra": return "\u5f27\u77e2\u4e8c";
+                case "Alphecca": return "\u8d2f\u7d22\u56db";
+                case "Izar": return "\u6897\u6cb3\u4e00";
+                case "Kornephoros": return "\u5929\u5e02\u53f3\u57a3\u4e00";
+                case "Seginus": return "\u62db\u6447";
+                case "Sarin": return "\u6b66\u4ed9\u5ea7\u03b4";
+                case "Nekkar": return "\u7267\u592b\u5ea7\u03b2";
+                case "Nusakan": return "\u8d2f\u7d22\u4e09";
+                case "Adhafera": return "\u8f69\u8f95\u5341\u4e00";
+                case "Algol": return "\u5927\u9675\u4e94";
+                case "Aljanah": return "\u5929\u6d25\u4e5d";
+                case "Almaaz": return "\u67f1\u4e00";
+                case "Almach": return "\u5929\u5927\u5c06\u519b\u4e00";
+                case "Alpherg": return "\u53f3\u66f4\u4e8c";
+                case "Alula Borealis": return "\u4e0b\u53f0\u4e00";
+                case "Bharani": return "\u767d\u7f8a\u5ea741";
+                case "Cor Caroli": return "\u5e38\u9648\u4e00";
+                case "Eltanin": return "\u5929\u68d3\u56db";
+                case "Enif": return "\u5371\u5bbf\u4e09";
+                case "Haedus": return "\u5fa1\u592b\u5ea7\u03b7";
+                case "Hamal": return "\u5a04\u5bbf\u4e09";
+                case "Hassaleh": return "\u4e94\u8f66\u4e00";
+                case "Homam": return "\u96f7\u7535\u4e00";
+                case "Mahasim": return "\u5fa1\u592b\u5ea7\u03b8";
+                case "Matar": return "\u98de\u9a6c\u5ea7\u03b7";
+                case "Menkalinan": return "\u4e94\u8f66\u4e09";
+                case "Mirach": return "\u594e\u5bbf\u4e5d";
+                case "Mirfak": return "\u5929\u8239\u4e09";
+                case "Mothallah": return "\u4e09\u89d2\u5ea7\u03b1";
+                case "Muphrid": return "\u53f3\u6444\u63d0\u4e00";
+                case "Nembus": return "\u4ed9\u5973\u5ea751";
+                case "Propus": return "\u94ba";
+                case "Ras Elased Australis": return "\u8f69\u8f95\u4e5d";
+                case "Rasalgethi": return "\u5e1d\u5ea7";
+                case "Rasalhague": return "\u5019";
+                case "Rastaban": return "\u5929\u68d3\u4e09";
+                case "Rotanev": return "\u74e0\u74dc\u4e09";
+                case "Sadalbari": return "\u79bb\u5bab\u4e00";
+                case "Sheratan": return "\u5a04\u5bbf\u4e00";
+                case "Subra": return "\u8f69\u8f95\u5341\u4e94";
+                case "Talitha": return "\u4e0a\u53f0\u4e00";
+                case "Tania Borealis": return "\u4e2d\u53f0\u4e00";
+                case "Tania Australis": return "\u4e2d\u53f0\u4e8c";
+                case "Tejat": return "\u4e95\u5bbf\u4e00";
+                case "Tianguan": return "\u5929\u5173";
+                case "Vindemiatrix": return "\u592a\u5fae\u5de6\u57a3\u56db";
+                default:
+                    return ConvertBayerStarNameToChinese(englishName);
+            }
+        }
+
+        private static string ConvertBayerStarNameToChinese(string englishName)
+        {
+            if (string.IsNullOrWhiteSpace(englishName))
+            {
+                return string.Empty;
+            }
+
+            string[] parts = englishName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+            {
+                return string.Empty;
+            }
+
+            string designation = GetGreekDesignation(parts[0]);
+            string constellationName = GetChineseConstellationName(parts[parts.Length - 1]);
+            if (string.IsNullOrEmpty(designation) || string.IsNullOrEmpty(constellationName))
+            {
+                return string.Empty;
+            }
+
+            return constellationName + designation;
+        }
+
+        private static string GetGreekDesignation(string abbreviation)
+        {
+            switch ((abbreviation ?? string.Empty).ToLowerInvariant())
+            {
+                case "alp": return "\u03b1";
+                case "bet": return "\u03b2";
+                case "gam": return "\u03b3";
+                case "del": return "\u03b4";
+                case "eps": return "\u03b5";
+                case "zet": return "\u03b6";
+                case "eta": return "\u03b7";
+                case "the": return "\u03b8";
+                case "iot": return "\u03b9";
+                case "kap": return "\u03ba";
+                case "lam": return "\u03bb";
+                case "mu": return "\u03bc";
+                case "nu": return "\u03bd";
+                case "xi": return "\u03be";
+                case "omi": return "\u03bf";
+                case "pi": return "\u03c0";
+                case "rho": return "\u03c1";
+                case "sig": return "\u03c3";
+                case "tau": return "\u03c4";
+                case "ups": return "\u03c5";
+                case "phi": return "\u03c6";
+                case "chi": return "\u03c7";
+                case "psi": return "\u03c8";
+                case "ome": return "\u03c9";
+                default: return string.Empty;
+            }
+        }
+
+        private static string GetChineseConstellationName(string abbreviation)
+        {
+            switch ((abbreviation ?? string.Empty).ToLowerInvariant())
+            {
+                case "and": return "\u4ed9\u5973\u5ea7";
+                case "ari": return "\u767d\u7f8a\u5ea7";
+                case "aur": return "\u5fa1\u592b\u5ea7";
+                case "boo": return "\u7267\u592b\u5ea7";
+                case "cyg": return "\u5929\u9e45\u5ea7";
+                case "gem": return "\u53cc\u5b50\u5ea7";
+                case "her": return "\u6b66\u4ed9\u5ea7";
+                case "leo": return "\u72ee\u5b50\u5ea7";
+                case "lyn": return "\u5929\u732b\u5ea7";
+                case "peg": return "\u98de\u9a6c\u5ea7";
+                case "per": return "\u82f1\u4ed9\u5ea7";
+                case "psc": return "\u53cc\u9c7c\u5ea7";
+                case "ser": return "\u5de8\u86c7\u5ea7";
+                case "tri": return "\u4e09\u89d2\u5ea7";
+                case "uma": return "\u5927\u718a\u5ea7";
+                case "vir": return "\u5ba4\u5973\u5ea7";
+                default: return string.Empty;
+            }
+        }
+
         private static string SanitizeObjectName(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -1809,6 +2232,20 @@ namespace AZ.Atlas
             }
         }
 
+        private struct ConstellationDefinition
+        {
+            public string key;
+            public string displayName;
+            public string[] starNames;
+
+            public ConstellationDefinition(string key, string displayName, params string[] starNames)
+            {
+                this.key = key;
+                this.displayName = displayName;
+                this.starNames = starNames;
+            }
+        }
+
         private static readonly string[] LocalPlanetKeys =
         {
             "mercury",
@@ -1976,6 +2413,58 @@ namespace AZ.Atlas
             new ConstellationSegment("Sirius", "Adhara"),
             new ConstellationSegment("Adhara", "Wezen"),
             new ConstellationSegment("Wezen", "Aludra")
+        };
+
+        private static readonly ConstellationDefinition[] ConstellationDefinitions =
+        {
+            new ConstellationDefinition(
+                "big-dipper",
+                "\u5317\u6597\u4e03\u661f",
+                "Dubhe", "Merak", "Phecda", "Megrez", "Alioth", "Mizar", "Alkaid"),
+            new ConstellationDefinition(
+                "orion",
+                "\u730e\u6237\u5ea7",
+                "Betelgeuse", "Meissa", "Bellatrix", "Mintaka", "Alnilam", "Alnitak", "Saiph", "Rigel"),
+            new ConstellationDefinition(
+                "cassiopeia",
+                "\u4ed9\u540e\u5ea7",
+                "Caph", "Schedar", "Gamma Cas", "Ruchbah", "Segin"),
+            new ConstellationDefinition(
+                "cygnus",
+                "\u5929\u9e45\u5ea7",
+                "Deneb", "Sadr", "Gienah Cygni", "Delta Cygni", "Albireo"),
+            new ConstellationDefinition(
+                "lyra",
+                "\u5929\u7434\u5ea7",
+                "Vega", "Epsilon Lyrae", "Delta2 Lyrae", "Sheliak", "Sulafat"),
+            new ConstellationDefinition(
+                "scorpius",
+                "\u5929\u874e\u5ea7",
+                "Acrab", "Dschubba", "Antares", "Sargas", "Shaula", "Lesath"),
+            new ConstellationDefinition(
+                "leo",
+                "\u72ee\u5b50\u5ea7",
+                "Regulus", "Algieba", "Rasalas", "Zosma", "Denebola", "Chertan"),
+            new ConstellationDefinition(
+                "pegasus",
+                "\u98de\u9a6c\u5ea7",
+                "Markab", "Scheat", "Alpheratz", "Algenib"),
+            new ConstellationDefinition(
+                "taurus",
+                "\u91d1\u725b\u5ea7",
+                "Elnath", "Zeta Tauri", "Aldebaran", "Ain", "Hyadum I"),
+            new ConstellationDefinition(
+                "gemini",
+                "\u53cc\u5b50\u5ea7",
+                "Castor", "Pollux", "Mebsuta", "Wasat", "Mekbuda", "Alhena"),
+            new ConstellationDefinition(
+                "aquila",
+                "\u5929\u9e70\u5ea7",
+                "Tarazed", "Altair", "Alshain"),
+            new ConstellationDefinition(
+                "canis-major",
+                "\u5927\u72ac\u5ea7",
+                "Mirzam", "Sirius", "Adhara", "Wezen", "Aludra")
         };
     }
 }

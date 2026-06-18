@@ -205,7 +205,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1117395703}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9959082
+  m_Size: 0.9999748
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1693,11 +1693,16 @@ MonoBehaviour:
   starColor: {r: 0.82, g: 0.9, b: 1, a: 1}
   starMaterial: {fileID: 0}
   includeFeaturedAsterisms: 1
-  featuredStarSizeMultiplier: 1.35
+  featuredStarSizeMultiplier: 1.4
   featuredStarColor: {r: 0.95, g: 0.98, b: 1, a: 1}
   showConstellationLines: 1
   constellationLineColor: {r: 0.56, g: 0.72, b: 1, a: 0.34}
   constellationLineWidth: 0.012
+  showConstellationNames: 1
+  constellationNameWorldHeight: 2
+  constellationNameVerticalOffset: 1.3
+  constellationNameHorizontalOffset: 0.2
+  constellationNameColor: {r: 0.72, g: 0.84, b: 1, a: 0.92}
   showObjectLabels: 1
   showStarLabels: 1
   showSolarSystemLabels: 1
