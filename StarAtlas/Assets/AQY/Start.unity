@@ -431,6 +431,7 @@ GameObject:
   - component: {fileID: 1234443509}
   - component: {fileID: 1234443510}
   - component: {fileID: 1234443511}
+  - component: {fileID: 1234443512}
   m_Layer: 0
   m_Name: Video
   m_TagString: Untagged
@@ -579,6 +580,44 @@ MonoBehaviour:
   fadeEase: 6
   audio: {fileID: 1234443509}
   audioClip: {fileID: 8300000, guid: 3ea61559ac736894bb7aa710dc00753a, type: 3}
+--- !u!114 &1234443512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1234443507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4131023acb374257aa5a60f57bce7141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  followTarget: {fileID: 0}
+  autoFindMainCamera: 1
+  forceSolidBlackCameraBackground: 1
+  cameraBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
+  farStarCount: 14000
+  farRadiusMin: 22
+  farRadiusMax: 60
+  farSizeMin: 0.012
+  farSizeMax: 0.05
+  farBrightnessMin: 0.35
+  farBrightnessMax: 1
+  nearStarCount: 1600
+  nearRadiusMin: 5
+  nearRadiusMax: 16
+  nearSizeMin: 0.018
+  nearSizeMax: 0.075
+  nearBrightnessMin: 0.65
+  nearBrightnessMax: 1.25
+  coolTint: {r: 0.78, g: 0.88, b: 1, a: 1}
+  warmStarChance: 0.18
+  warmTint: {r: 1, g: 0.78, b: 0.48, a: 1}
+  starMaterial: {fileID: 0}
+  twinkle: 1
+  twinkleStrength: 0.22
+  twinkleSpeed: 1.2
+  randomSeed: 31415
 --- !u!1001 &1338264272
 PrefabInstance:
   m_ObjectHideFlags: 0
