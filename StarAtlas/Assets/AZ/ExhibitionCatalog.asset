@@ -23,11 +23,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 0
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u592A\u9633\u662F\u592A\u9633\u7CFB\u7684\u4E2D\u5FC3\u6052\u661F\uFF0C\u7EA6\u5360\u5176\u603B\u8D28\u91CF\u7684\u5927\u90E8\u5206\u3002\u5B83\u901A\u8FC7\u6838\u805A\u53D8\u91CA\u653E\u5149\u548C\u70ED\uFF0C\u4E3A\u5730\u7403\u548C\u5176\u4ED6\u884C\u661F\u63D0\u4F9B\u80FD\u91CF\uFF0C\u540C\u65F6\u4E5F\u662F\u592A\u9633\u7CFB\u4E2D\u5404\u884C\u661F\u8F68\u9053\u7684\u5F15\u529B\u4E2D\u5FC3\u3002"
-    diameter: 1,392,700 km
-    mass: 1.989 x 10^30 kg
-    orbitPeriod: "\u65E0\uFF0C\u592A\u9633\u7CFB\u4E2D\u5FC3\u5929\u4F53"
-    rotationPeriod: "\u7EA626.5 days"
+    summary: "太阳是一颗约46亿岁的黄矮星，集中了太阳系约99.8%的质量，引力维系着行星、卫星、小行星和彗星的轨道。它主要由氢和氦组成，核心持续进行氢聚变并释放光与热；核心温度约1500万摄氏度，可见光球层约5500摄氏度。太阳没有固体表面，不同纬度的等离子体自转速度不同。活跃磁场会产生黑子、耀斑和日冕物质抛射，太阳风向外形成覆盖整个行星区域的日球层，并可能在地球引发极光和空间天气扰动。"
+    diameter: "约1,392,700千米"
+    mass: "约1.989 × 10^30千克"
+    orbitPeriod: "约2.3亿年（绕银河系中心）"
+    rotationPeriod: "赤道约25天，极区约36天"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 0.755
     defaultTemperatureCelsius: 5500
@@ -43,11 +43,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 0
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u6C34\u661F\u662F\u8DDD\u79BB\u592A\u9633\u6700\u8FD1\u7684\u884C\u661F\uFF0C\u4E5F\u662F\u592A\u9633\u7CFB\u4E2D\u6700\u5C0F\u7684\u884C\u661F\u3002\u5B83\u51E0\u4E4E\u6CA1\u6709\u5927\u6C14\u5C42\uFF0C\u663C\u591C\u6E29\u5DEE\u6781\u5927\uFF0C\u8868\u9762\u5E03\u6EE1\u649E\u51FB\u5751\u3002"
-    diameter: 4,879 km
-    mass: 3.30 x 10^23 kg
-    orbitPeriod: 87.97 days
-    rotationPeriod: 58.65 days
+    summary: "水星是距离太阳最近、也是八大行星中最小的一颗岩石行星。它拥有比例异常巨大的富铁核心，表面遍布撞击坑、悬崖和平原，外观与月球相似。水星只有由氧、钠、氢、氦和钾等稀薄粒子构成的外逸层，无法像真正大气那样保存热量，因此白昼表面可超过430摄氏度，夜间可降到约零下180摄氏度。它每自转3周恰好绕太阳运行2周，形成3:2自转轨道共振。水星没有天然卫星，也没有星环。"
+    diameter: "约4,879千米"
+    mass: "约3.301 × 10^23千克"
+    orbitPeriod: "87.97天"
+    rotationPeriod: "58.65天"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 0.341
     defaultTemperatureCelsius: 167
@@ -63,11 +63,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 0
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u91D1\u661F\u5927\u5C0F\u548C\u5730\u7403\u76F8\u8FD1\uFF0C\u4F46\u62E5\u6709\u6781\u5176\u6D53\u539A\u7684\u4E8C\u6C27\u5316\u78B3\u5927\u6C14\u548C\u5F3A\u70C8\u7684\u6E29\u5BA4\u6548\u5E94\uFF0C\u662F\u592A\u9633\u7CFB\u4E2D\u8868\u9762\u6E29\u5EA6\u6700\u9AD8\u7684\u884C\u661F\u3002\u5B83\u7684\u81EA\u8F6C\u65B9\u5411\u4E0E\u5927\u591A\u6570\u884C\u661F\u76F8\u53CD\u3002"
-    diameter: 12,104 km
-    mass: 4.87 x 10^24 kg
-    orbitPeriod: 224.70 days
-    rotationPeriod: 243 days
+    summary: "金星的直径和质量与地球接近，却拥有完全不同的环境。其浓厚大气约96%是二氧化碳，上层覆盖硫酸云，地表气压约为地球海平面的92倍。失控的温室效应使全球平均表面温度约464摄氏度，比更靠近太阳的水星还热。金星表面分布着广阔火山平原、山地和大量火山构造，是否仍存在火山活动仍是重要研究问题。它自转极慢且方向与多数行星相反，因此太阳会从西方升起。金星没有天然卫星，也没有星环。"
+    diameter: "约12,104千米"
+    mass: "约4.867 × 10^24千克"
+    orbitPeriod: "224.70天"
+    rotationPeriod: "243.02天（逆行）"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: -0.082
     defaultTemperatureCelsius: 464
@@ -84,11 +84,11 @@ MonoBehaviour:
     planetSystem: 1
     primaryMoonPrefab: {fileID: 995716104177521626, guid: 6f60e2696aee62446be9cca2adffdad2,
       type: 3}
-    summary: "\u5730\u7403\u662F\u76EE\u524D\u5DF2\u77E5\u552F\u4E00\u62E5\u6709\u7A33\u5B9A\u6DB2\u6001\u6C34\u548C\u751F\u547D\u7684\u884C\u661F\u3002\u5B83\u62E5\u6709\u9002\u5B9C\u7684\u5927\u6C14\u3001\u78C1\u573A\u548C\u6E29\u5EA6\u73AF\u5883\uFF0C\u662F\u592A\u9633\u7CFB\u4E2D\u751F\u547D\u6D3B\u52A8\u6700\u4E30\u5BCC\u7684\u661F\u7403\u3002"
-    diameter: 12,742 km
-    mass: 5.97 x 10^24 kg
-    orbitPeriod: 365.25 days
-    rotationPeriod: 24 hours
+    summary: "地球是目前已知唯一拥有广泛稳定液态水和生命的行星。海洋覆盖约71%的表面，以氮和氧为主的大气调节温度并保护生命，内部活动推动板块构造、火山和地磁场的形成。磁层能够偏转大量太阳风粒子，大气中的水循环和碳循环共同维持长期宜居环境。地球拥有1颗天然卫星月球，没有行星环。月球的引力造成潮汐，并帮助稳定地球约23.4度的自转轴倾角；月球被地球潮汐锁定，因此始终以近似同一面朝向地球。"
+    diameter: "约12,742千米"
+    mass: "约5.972 × 10^24千克"
+    orbitPeriod: "365.256天"
+    rotationPeriod: "23小时56分"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 20
     defaultTemperatureCelsius: 15
@@ -104,11 +104,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 2
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u706B\u661F\u88AB\u79F0\u4E3A\u7EA2\u8272\u661F\u7403\uFF0C\u8868\u9762\u5BCC\u542B\u6C27\u5316\u94C1\uFF0C\u62E5\u6709\u5DE8\u5927\u7684\u706B\u5C71\u3001\u5CE1\u8C37\u548C\u6781\u51A0\u3002\u5B83\u66FE\u7ECF\u53EF\u80FD\u5B58\u5728\u6DB2\u6001\u6C34\uFF0C\u662F\u4EBA\u7C7B\u91CD\u70B9\u63A2\u7D22\u7684\u884C\u661F\u4E4B\u4E00\u3002"
-    diameter: 6,779 km
-    mass: 6.42 x 10^23 kg
-    orbitPeriod: 686.98 days
-    rotationPeriod: 24.6 hours
+    summary: "火星是一颗寒冷、干燥且布满尘埃的岩石行星，土壤中的氧化铁使它呈现红色。稀薄大气主要由二氧化碳组成，无法有效保存热量，全球性沙尘暴有时可持续数周。火星拥有太阳系最高的大型火山奥林帕斯山和巨大的水手号峡谷，古河道、三角洲与湖床证明早期火星曾更温暖湿润。它有2颗不规则小卫星：较近的火卫一和较远的火卫二；火卫一正缓慢接近火星，未来可能破碎形成短暂尘埃环。火星目前没有星环。"
+    diameter: "约6,779千米"
+    mass: "约6.417 × 10^23千克"
+    orbitPeriod: "686.98天"
+    rotationPeriod: "24小时37分"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 19.512
     defaultTemperatureCelsius: -63
@@ -124,11 +124,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 3
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u6728\u661F\u662F\u592A\u9633\u7CFB\u4E2D\u6700\u5927\u7684\u884C\u661F\uFF0C\u4E3B\u8981\u7531\u6C22\u548C\u6C26\u7EC4\u6210\u3002\u5B83\u62E5\u6709\u5F3A\u5927\u7684\u78C1\u573A\u3001\u4F17\u591A\u536B\u661F\uFF0C\u4EE5\u53CA\u8457\u540D\u7684\u5927\u7EA2\u6591\u98CE\u66B4\u3002"
-    diameter: 139,820 km
-    mass: 1.90 x 10^27 kg
-    orbitPeriod: 11.86 years
-    rotationPeriod: 9.9 hours
+    summary: "木星是太阳系最大的行星，质量超过其他七颗行星质量总和的两倍。它主要由氢和氦组成，没有明确固体表面，快速自转把云层拉成明暗相间的带状结构，并形成持续数百年的大红斑风暴。木星拥有极强磁场和巨大的磁层。JPL当前数据记录115颗卫星，其中木卫一火山活动剧烈，木卫二可能拥有冰下海洋，木卫三是太阳系最大卫星，木卫四表面遍布古老撞击坑。木星还拥有由尘埃构成的暗淡星环，包括晕环、主环和两层蛛网状环。"
+    diameter: "约139,820千米"
+    mass: "约1.898 × 10^27千克"
+    orbitPeriod: "11.86年"
+    rotationPeriod: "9小时56分"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 48.485
     defaultTemperatureCelsius: -108
@@ -144,11 +144,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 4
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u571F\u661F\u4EE5\u58EE\u89C2\u7684\u884C\u661F\u73AF\u95FB\u540D\uFF0C\u4E3B\u8981\u7531\u51B0\u7C92\u3001\u5CA9\u77F3\u788E\u7247\u548C\u5C18\u57C3\u7EC4\u6210\u3002\u5B83\u662F\u4E00\u9897\u6C14\u6001\u5DE8\u884C\u661F\uFF0C\u5BC6\u5EA6\u5F88\u4F4E\uFF0C\u62E5\u6709\u5927\u91CF\u536B\u661F\u3002"
-    diameter: 116,460 km
-    mass: 5.68 x 10^26 kg
-    orbitPeriod: 29.46 years
-    rotationPeriod: 10.7 hours
+    summary: "土星是太阳系第二大行星，也是一颗主要由氢和氦组成的气态巨行星。它的平均密度低于水，快速自转使赤道明显隆起。壮观的星环主要由水冰颗粒混合少量岩石和尘埃组成，A、B、C等主环之间分布着大量细环和缝隙，其中最醒目的是卡西尼缝。JPL当前数据记录291颗卫星：土卫六拥有浓厚氮气大气和液态甲烷湖，土卫二会从南极喷出含水冰物质，暗示地下存在全球性海洋。卫星引力还会塑造和约束许多环缝与环带。"
+    diameter: "约116,460千米"
+    mass: "约5.683 × 10^26千克"
+    orbitPeriod: "29.45年"
+    rotationPeriod: "约10小时42分"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 44.86
     defaultTemperatureCelsius: -139
@@ -164,11 +164,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 5
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u5929\u738B\u661F\u662F\u4E00\u9897\u51B0\u5DE8\u661F\uFF0C\u542B\u6709\u5927\u91CF\u6C34\u3001\u6C28\u548C\u7532\u70F7\u7B49\u51B0\u8D28\u7269\u8D28\u3002\u5B83\u7684\u81EA\u8F6C\u8F74\u51E0\u4E4E\u6A2A\u8EBA\u5728\u8F68\u9053\u5E73\u9762\u4E0A\uFF0C\u56E0\u6B64\u5B63\u8282\u53D8\u5316\u975E\u5E38\u7279\u6B8A\u3002"
-    diameter: 50,724 km
-    mass: 8.68 x 10^25 kg
-    orbitPeriod: 84.01 years
-    rotationPeriod: 17.2 hours
+    summary: "天王星是由水、氨、甲烷等高压流体和氢氦大气构成的冰巨星，甲烷吸收红光，使云顶呈淡青蓝色。它最特殊的特征是约97.8度的自转轴倾角，整颗行星几乎横躺着绕太阳运行，而且自转方向与多数行星相反。这使每个极区都可能连续经历约21年的白昼或黑夜。JPL当前数据记录29颗卫星，主要卫星包括天卫五、天卫一、天卫二、天卫三和天卫四。天王星还拥有13条已知暗色窄环，环面也随倾斜的赤道一起近乎侧立。"
+    diameter: "约50,724千米"
+    mass: "约8.681 × 10^25千克"
+    orbitPeriod: "84.01年"
+    rotationPeriod: "17小时14分（逆行）"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: -27.907
     defaultTemperatureCelsius: -197
@@ -184,11 +184,11 @@ MonoBehaviour:
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
     planetSystem: 6
     primaryMoonPrefab: {fileID: 0}
-    summary: "\u6D77\u738B\u661F\u662F\u8DDD\u79BB\u592A\u9633\u6700\u8FDC\u7684\u516B\u5927\u884C\u661F\uFF0C\u5448\u6DF1\u84DD\u8272\uFF0C\u62E5\u6709\u592A\u9633\u7CFB\u4E2D\u6700\u5F3A\u70C8\u7684\u98CE\u66B4\u4E4B\u4E00\u3002\u5B83\u662F\u4E00\u9897\u5BD2\u51B7\u7684\u51B0\u5DE8\u661F\uFF0C\u4E3B\u8981\u7531\u6C22\u3001\u6C26\u548C\u51B0\u8D28\u7269\u8D28\u7EC4\u6210\u3002"
-    diameter: 49,244 km
-    mass: 1.02 x 10^26 kg
-    orbitPeriod: 164.8 years
-    rotationPeriod: 16.1 hours
+    summary: "海王星是距离太阳最远的八大行星，平均距离约30个天文单位，是一颗寒冷的冰巨星。它的大气以氢、氦和甲烷为主，内部热量驱动着太阳系中最猛烈的天气之一，云层风速可超过每小时2000千米，并会形成不断出现和消散的暗色风暴。海王星拥有16颗已知卫星，其中最大的海卫一沿逆行轨道运行，可能是被捕获的柯伊伯带天体，表面还有氮冰喷泉。它至少拥有5条主环，最外侧亚当斯环中聚集着自由、平等、博爱和勇气等明亮环弧。"
+    diameter: "约49,244千米"
+    mass: "约1.024 × 10^26千克"
+    orbitPeriod: "164.8年"
+    rotationPeriod: "约16小时6分"
     enableSpawnedRotation: 1
     spawnedRotationDegreesPerSecond: 29.814
     defaultTemperatureCelsius: -201

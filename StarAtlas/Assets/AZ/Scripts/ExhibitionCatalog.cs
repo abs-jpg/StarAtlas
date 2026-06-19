@@ -45,7 +45,7 @@ namespace AZ.Exhibition
         public GameObject primaryMoonPrefab;
 
         [Header("Science Panel")]
-        [TextArea(3, 8)]
+        [TextArea(5, 12)]
         public string summary;
         public string diameter;
         public string mass;

@@ -285,10 +285,8 @@ namespace AZ.Exhibition
             shape.enabled = false;
 
             ParticleSystemRenderer renderer = particleObject.GetComponent<ParticleSystemRenderer>();
-            Material material = CreateColorMaterial(
-                $"MinorMoonMaterial_{systemData.Name}",
-                systemData.MinorMoonColor,
-                true);
+            Material material = CreateMoonParticleMaterial(
+                $"MinorMoonMaterial_{systemData.Name}");
             renderer.sharedMaterial = material;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
             renderer.alignment = ParticleSystemRenderSpace.View;
@@ -898,6 +896,38 @@ namespace AZ.Exhibition
             }
 
             return ringMaterial;
+        }
+
+        private static Material CreateMoonParticleMaterial(string materialName)
+        {
+            Material particleTemplate =
+                Resources.Load<Material>("ExhibitionMoonParticleBase");
+            Material particleMaterial;
+
+            if (particleTemplate != null)
+            {
+                particleMaterial = new Material(particleTemplate);
+            }
+            else
+            {
+                Shader shader = Shader.Find("AZ/Exhibition Moon Particle");
+                if (shader == null)
+                {
+                    return CreateColorMaterial(materialName, Color.white, true);
+                }
+
+                particleMaterial = new Material(shader);
+            }
+
+            particleMaterial.name = materialName;
+            particleMaterial.hideFlags = HideFlags.DontSave;
+            particleMaterial.color = Color.white;
+            if (particleMaterial.HasProperty("_Color"))
+            {
+                particleMaterial.SetColor("_Color", Color.white);
+            }
+
+            return particleMaterial;
         }
 
         private static void FitObjectToLocalDiameter(
