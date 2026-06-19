@@ -2385,8 +2385,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 11500000, guid: 831fb446ab4f79842b50fbc602c03129,
-        type: 3}
+      objectReference: {fileID: 454052296}
     - target: {fileID: 2315289584108803517, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -2395,12 +2394,12 @@ PrefabInstance:
     - target: {fileID: 2315289584108803517, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: set_name
+      value: ChangeScenes
       objectReference: {fileID: 0}
     - target: {fileID: 2315289584108803517, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
+      value: ChangeScene, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2315289584108803517, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
@@ -2562,7 +2561,7 @@ PrefabInstance:
     - target: {fileID: 8061307773979316499, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -241
+      value: 478
       objectReference: {fileID: 0}
     - target: {fileID: 8061307773979316499, guid: 7906055bc173f804f95f8d24f29dbbee,
         type: 3}
