@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using AZ.Exhibition;
 using TMPro;
 using UnityEngine;
 
@@ -106,6 +107,10 @@ namespace AZ.Atlas
             new PlanetPrefabBinding { key = "neptune" }
         };
 
+        [Header("Planetary Rings And Moons")]
+        [SerializeField] private bool includePlanetaryRingsAndMoons = true;
+        [SerializeField] private bool orientPlanetarySystemsFromRealPoles = true;
+
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, TextMeshPro> labelInstances = new Dictionary<string, TextMeshPro>();
         private readonly Dictionary<string, TextMeshPro> constellationLabelInstances =
@@ -128,6 +133,7 @@ namespace AZ.Atlas
         private float currentNorthYawOffsetDegrees;
         private float lastRenderedScaleSignature = -1f;
         private Coroutine apiRoutine;
+        private DateTime latestRenderUtc = DateTime.UtcNow;
 
         private void Awake()
         {
@@ -317,6 +323,7 @@ namespace AZ.Atlas
 
         private void RenderApiResponse(AtlasSkyChartResponse response, DateTime utc)
         {
+            latestRenderUtc = utc.ToUniversalTime();
             latestObjects.Clear();
 
             if (response != null && response.objects != null)
@@ -376,6 +383,7 @@ namespace AZ.Atlas
 
         private void RenderBuiltInStars(DateTime utc)
         {
+            latestRenderUtc = utc.ToUniversalTime();
             latestObjects.Clear();
 
             if (locationProvider == null || !locationProvider.HasLocation)
@@ -999,6 +1007,7 @@ namespace AZ.Atlas
                     Vector3.one * GetScaledSolarSystemBodyScale(item, key);
 
                 FacePlanetInstance(instance);
+                UpdatePlanetarySystem(instance, key);
             }
 
             foreach (KeyValuePair<string, GameObject> pair in planetInstances)
@@ -1302,6 +1311,7 @@ namespace AZ.Atlas
             foreach (KeyValuePair<string, GameObject> pair in planetInstances)
             {
                 FacePlanetInstance(pair.Value);
+                UpdatePlanetarySystem(pair.Value, pair.Key);
             }
 
             foreach (KeyValuePair<string, TextMeshPro> pair in labelInstances)
@@ -1360,8 +1370,75 @@ namespace AZ.Atlas
                 : CreateFallbackSolarSystemBody(key, source.displayName);
             instance.name = $"Atlas_{key}";
             RemoveImportedOrbitVisuals(instance);
+            UpdatePlanetarySystem(instance, key);
             planetInstances[key] = instance;
             return instance;
+        }
+
+        private void UpdatePlanetarySystem(GameObject planetInstance, string key)
+        {
+            if (planetInstance == null || !IsRingedGiantPlanet(key))
+            {
+                return;
+            }
+
+            ExhibitionPlanetarySystem system =
+                planetInstance.GetComponentInChildren<ExhibitionPlanetarySystem>(true);
+            if (!includePlanetaryRingsAndMoons)
+            {
+                if (system != null)
+                {
+                    system.gameObject.SetActive(false);
+                }
+
+                return;
+            }
+
+            if (system == null)
+            {
+                system = ExhibitionPlanetarySystem.AttachAtlas(planetInstance, key);
+            }
+
+            if (system == null)
+            {
+                return;
+            }
+
+            system.gameObject.SetActive(true);
+            if (!orientPlanetarySystemsFromRealPoles ||
+                observerCamera == null ||
+                locationProvider == null ||
+                !locationProvider.HasLocation ||
+                !AtlasAstronomy.TryGetPlanetNorthPoleEquatorial(
+                    key,
+                    latestRenderUtc,
+                    out EquatorialCoordinate pole))
+            {
+                return;
+            }
+
+            AltAz poleAltAz = AtlasAstronomy.EquatorialToHorizontal(
+                pole.RightAscensionDegrees,
+                pole.DeclinationDegrees,
+                locationProvider.Latitude,
+                locationProvider.Longitude,
+                latestRenderUtc);
+            Vector3 localAxis = AtlasAstronomy.AltAzToLocalDirection(
+                poleAltAz.AzimuthDegrees,
+                poleAltAz.AltitudeDegrees);
+            Vector3 worldAxis = skyRoot != null
+                ? skyRoot.TransformDirection(localAxis)
+                : localAxis;
+            system.SetAtlasAxisDirection(worldAxis, observerCamera.transform.position);
+        }
+
+        private static bool IsRingedGiantPlanet(string key)
+        {
+            string normalized = NormalizeSolarSystemKey(key);
+            return normalized == "jupiter" ||
+                   normalized == "saturn" ||
+                   normalized == "uranus" ||
+                   normalized == "neptune";
         }
 
         private GameObject CreateFallbackSolarSystemBody(string key, string displayName)
@@ -1539,7 +1616,9 @@ namespace AZ.Atlas
                    + constellationLineWidth * 0.08f
                    + constellationNameWorldHeight * 0.09f
                    + constellationNameVerticalOffset * 0.1f
-                   + constellationNameHorizontalOffset * 0.11f;
+                   + constellationNameHorizontalOffset * 0.11f
+                   + (includePlanetaryRingsAndMoons ? 500000f : 0f)
+                   + (orientPlanetarySystemsFromRealPoles ? 600000f : 0f);
         }
 
         private float GetScaledSkySphereRadius()

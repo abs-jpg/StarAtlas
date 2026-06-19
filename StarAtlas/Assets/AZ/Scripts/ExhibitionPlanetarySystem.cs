@@ -30,6 +30,10 @@ namespace AZ.Exhibition
         private double minimumPhysicalOrbitKm;
         private double maximumPhysicalOrbitKm;
         private double outerRingRadiusKm;
+        private bool useExternalAxisOrientation;
+        private bool hasExternalAxisOrientation;
+        private Vector3 externalAxisWorld = Vector3.up;
+        private Vector3 externalObserverWorld;
 
         public bool HasVisibleRings => ringRenderers.Count > 0;
 
@@ -74,6 +78,70 @@ namespace AZ.Exhibition
             system.Initialize(data, entry.primaryMoonPrefab, radiusLocal, includeMoons, spawnedItem);
         }
 
+        public static ExhibitionPlanetarySystem AttachAtlas(GameObject planet, string planetKey)
+        {
+            if (planet == null ||
+                !TryGetPlanetSystem(planetKey, out ExhibitionPlanetSystem planetSystem))
+            {
+                return null;
+            }
+
+            Transform existing = planet.transform.Find(GeneratedRootName);
+            if (existing != null)
+            {
+                ExhibitionPlanetarySystem existingSystem =
+                    existing.GetComponent<ExhibitionPlanetarySystem>();
+                if (existingSystem != null)
+                {
+                    existingSystem.gameObject.SetActive(true);
+                    return existingSystem;
+                }
+
+                DestroyGeneratedObject(existing.gameObject);
+            }
+
+            if (!TryGetPlanetGeometry(planet, out Vector3 centerLocal, out float radiusLocal))
+            {
+                Debug.LogWarning(
+                    $"Could not calculate an Atlas planet radius for {planet.name}.",
+                    planet);
+                return null;
+            }
+
+            PlanetSystemData data = PlanetSystemDatabase.Get(planetSystem);
+            if (data == null)
+            {
+                return null;
+            }
+
+            GameObject rootObject = new GameObject(GeneratedRootName);
+            rootObject.transform.SetParent(planet.transform, false);
+            rootObject.transform.localPosition = centerLocal;
+            rootObject.transform.localRotation = Quaternion.identity;
+            rootObject.transform.localScale = Vector3.one;
+
+            ExhibitionPlanetarySystem system =
+                rootObject.AddComponent<ExhibitionPlanetarySystem>();
+            system.useExternalAxisOrientation = true;
+            system.Initialize(data, null, radiusLocal, true, null);
+            return system;
+        }
+
+        public void SetAtlasAxisDirection(Vector3 worldAxisDirection, Vector3 observerWorldPosition)
+        {
+            if (worldAxisDirection.sqrMagnitude <= 0.000001f)
+            {
+                hasExternalAxisOrientation = false;
+                return;
+            }
+
+            useExternalAxisOrientation = true;
+            hasExternalAxisOrientation = true;
+            externalAxisWorld = worldAxisDirection.normalized;
+            externalObserverWorld = observerWorldPosition;
+            ApplyExternalAxisOrientation();
+        }
+
         private void Initialize(
             PlanetSystemData data,
             GameObject primaryMoonPrefab,
@@ -91,7 +159,9 @@ namespace AZ.Exhibition
             contentRoot = contentObject.transform;
             contentRoot.SetParent(transform, false);
             contentRoot.localPosition = Vector3.zero;
-            contentRoot.localRotation = Quaternion.AngleAxis(data.AxialTiltDegrees, Vector3.forward);
+            contentRoot.localRotation = useExternalAxisOrientation
+                ? Quaternion.identity
+                : Quaternion.AngleAxis(data.AxialTiltDegrees, Vector3.forward);
             contentRoot.localScale = Vector3.one;
 
             BuildRings();
@@ -114,7 +184,11 @@ namespace AZ.Exhibition
                 return;
             }
 
-            if (spawnedItem != null)
+            if (useExternalAxisOrientation && hasExternalAxisOrientation)
+            {
+                ApplyExternalAxisOrientation();
+            }
+            else if (spawnedItem != null)
             {
                 transform.localRotation = Quaternion.AngleAxis(
                     -spawnedItem.AccumulatedVisualRotationDegrees,
@@ -133,6 +207,52 @@ namespace AZ.Exhibition
             {
                 UpdateMinorMoonParticles(julianDate);
                 nextMinorMoonUpdateTime = Time.unscaledTime + MinorMoonUpdateInterval;
+            }
+        }
+
+        private void ApplyExternalAxisOrientation()
+        {
+            Vector3 axis = externalAxisWorld.sqrMagnitude > 0.000001f
+                ? externalAxisWorld.normalized
+                : Vector3.up;
+            Vector3 observerDirection =
+                externalObserverWorld - transform.position;
+            Vector3 forward = Vector3.ProjectOnPlane(observerDirection, axis);
+
+            if (forward.sqrMagnitude <= 0.000001f)
+            {
+                forward = Vector3.ProjectOnPlane(Vector3.forward, axis);
+            }
+
+            if (forward.sqrMagnitude <= 0.000001f)
+            {
+                forward = Vector3.Cross(axis, Vector3.right);
+            }
+
+            transform.rotation = Quaternion.LookRotation(forward.normalized, axis);
+        }
+
+        private static bool TryGetPlanetSystem(
+            string planetKey,
+            out ExhibitionPlanetSystem planetSystem)
+        {
+            switch ((planetKey ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "jupiter":
+                    planetSystem = ExhibitionPlanetSystem.Jupiter;
+                    return true;
+                case "saturn":
+                    planetSystem = ExhibitionPlanetSystem.Saturn;
+                    return true;
+                case "uranus":
+                    planetSystem = ExhibitionPlanetSystem.Uranus;
+                    return true;
+                case "neptune":
+                    planetSystem = ExhibitionPlanetSystem.Neptune;
+                    return true;
+                default:
+                    planetSystem = ExhibitionPlanetSystem.None;
+                    return false;
             }
         }
 
@@ -469,6 +589,11 @@ namespace AZ.Exhibition
 
         private float GetMajorMoonVisualScale()
         {
+            if (useExternalAxisOrientation)
+            {
+                return 1f;
+            }
+
             switch (systemData.Name)
             {
                 case "Mars":

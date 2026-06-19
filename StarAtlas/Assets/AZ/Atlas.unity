@@ -2071,6 +2071,8 @@ MonoBehaviour:
       type: 3}
   - key: moon
     prefab: {fileID: 995716104177521626, guid: 6f60e2696aee62446be9cca2adffdad2, type: 3}
+  includePlanetaryRingsAndMoons: 1
+  orientPlanetarySystemsFromRealPoles: 1
 --- !u!114 &1579284919
 MonoBehaviour:
   m_ObjectHideFlags: 0

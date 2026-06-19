@@ -160,6 +160,44 @@ namespace AZ.Atlas
             return true;
         }
 
+        public static bool TryGetPlanetNorthPoleEquatorial(
+            string planetKey,
+            DateTime utc,
+            out EquatorialCoordinate coordinate)
+        {
+            coordinate = new EquatorialCoordinate();
+            double centuries = (JulianDate(utc) - 2451545.0) / 36525.0;
+
+            switch ((planetKey ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "jupiter":
+                    coordinate = new EquatorialCoordinate(
+                        NormalizeDegrees(268.056595 - 0.006499 * centuries),
+                        64.495303 + 0.002413 * centuries,
+                        1.0);
+                    return true;
+                case "saturn":
+                    coordinate = new EquatorialCoordinate(
+                        NormalizeDegrees(40.589 - 0.036 * centuries),
+                        83.537 - 0.004 * centuries,
+                        1.0);
+                    return true;
+                case "uranus":
+                    coordinate = new EquatorialCoordinate(257.311, -15.175, 1.0);
+                    return true;
+                case "neptune":
+                    double neptuneArgument =
+                        NormalizeDegrees(357.85 + 52.316 * centuries);
+                    coordinate = new EquatorialCoordinate(
+                        NormalizeDegrees(299.36 + 0.70 * SinDeg(neptuneArgument)),
+                        43.46 - 0.51 * CosDeg(neptuneArgument),
+                        1.0);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static Vector3 AltAzToLocalDirection(double azimuthDegrees, double altitudeDegrees)
         {
             double az = Deg2Rad(azimuthDegrees);
