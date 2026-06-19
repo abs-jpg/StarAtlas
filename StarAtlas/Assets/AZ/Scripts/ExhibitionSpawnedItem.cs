@@ -34,10 +34,12 @@ namespace AZ.Exhibition
         private Vector3 rayDragNormal = Vector3.up;
         private float rotationSpeedMultiplier = 1f;
         private float orbitSpeedMultiplier = 1f;
+        private float accumulatedVisualRotationDegrees;
 
         public float RotationSpeedMultiplier => rotationSpeedMultiplier;
         public float OrbitSpeedMultiplier => orbitSpeedMultiplier;
         public float CurrentTemperatureCelsius => CalculateTemperatureCelsius();
+        public float AccumulatedVisualRotationDegrees => accumulatedVisualRotationDegrees;
 
         public void Initialize(
             ExhibitionDock owner,
@@ -306,7 +308,11 @@ namespace AZ.Exhibition
                 return;
             }
 
-            transform.Rotate(Vector3.up, degreesPerSecond * Time.deltaTime, Space.Self);
+            float rotationDelta = degreesPerSecond * Time.deltaTime;
+            transform.Rotate(Vector3.up, rotationDelta, Space.Self);
+            accumulatedVisualRotationDegrees = Mathf.Repeat(
+                accumulatedVisualRotationDegrees + rotationDelta,
+                360f);
         }
 
         private float CalculateTemperatureCelsius()
@@ -372,6 +378,11 @@ namespace AZ.Exhibition
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
                 if (renderer == null || !renderer.enabled || renderer is LineRenderer)
+                {
+                    continue;
+                }
+
+                if (renderer.GetComponentInParent<ExhibitionPlanetarySystem>() != null)
                 {
                     continue;
                 }

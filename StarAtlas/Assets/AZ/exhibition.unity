@@ -2717,6 +2717,8 @@ MonoBehaviour:
   faceMainCamera: 1
   lockToInteractionPlane: 1
   interactionPlaneOverride: {fileID: 0}
+  avoidPlanetaryRings: 1
+  ringAvoidancePadding: 0.04
   keepInsideCanvasBounds: 1
   flipHorizontalSideAtCanvasEdge: 1
   snapOnHorizontalSideFlip: 1

@@ -39,6 +39,8 @@ namespace AZ.Exhibition
         [SerializeField] private bool faceMainCamera = true;
         [SerializeField] private bool lockToInteractionPlane = true;
         [SerializeField] private Transform interactionPlaneOverride;
+        [SerializeField] private bool avoidPlanetaryRings = true;
+        [SerializeField, Min(0f)] private float ringAvoidancePadding = 0.04f;
 
         [Header("Canvas Bounds")]
         [SerializeField] private bool keepInsideCanvasBounds = true;
@@ -57,6 +59,7 @@ namespace AZ.Exhibition
         private bool registeredCanvasAddedByPanel;
         private int currentHorizontalSide;
         private readonly Vector3[] panelWorldCorners = new Vector3[4];
+        private Graphic[] panelGraphics;
 
         private void Reset()
         {
@@ -71,6 +74,7 @@ namespace AZ.Exhibition
             ApplyFontOverride();
             PrepareSliderRayAdapters();
             HookSliderEvents();
+            CachePanelGraphics();
 
             if (hideOnAwake)
             {
@@ -86,6 +90,7 @@ namespace AZ.Exhibition
             ApplyFontOverride();
             PrepareSliderRayAdapters();
             HookSliderEvents();
+            CachePanelGraphics();
 
             if (hideOnAwake && !hasShown)
             {
@@ -169,7 +174,6 @@ namespace AZ.Exhibition
             target = follow;
             controlledItem = follow != null ? follow.GetComponent<ExhibitionSpawnedItem>() : null;
             currentHorizontalSide = 0;
-            SnapToTarget();
             SetText(titleText, entry.Title);
             SetText(summaryText, entry.summary);
             SetText(diameterText, FormatStat("\u76f4\u5f84", entry.diameter));
@@ -178,6 +182,9 @@ namespace AZ.Exhibition
             SetText(rotationPeriodText, FormatStat("\u81ea\u8f6c\u5468\u671f", entry.rotationPeriod));
             RefreshSimulationControls();
             RefreshSimulationLabels();
+            CachePanelGraphics();
+            Canvas.ForceUpdateCanvases();
+            SnapToTarget();
             FadeTo(true);
         }
 
@@ -424,6 +431,20 @@ namespace AZ.Exhibition
         private Vector3 GetFollowPosition(Vector3 targetPosition, Camera camera, out bool sideChanged)
         {
             sideChanged = false;
+
+            if (TryGetRingSafeFollowPosition(
+                    targetPosition,
+                    camera,
+                    out Vector3 ringSafePosition,
+                    out int ringSafeSide))
+            {
+                sideChanged = currentHorizontalSide != 0 &&
+                              ringSafeSide != 0 &&
+                              ringSafeSide != currentHorizontalSide;
+                currentHorizontalSide = ringSafeSide;
+                return ClampInsideCanvasBounds(ringSafePosition);
+            }
+
             int preferredSide = GetPreferredHorizontalSide();
             Vector3 preferredPosition = ConstrainToInteractionPlane(targetPosition + GetFollowOffset(camera, preferredSide));
             int selectedSide = preferredSide;
@@ -443,6 +464,320 @@ namespace AZ.Exhibition
             sideChanged = currentHorizontalSide != 0 && selectedSide != currentHorizontalSide;
             currentHorizontalSide = selectedSide;
             return ClampInsideCanvasBounds(selectedPosition);
+        }
+
+        private bool TryGetRingSafeFollowPosition(
+            Vector3 targetPosition,
+            Camera camera,
+            out Vector3 selectedPosition,
+            out int selectedSide)
+        {
+            selectedPosition = targetPosition;
+            selectedSide = 0;
+
+            if (!avoidPlanetaryRings || target == null)
+            {
+                return false;
+            }
+
+            ExhibitionPlanetarySystem system =
+                target.GetComponentInChildren<ExhibitionPlanetarySystem>(true);
+            if (system == null || !system.HasVisibleRings)
+            {
+                return false;
+            }
+
+            Transform plane = GetInteractionPlaneTransform();
+            Vector3 horizontalAxis = camera != null
+                ? camera.transform.right
+                : plane != null ? plane.right : Vector3.right;
+            Vector3 verticalAxis = camera != null
+                ? camera.transform.up
+                : plane != null ? plane.up : Vector3.up;
+
+            if (!TryGetTargetProjectedExtents(
+                    targetPosition,
+                    horizontalAxis,
+                    verticalAxis,
+                    system,
+                    out float occupiedHorizontalExtent,
+                    out float occupiedVerticalExtent))
+            {
+                return false;
+            }
+
+            GetPanelProjectedHalfExtents(
+                horizontalAxis,
+                verticalAxis,
+                out float panelHorizontalExtent,
+                out float panelVerticalExtent);
+
+            float horizontalDistance =
+                occupiedHorizontalExtent + panelHorizontalExtent + ringAvoidancePadding;
+            int preferredSide = GetPreferredHorizontalSide();
+            Vector3 depthOffset = GetWorldOffset(camera, new Vector3(0f, 0f, worldOffset.z));
+            Vector3 verticalBias = verticalAxis * worldOffset.y;
+
+            selectedPosition = ClampInsideCanvasBounds(
+                ConstrainToInteractionPlane(
+                    targetPosition +
+                    horizontalAxis * horizontalDistance * preferredSide +
+                    verticalBias +
+                    depthOffset));
+            selectedSide = preferredSide;
+            float bestScore = GetVisualOverlapScore(
+                selectedPosition,
+                targetPosition,
+                horizontalAxis,
+                verticalAxis,
+                occupiedHorizontalExtent,
+                occupiedVerticalExtent,
+                panelHorizontalExtent,
+                panelVerticalExtent);
+
+            ConsiderHorizontalSafeCandidate(
+                ClampInsideCanvasBounds(
+                    ConstrainToInteractionPlane(
+                        targetPosition -
+                        horizontalAxis * horizontalDistance * preferredSide +
+                        verticalBias +
+                        depthOffset)),
+                -preferredSide,
+                targetPosition,
+                horizontalAxis,
+                verticalAxis,
+                occupiedHorizontalExtent,
+                occupiedVerticalExtent,
+                panelHorizontalExtent,
+                panelVerticalExtent,
+                ref selectedPosition,
+                ref selectedSide,
+                ref bestScore);
+            return true;
+        }
+
+        private void ConsiderHorizontalSafeCandidate(
+            Vector3 candidate,
+            int candidateSide,
+            Vector3 targetPosition,
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            float occupiedHorizontalExtent,
+            float occupiedVerticalExtent,
+            float panelHorizontalExtent,
+            float panelVerticalExtent,
+            ref Vector3 selectedPosition,
+            ref int selectedSide,
+            ref float bestScore)
+        {
+            float score = GetVisualOverlapScore(
+                candidate,
+                targetPosition,
+                horizontalAxis,
+                verticalAxis,
+                occupiedHorizontalExtent,
+                occupiedVerticalExtent,
+                panelHorizontalExtent,
+                panelVerticalExtent);
+
+            if (Mathf.Approximately(score, bestScore) &&
+                candidateSide != GetPreferredHorizontalSide())
+            {
+                score += 0.0001f;
+            }
+
+            if (score >= bestScore)
+            {
+                return;
+            }
+
+            selectedPosition = candidate;
+            selectedSide = candidateSide;
+            bestScore = score;
+        }
+
+        private float GetVisualOverlapScore(
+            Vector3 panelPosition,
+            Vector3 targetPosition,
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            float occupiedHorizontalExtent,
+            float occupiedVerticalExtent,
+            float panelHorizontalExtent,
+            float panelVerticalExtent)
+        {
+            Vector3 separation = panelPosition - targetPosition;
+            float horizontalSeparation = Mathf.Abs(Vector3.Dot(separation, horizontalAxis.normalized));
+            float verticalSeparation = Mathf.Abs(Vector3.Dot(separation, verticalAxis.normalized));
+            float horizontalOverlap =
+                occupiedHorizontalExtent +
+                panelHorizontalExtent +
+                ringAvoidancePadding -
+                horizontalSeparation;
+            float verticalOverlap =
+                occupiedVerticalExtent +
+                panelVerticalExtent +
+                ringAvoidancePadding -
+                verticalSeparation;
+
+            if (horizontalOverlap <= 0f || verticalOverlap <= 0f)
+            {
+                return 0f;
+            }
+
+            return 1000f + horizontalOverlap + verticalOverlap;
+        }
+
+        private bool TryGetTargetProjectedExtents(
+            Vector3 origin,
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            ExhibitionPlanetarySystem system,
+            out float horizontalExtent,
+            out float verticalExtent)
+        {
+            horizontalExtent = 0f;
+            verticalExtent = 0f;
+            bool found = false;
+            horizontalAxis.Normalize();
+            verticalAxis.Normalize();
+
+            Renderer[] renderers = target.GetComponentsInChildren<Renderer>(true);
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Renderer renderer = renderers[i];
+                if (renderer == null ||
+                    !renderer.enabled ||
+                    renderer is LineRenderer ||
+                    renderer is ParticleSystemRenderer ||
+                    renderer.GetComponentInParent<ExhibitionPlanetarySystem>() != null)
+                {
+                    continue;
+                }
+
+                IncludeProjectedBounds(
+                    renderer.bounds,
+                    origin,
+                    horizontalAxis,
+                    verticalAxis,
+                    ref horizontalExtent,
+                    ref verticalExtent);
+                found = true;
+            }
+
+            if (system.TryGetRingProjectedExtents(
+                    origin,
+                    horizontalAxis,
+                    verticalAxis,
+                    out float ringHorizontalExtent,
+                    out float ringVerticalExtent))
+            {
+                horizontalExtent = Mathf.Max(horizontalExtent, ringHorizontalExtent);
+                verticalExtent = Mathf.Max(verticalExtent, ringVerticalExtent);
+                found = true;
+            }
+
+            return found;
+        }
+
+        private static void IncludeProjectedBounds(
+            Bounds bounds,
+            Vector3 origin,
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            ref float horizontalExtent,
+            ref float verticalExtent)
+        {
+            Vector3 centerOffset = bounds.center - origin;
+            horizontalExtent = Mathf.Max(
+                horizontalExtent,
+                Mathf.Abs(Vector3.Dot(centerOffset, horizontalAxis)) +
+                ProjectBoundsExtent(bounds.extents, horizontalAxis));
+            verticalExtent = Mathf.Max(
+                verticalExtent,
+                Mathf.Abs(Vector3.Dot(centerOffset, verticalAxis)) +
+                ProjectBoundsExtent(bounds.extents, verticalAxis));
+        }
+
+        private static float ProjectBoundsExtent(Vector3 extents, Vector3 axis)
+        {
+            return Mathf.Abs(axis.x) * extents.x +
+                   Mathf.Abs(axis.y) * extents.y +
+                   Mathf.Abs(axis.z) * extents.z;
+        }
+
+        private void GetPanelProjectedHalfExtents(
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            out float horizontalExtent,
+            out float verticalExtent)
+        {
+            horizontalExtent = Mathf.Max(0.01f, Mathf.Abs(worldOffset.x) * 0.25f);
+            verticalExtent = 0.05f;
+
+            Vector3 center = transform.position;
+            horizontalAxis.Normalize();
+            verticalAxis.Normalize();
+
+            bool foundVisibleGraphic = false;
+            if (panelGraphics != null)
+            {
+                for (int graphicIndex = 0; graphicIndex < panelGraphics.Length; graphicIndex++)
+                {
+                    Graphic graphic = panelGraphics[graphicIndex];
+                    if (graphic == null ||
+                        !graphic.enabled ||
+                        !graphic.gameObject.activeInHierarchy ||
+                        graphic.rectTransform == null)
+                    {
+                        continue;
+                    }
+
+                    graphic.rectTransform.GetWorldCorners(panelWorldCorners);
+                    IncludePanelProjectedCorners(
+                        center,
+                        horizontalAxis,
+                        verticalAxis,
+                        ref horizontalExtent,
+                        ref verticalExtent);
+                    foundVisibleGraphic = true;
+                }
+            }
+
+            if (!foundVisibleGraphic && transform is RectTransform panelRect)
+            {
+                panelRect.GetWorldCorners(panelWorldCorners);
+                IncludePanelProjectedCorners(
+                    center,
+                    horizontalAxis,
+                    verticalAxis,
+                    ref horizontalExtent,
+                    ref verticalExtent);
+            }
+        }
+
+        private void IncludePanelProjectedCorners(
+            Vector3 center,
+            Vector3 horizontalAxis,
+            Vector3 verticalAxis,
+            ref float horizontalExtent,
+            ref float verticalExtent)
+        {
+            for (int i = 0; i < panelWorldCorners.Length; i++)
+            {
+                Vector3 offset = panelWorldCorners[i] - center;
+                horizontalExtent = Mathf.Max(
+                    horizontalExtent,
+                    Mathf.Abs(Vector3.Dot(offset, horizontalAxis)));
+                verticalExtent = Mathf.Max(
+                    verticalExtent,
+                    Mathf.Abs(Vector3.Dot(offset, verticalAxis)));
+            }
+        }
+
+        private void CachePanelGraphics()
+        {
+            panelGraphics = GetComponentsInChildren<Graphic>(true);
         }
 
         private int GetPreferredHorizontalSide()
@@ -572,28 +907,42 @@ namespace AZ.Exhibition
 
             Rect paddedRect = GetPaddedBoundsRect(boundsRect.rect);
             Vector3 candidateOffset = desiredPosition - panelRect.position;
-            panelRect.GetWorldCorners(panelWorldCorners);
-
             bool hasCorners = false;
             Vector2 min = Vector2.zero;
             Vector2 max = Vector2.zero;
 
-            for (int i = 0; i < panelWorldCorners.Length; i++)
+            if (panelGraphics != null)
             {
-                Vector3 localCorner = boundsRect.InverseTransformPoint(panelWorldCorners[i] + candidateOffset);
-                Vector2 corner2D = new Vector2(localCorner.x, localCorner.y);
+                for (int graphicIndex = 0; graphicIndex < panelGraphics.Length; graphicIndex++)
+                {
+                    Graphic graphic = panelGraphics[graphicIndex];
+                    if (graphic == null ||
+                        !graphic.enabled ||
+                        !graphic.gameObject.activeInHierarchy ||
+                        graphic.rectTransform == null)
+                    {
+                        continue;
+                    }
 
-                if (!hasCorners)
-                {
-                    min = corner2D;
-                    max = corner2D;
-                    hasCorners = true;
+                    graphic.rectTransform.GetWorldCorners(panelWorldCorners);
+                    IncludeCanvasLocalCorners(
+                        boundsRect,
+                        candidateOffset,
+                        ref min,
+                        ref max,
+                        ref hasCorners);
                 }
-                else
-                {
-                    min = Vector2.Min(min, corner2D);
-                    max = Vector2.Max(max, corner2D);
-                }
+            }
+
+            if (!hasCorners)
+            {
+                panelRect.GetWorldCorners(panelWorldCorners);
+                IncludeCanvasLocalCorners(
+                    boundsRect,
+                    candidateOffset,
+                    ref min,
+                    ref max,
+                    ref hasCorners);
             }
 
             if (!hasCorners)
@@ -634,6 +983,33 @@ namespace AZ.Exhibition
             }
 
             return true;
+        }
+
+        private void IncludeCanvasLocalCorners(
+            RectTransform boundsRect,
+            Vector3 candidateOffset,
+            ref Vector2 min,
+            ref Vector2 max,
+            ref bool hasCorners)
+        {
+            for (int i = 0; i < panelWorldCorners.Length; i++)
+            {
+                Vector3 localCorner =
+                    boundsRect.InverseTransformPoint(panelWorldCorners[i] + candidateOffset);
+                Vector2 corner2D = new Vector2(localCorner.x, localCorner.y);
+
+                if (!hasCorners)
+                {
+                    min = corner2D;
+                    max = corner2D;
+                    hasCorners = true;
+                }
+                else
+                {
+                    min = Vector2.Min(min, corner2D);
+                    max = Vector2.Max(max, corner2D);
+                }
+            }
         }
 
         private RectTransform GetCanvasBoundsRect()

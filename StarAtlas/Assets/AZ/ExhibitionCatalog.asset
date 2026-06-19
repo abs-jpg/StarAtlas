@@ -21,6 +21,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 0
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u592A\u9633\u662F\u592A\u9633\u7CFB\u7684\u4E2D\u5FC3\u6052\u661F\uFF0C\u7EA6\u5360\u5176\u603B\u8D28\u91CF\u7684\u5927\u90E8\u5206\u3002\u5B83\u901A\u8FC7\u6838\u805A\u53D8\u91CA\u653E\u5149\u548C\u70ED\uFF0C\u4E3A\u5730\u7403\u548C\u5176\u4ED6\u884C\u661F\u63D0\u4F9B\u80FD\u91CF\uFF0C\u540C\u65F6\u4E5F\u662F\u592A\u9633\u7CFB\u4E2D\u5404\u884C\u661F\u8F68\u9053\u7684\u5F15\u529B\u4E2D\u5FC3\u3002"
     diameter: 1,392,700 km
     mass: 1.989 x 10^30 kg
@@ -39,6 +41,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 0
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u6C34\u661F\u662F\u8DDD\u79BB\u592A\u9633\u6700\u8FD1\u7684\u884C\u661F\uFF0C\u4E5F\u662F\u592A\u9633\u7CFB\u4E2D\u6700\u5C0F\u7684\u884C\u661F\u3002\u5B83\u51E0\u4E4E\u6CA1\u6709\u5927\u6C14\u5C42\uFF0C\u663C\u591C\u6E29\u5DEE\u6781\u5927\uFF0C\u8868\u9762\u5E03\u6EE1\u649E\u51FB\u5751\u3002"
     diameter: 4,879 km
     mass: 3.30 x 10^23 kg
@@ -57,6 +61,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 0
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u91D1\u661F\u5927\u5C0F\u548C\u5730\u7403\u76F8\u8FD1\uFF0C\u4F46\u62E5\u6709\u6781\u5176\u6D53\u539A\u7684\u4E8C\u6C27\u5316\u78B3\u5927\u6C14\u548C\u5F3A\u70C8\u7684\u6E29\u5BA4\u6548\u5E94\uFF0C\u662F\u592A\u9633\u7CFB\u4E2D\u8868\u9762\u6E29\u5EA6\u6700\u9AD8\u7684\u884C\u661F\u3002\u5B83\u7684\u81EA\u8F6C\u65B9\u5411\u4E0E\u5927\u591A\u6570\u884C\u661F\u76F8\u53CD\u3002"
     diameter: 12,104 km
     mass: 4.87 x 10^24 kg
@@ -75,6 +81,9 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 1
+    primaryMoonPrefab: {fileID: 995716104177521626, guid: 6f60e2696aee62446be9cca2adffdad2,
+      type: 3}
     summary: "\u5730\u7403\u662F\u76EE\u524D\u5DF2\u77E5\u552F\u4E00\u62E5\u6709\u7A33\u5B9A\u6DB2\u6001\u6C34\u548C\u751F\u547D\u7684\u884C\u661F\u3002\u5B83\u62E5\u6709\u9002\u5B9C\u7684\u5927\u6C14\u3001\u78C1\u573A\u548C\u6E29\u5EA6\u73AF\u5883\uFF0C\u662F\u592A\u9633\u7CFB\u4E2D\u751F\u547D\u6D3B\u52A8\u6700\u4E30\u5BCC\u7684\u661F\u7403\u3002"
     diameter: 12,742 km
     mass: 5.97 x 10^24 kg
@@ -93,6 +102,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 2
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u706B\u661F\u88AB\u79F0\u4E3A\u7EA2\u8272\u661F\u7403\uFF0C\u8868\u9762\u5BCC\u542B\u6C27\u5316\u94C1\uFF0C\u62E5\u6709\u5DE8\u5927\u7684\u706B\u5C71\u3001\u5CE1\u8C37\u548C\u6781\u51A0\u3002\u5B83\u66FE\u7ECF\u53EF\u80FD\u5B58\u5728\u6DB2\u6001\u6C34\uFF0C\u662F\u4EBA\u7C7B\u91CD\u70B9\u63A2\u7D22\u7684\u884C\u661F\u4E4B\u4E00\u3002"
     diameter: 6,779 km
     mass: 6.42 x 10^23 kg
@@ -111,6 +122,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 3
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u6728\u661F\u662F\u592A\u9633\u7CFB\u4E2D\u6700\u5927\u7684\u884C\u661F\uFF0C\u4E3B\u8981\u7531\u6C22\u548C\u6C26\u7EC4\u6210\u3002\u5B83\u62E5\u6709\u5F3A\u5927\u7684\u78C1\u573A\u3001\u4F17\u591A\u536B\u661F\uFF0C\u4EE5\u53CA\u8457\u540D\u7684\u5927\u7EA2\u6591\u98CE\u66B4\u3002"
     diameter: 139,820 km
     mass: 1.90 x 10^27 kg
@@ -129,6 +142,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 4
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u571F\u661F\u4EE5\u58EE\u89C2\u7684\u884C\u661F\u73AF\u95FB\u540D\uFF0C\u4E3B\u8981\u7531\u51B0\u7C92\u3001\u5CA9\u77F3\u788E\u7247\u548C\u5C18\u57C3\u7EC4\u6210\u3002\u5B83\u662F\u4E00\u9897\u6C14\u6001\u5DE8\u884C\u661F\uFF0C\u5BC6\u5EA6\u5F88\u4F4E\uFF0C\u62E5\u6709\u5927\u91CF\u536B\u661F\u3002"
     diameter: 116,460 km
     mass: 5.68 x 10^26 kg
@@ -147,6 +162,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 5
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u5929\u738B\u661F\u662F\u4E00\u9897\u51B0\u5DE8\u661F\uFF0C\u542B\u6709\u5927\u91CF\u6C34\u3001\u6C28\u548C\u7532\u70F7\u7B49\u51B0\u8D28\u7269\u8D28\u3002\u5B83\u7684\u81EA\u8F6C\u8F74\u51E0\u4E4E\u6A2A\u8EBA\u5728\u8F68\u9053\u5E73\u9762\u4E0A\uFF0C\u56E0\u6B64\u5B63\u8282\u53D8\u5316\u975E\u5E38\u7279\u6B8A\u3002"
     diameter: 50,724 km
     mass: 8.68 x 10^25 kg
@@ -165,6 +182,8 @@ MonoBehaviour:
     previewEulerAngles: {x: 0, y: 0, z: 0}
     spawnedScale: {x: 0.25, y: 0.25, z: 0.25}
     spawnedEulerAngles: {x: 0, y: 0, z: 0}
+    planetSystem: 6
+    primaryMoonPrefab: {fileID: 0}
     summary: "\u6D77\u738B\u661F\u662F\u8DDD\u79BB\u592A\u9633\u6700\u8FDC\u7684\u516B\u5927\u884C\u661F\uFF0C\u5448\u6DF1\u84DD\u8272\uFF0C\u62E5\u6709\u592A\u9633\u7CFB\u4E2D\u6700\u5F3A\u70C8\u7684\u98CE\u66B4\u4E4B\u4E00\u3002\u5B83\u662F\u4E00\u9897\u5BD2\u51B7\u7684\u51B0\u5DE8\u661F\uFF0C\u4E3B\u8981\u7531\u6C22\u3001\u6C26\u548C\u51B0\u8D28\u7269\u8D28\u7EC4\u6210\u3002"
     diameter: 49,244 km
     mass: 1.02 x 10^26 kg

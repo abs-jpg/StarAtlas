@@ -4,6 +4,17 @@ using UnityEngine;
 
 namespace AZ.Exhibition
 {
+    public enum ExhibitionPlanetSystem
+    {
+        None,
+        Earth,
+        Mars,
+        Jupiter,
+        Saturn,
+        Uranus,
+        Neptune
+    }
+
     [CreateAssetMenu(fileName = "ExhibitionCatalog", menuName = "AZ/Exhibition Catalog")]
     public sealed class ExhibitionCatalog : ScriptableObject
     {
@@ -27,6 +38,11 @@ namespace AZ.Exhibition
         [Header("Spawned Object")]
         public Vector3 spawnedScale = Vector3.one;
         public Vector3 spawnedEulerAngles;
+
+        [Header("Natural Satellites And Rings")]
+        public ExhibitionPlanetSystem planetSystem;
+        [Tooltip("Used by the first major moon. Earth can reference the moon prefab here.")]
+        public GameObject primaryMoonPrefab;
 
         [Header("Science Panel")]
         [TextArea(3, 8)]

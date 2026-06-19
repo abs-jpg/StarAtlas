@@ -402,6 +402,7 @@ namespace AZ.Exhibition
                 spawnScaleDuration,
                 showInfoWhenSpawned);
             temperatureColor.Initialize(spawnedItem);
+            ExhibitionPlanetarySystem.Attach(spawned, entry, true, spawnedItem);
             return spawnedItem;
         }
 
