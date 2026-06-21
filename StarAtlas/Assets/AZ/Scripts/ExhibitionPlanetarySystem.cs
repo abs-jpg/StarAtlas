@@ -32,6 +32,7 @@ namespace AZ.Exhibition
         private double outerRingRadiusKm;
         private bool useExternalAxisOrientation;
         private bool hasExternalAxisOrientation;
+        private bool atlasRingVisibilityApplied;
         private Vector3 externalAxisWorld = Vector3.up;
         private Vector3 externalObserverWorld;
 
@@ -94,6 +95,7 @@ namespace AZ.Exhibition
                 if (existingSystem != null)
                 {
                     existingSystem.gameObject.SetActive(true);
+                    existingSystem.ApplyAtlasRingVisibility();
                     return existingSystem;
                 }
 
@@ -124,6 +126,7 @@ namespace AZ.Exhibition
                 rootObject.AddComponent<ExhibitionPlanetarySystem>();
             system.useExternalAxisOrientation = true;
             system.Initialize(data, null, radiusLocal, true, null);
+            system.ApplyAtlasRingVisibility();
             return system;
         }
 
@@ -298,6 +301,35 @@ namespace AZ.Exhibition
                 ringRenderers.Add(renderer);
                 generatedMeshes.Add(mesh);
                 generatedMaterials.Add(material);
+            }
+        }
+
+        private void ApplyAtlasRingVisibility()
+        {
+            if (atlasRingVisibilityApplied)
+            {
+                return;
+            }
+
+            atlasRingVisibilityApplied = true;
+            for (int i = 0; i < ringRenderers.Count; i++)
+            {
+                Renderer renderer = ringRenderers[i];
+                if (renderer == null || renderer.sharedMaterial == null)
+                {
+                    continue;
+                }
+
+                Material material = renderer.sharedMaterial;
+                if (!material.HasProperty("_Color"))
+                {
+                    continue;
+                }
+
+                Color color = material.GetColor("_Color");
+                color.a = Mathf.Lerp(color.a, 1f, 0.18f);
+                material.SetColor("_Color", color);
+                material.color = color;
             }
         }
 

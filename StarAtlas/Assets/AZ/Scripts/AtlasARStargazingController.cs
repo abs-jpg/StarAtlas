@@ -111,7 +111,15 @@ namespace AZ.Atlas
         [SerializeField] private bool includePlanetaryRingsAndMoons = true;
         [SerializeField] private bool orientPlanetarySystemsFromRealPoles = true;
 
+        [Header("Selection Interaction")]
+        [SerializeField] private bool enableFocusInteraction = true;
+        [SerializeField] private ExhibitionCatalog focusInfoCatalog;
+        [SerializeField, Min(0.5f)] private float infoPanelDistance = 1.5f;
+        [SerializeField, Min(0f)] private float infoPanelHorizontalOffset = 0.48f;
+
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
+        private readonly Dictionary<string, Vector3> planetLocalPositions =
+            new Dictionary<string, Vector3>();
         private readonly Dictionary<string, TextMeshPro> labelInstances = new Dictionary<string, TextMeshPro>();
         private readonly Dictionary<string, TextMeshPro> constellationLabelInstances =
             new Dictionary<string, TextMeshPro>();
@@ -134,13 +142,16 @@ namespace AZ.Atlas
         private float lastRenderedScaleSignature = -1f;
         private Coroutine apiRoutine;
         private DateTime latestRenderUtc = DateTime.UtcNow;
+        private AtlasFocusController focusController;
 
         private void Awake()
         {
+            EnsureSystemTransform();
             ResolveReferences();
             EnsureSkyRoot();
             EnsureStarParticles();
             EnsureGuideLineRoots();
+            EnsureFocusController();
         }
 
         private void OnEnable()
@@ -186,6 +197,11 @@ namespace AZ.Atlas
             {
                 RefreshSkyNow();
             }
+        }
+
+        private void LateUpdate()
+        {
+            LockPlanetPositions();
         }
 
         [ContextMenu("Refresh Atlas Sky Now")]
@@ -277,6 +293,20 @@ namespace AZ.Atlas
             {
                 skyApiClient = GetComponent<AtlasSkyApiClient>();
             }
+        }
+
+        private void EnsureSystemTransform()
+        {
+            if ((transform.localScale - Vector3.one).sqrMagnitude <= 0.000001f)
+            {
+                return;
+            }
+
+            Debug.LogWarning(
+                "AtlasSystem must keep a (1, 1, 1) scale. " +
+                "Use Sky Distance And Size Multiplier to resize the sky.",
+                this);
+            transform.localScale = Vector3.one;
         }
 
         private void EnsureSkyRoot()
@@ -430,6 +460,7 @@ namespace AZ.Atlas
             RenderPlanets();
             RenderLabels();
             RenderConstellationLabels();
+            RenderConstellationInteractionTargets();
             lastRenderedScaleSignature = GetScaleSignature();
         }
 
@@ -1001,13 +1032,18 @@ namespace AZ.Atlas
                 Vector3 direction = AtlasAstronomy.AltAzToLocalDirection(
                     item.azimuthDegrees,
                     item.altitudeDegrees);
+                Vector3 targetLocalPosition =
+                    direction * GetScaledPlanetSphereRadius();
                 instance.transform.SetParent(skyRoot, false);
-                instance.transform.localPosition = direction * GetScaledPlanetSphereRadius();
+                instance.transform.localPosition = targetLocalPosition;
                 instance.transform.localScale =
                     Vector3.one * GetScaledSolarSystemBodyScale(item, key);
+                planetLocalPositions[key] = targetLocalPosition;
 
                 FacePlanetInstance(instance);
                 UpdatePlanetarySystem(instance, key);
+
+                focusController?.RegisterSolarSystemBody(key, item.displayName, instance);
             }
 
             foreach (KeyValuePair<string, GameObject> pair in planetInstances)
@@ -1016,6 +1052,33 @@ namespace AZ.Atlas
                 {
                     pair.Value.SetActive(visibleKeys.Contains(pair.Key));
                 }
+            }
+        }
+
+        private void LockPlanetPositions()
+        {
+            if (skyRoot == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<string, GameObject> pair in planetInstances)
+            {
+                GameObject instance = pair.Value;
+                if (instance == null ||
+                    !instance.activeInHierarchy ||
+                    !planetLocalPositions.TryGetValue(pair.Key, out Vector3 localPosition))
+                {
+                    continue;
+                }
+
+                Transform instanceTransform = instance.transform;
+                if (instanceTransform.parent != skyRoot)
+                {
+                    instanceTransform.SetParent(skyRoot, false);
+                }
+
+                instanceTransform.localPosition = localPosition;
             }
         }
 
@@ -1097,6 +1160,71 @@ namespace AZ.Atlas
                 {
                     pair.Value.gameObject.SetActive(visibleKeys.Contains(pair.Key));
                 }
+            }
+        }
+
+        private void RenderConstellationInteractionTargets()
+        {
+            if (focusController == null || skyRoot == null || !includeFeaturedAsterisms)
+            {
+                return;
+            }
+
+            for (int definitionIndex = 0;
+                 definitionIndex < ConstellationDefinitions.Length;
+                 definitionIndex++)
+            {
+                ConstellationDefinition definition = ConstellationDefinitions[definitionIndex];
+                List<Vector3> positions = new List<Vector3>();
+                List<string> availableStarNames = new List<string>();
+                List<TMP_Text> availableStarLabels = new List<TMP_Text>();
+
+                for (int starIndex = 0; starIndex < definition.starNames.Length; starIndex++)
+                {
+                    string starName = definition.starNames[starIndex];
+                    if (!TryGetStarRenderObject(starName, out SkyRenderObject star))
+                    {
+                        continue;
+                    }
+
+                    Vector3 position = AtlasAstronomy.AltAzToLocalDirection(
+                        star.azimuthDegrees,
+                        star.altitudeDegrees) * GetScaledStarSphereRadius();
+                    positions.Add(position);
+                    availableStarNames.Add(starName);
+
+                    string labelKey = GetStableSkyObjectKey(star);
+                    if (labelInstances.TryGetValue(labelKey, out TextMeshPro starLabel) &&
+                        starLabel != null)
+                    {
+                        availableStarLabels.Add(starLabel);
+                    }
+                }
+
+                if (positions.Count < 2 ||
+                    !TryGetConstellationLabelPosition(definition, out Vector3 labelPosition))
+                {
+                    continue;
+                }
+
+                string[] translatedNames = new string[availableStarNames.Count];
+                for (int i = 0; i < availableStarNames.Count; i++)
+                {
+                    translatedNames[i] = GetChineseStarDisplayName(availableStarNames[i]);
+                }
+
+                constellationLabelInstances.TryGetValue(
+                    definition.key,
+                    out TextMeshPro constellationLabel);
+                focusController.RegisterConstellation(
+                    definition.key,
+                    definition.displayName,
+                    string.Join("\u3001", translatedNames),
+                    skyRoot,
+                    positions.ToArray(),
+                    labelPosition,
+                    availableStarLabels.ToArray(),
+                    constellationLabel);
             }
         }
 
@@ -1488,6 +1616,22 @@ namespace AZ.Atlas
 
             if (disableImportedOrbitMotion)
             {
+                foreach (OrbitMotion orbitMotion in root.GetComponentsInChildren<OrbitMotion>(true))
+                {
+                    if (orbitMotion == null)
+                    {
+                        continue;
+                    }
+
+                    orbitMotion.isActive = false;
+                    if (orbitMotion.solarObject != null)
+                    {
+                        orbitMotion.solarObject.isMoving = false;
+                    }
+
+                    orbitMotion.enabled = false;
+                }
+
                 foreach (MonoBehaviour behaviour in root.GetComponentsInChildren<MonoBehaviour>(true))
                 {
                     if (behaviour == null)
@@ -1754,6 +1898,31 @@ namespace AZ.Atlas
             {
                 renderer.material = material;
             }
+        }
+
+        private void EnsureFocusController()
+        {
+            if (!enableFocusInteraction)
+            {
+                return;
+            }
+
+            if (focusController == null)
+            {
+                focusController = GetComponent<AtlasFocusController>();
+            }
+
+            if (focusController == null)
+            {
+                focusController = gameObject.AddComponent<AtlasFocusController>();
+            }
+
+            focusController.Initialize(
+                observerCamera,
+                focusInfoCatalog,
+                labelFont,
+                infoPanelDistance,
+                infoPanelHorizontalOffset);
         }
 
         private Material GetStarMaterial()
@@ -2026,7 +2195,7 @@ namespace AZ.Atlas
                 case "Alula Borealis": return "\u4e0b\u53f0\u4e00";
                 case "Bharani": return "\u767d\u7f8a\u5ea741";
                 case "Cor Caroli": return "\u5e38\u9648\u4e00";
-                case "Eltanin": return "\u5929\u68d3\u56db";
+                case "Eltanin": return "\u5929\u9f99\u5ea7\u4e3b\u661f";
                 case "Enif": return "\u5371\u5bbf\u4e09";
                 case "Haedus": return "\u5fa1\u592b\u5ea7\u03b7";
                 case "Hamal": return "\u5a04\u5bbf\u4e09";
@@ -2044,10 +2213,11 @@ namespace AZ.Atlas
                 case "Ras Elased Australis": return "\u8f69\u8f95\u4e5d";
                 case "Rasalgethi": return "\u5e1d\u5ea7";
                 case "Rasalhague": return "\u5019";
-                case "Rastaban": return "\u5929\u68d3\u4e09";
+                case "Rastaban": return "\u5929\u9f99\u5ea7\u4eae\u661f";
                 case "Rotanev": return "\u74e0\u74dc\u4e09";
                 case "Sadalbari": return "\u79bb\u5bab\u4e00";
                 case "Sheratan": return "\u5a04\u5bbf\u4e00";
+                case "Mesarthim": return "\u5a04\u5bbf\u4e8c";
                 case "Subra": return "\u8f69\u8f95\u5341\u4e94";
                 case "Talitha": return "\u4e0a\u53f0\u4e00";
                 case "Tania Borealis": return "\u4e2d\u53f0\u4e00";
@@ -2055,6 +2225,38 @@ namespace AZ.Atlas
                 case "Tejat": return "\u4e95\u5bbf\u4e00";
                 case "Tianguan": return "\u5929\u5173";
                 case "Vindemiatrix": return "\u592a\u5fae\u5de6\u57a3\u56db";
+                case "Tarf": return "\u5de8\u87f9\u5ea7\u03b2";
+                case "Asellus Australis": return "\u9b3c\u5bbf\u4e09";
+                case "Acubens": return "\u5de8\u87f9\u5ea7\u03b1";
+                case "Asellus Borealis": return "\u9b3c\u5bbf\u56db";
+                case "Tegmine": return "\u5de8\u87f9\u5ea7\u03b6";
+                case "Porrima": return "\u5ba4\u5973\u5ea7\u03b3";
+                case "Heze": return "\u89d2\u5bbf\u4e8c";
+                case "Zavijava": return "\u5ba4\u5973\u5ea7\u03b2";
+                case "Zaniah": return "\u5ba4\u5973\u5ea7\u03b7";
+                case "Zubeneschamali": return "\u5929\u79e4\u5ea7\u03b2";
+                case "Zubenelgenubi": return "\u5929\u79e4\u5ea7\u03b1";
+                case "Brachium": return "\u5929\u79e4\u5ea7\u03c3";
+                case "Zubenelhakrabi": return "\u5929\u79e4\u5ea7\u03b3";
+                case "Kaus Australis": return "\u4eba\u9a6c\u5ea7\u03b5";
+                case "Nunki": return "\u6597\u5bbf\u56db";
+                case "Ascella": return "\u4eba\u9a6c\u5ea7\u03b6";
+                case "Kaus Media": return "\u4eba\u9a6c\u5ea7\u03b4";
+                case "Kaus Borealis": return "\u4eba\u9a6c\u5ea7\u03bb";
+                case "Alnasl": return "\u4eba\u9a6c\u5ea7\u03b3";
+                case "Deneb Algedi": return "\u6469\u7faf\u5ea7\u03b4";
+                case "Dabih": return "\u6469\u7faf\u5ea7\u03b2";
+                case "Algedi": return "\u6469\u7faf\u5ea7\u03b1";
+                case "Nashira": return "\u6469\u7faf\u5ea7\u03b3";
+                case "Sadalsuud": return "\u5b9d\u74f6\u5ea7\u03b2";
+                case "Sadalmelik": return "\u5b9d\u74f6\u5ea7\u03b1";
+                case "Skat": return "\u5b9d\u74f6\u5ea7\u03b4";
+                case "Albali": return "\u5b9d\u74f6\u5ea7\u03b5";
+                case "Ancha": return "\u5b9d\u74f6\u5ea7\u03b8";
+                case "Alrescha": return "\u53cc\u9c7c\u5ea7\u03b1";
+                case "Fumalsamakah": return "\u53cc\u9c7c\u5ea7\u03b2";
+                case "Torcular": return "\u53cc\u9c7c\u5ea7\u03bf";
+                case "Revati": return "\u53cc\u9c7c\u5ea7\u03b6";
                 default:
                     return ConvertBayerStarNameToChinese(englishName);
             }
@@ -2121,16 +2323,21 @@ namespace AZ.Atlas
             {
                 case "and": return "\u4ed9\u5973\u5ea7";
                 case "ari": return "\u767d\u7f8a\u5ea7";
+                case "aqr": return "\u5b9d\u74f6\u5ea7";
                 case "aur": return "\u5fa1\u592b\u5ea7";
                 case "boo": return "\u7267\u592b\u5ea7";
+                case "cap": return "\u6469\u7faf\u5ea7";
+                case "cnc": return "\u5de8\u87f9\u5ea7";
                 case "cyg": return "\u5929\u9e45\u5ea7";
                 case "gem": return "\u53cc\u5b50\u5ea7";
                 case "her": return "\u6b66\u4ed9\u5ea7";
                 case "leo": return "\u72ee\u5b50\u5ea7";
+                case "lib": return "\u5929\u79e4\u5ea7";
                 case "lyn": return "\u5929\u732b\u5ea7";
                 case "peg": return "\u98de\u9a6c\u5ea7";
                 case "per": return "\u82f1\u4ed9\u5ea7";
                 case "psc": return "\u53cc\u9c7c\u5ea7";
+                case "sgr": return "\u4eba\u9a6c\u5ea7";
                 case "ser": return "\u5de8\u86c7\u5ea7";
                 case "tri": return "\u4e09\u89d2\u5ea7";
                 case "uma": return "\u5927\u718a\u5ea7";
@@ -2426,7 +2633,45 @@ namespace AZ.Atlas
             new BuiltInStar("Alshain", 298.828304, 6.406763, 3.71f),
             new BuiltInStar("Mirzam", 95.674938, -17.955917, 1.98f),
             new BuiltInStar("Wezen", 107.097858, -26.393199, 1.83f),
-            new BuiltInStar("Aludra", 111.023760, -29.303103, 2.45f)
+            new BuiltInStar("Aludra", 111.023760, -29.303103, 2.45f),
+            new BuiltInStar("Hamal", 31.793325, 23.462423, 2.01f),
+            new BuiltInStar("Sheratan", 28.660020, 20.808035, 2.64f),
+            new BuiltInStar("Mesarthim", 28.382550, 19.293852, 3.88f),
+            new BuiltInStar("Tarf", 124.128840, 9.185545, 3.53f),
+            new BuiltInStar("Asellus Australis", 131.171250, 18.154309, 3.94f),
+            new BuiltInStar("Acubens", 134.621760, 11.857701, 4.26f),
+            new BuiltInStar("Asellus Borealis", 130.821465, 21.468501, 4.66f),
+            new BuiltInStar("Tegmine", 123.053025, 17.647771, 4.67f),
+            new BuiltInStar("Spica", 201.298245, -11.161322, 0.98f),
+            new BuiltInStar("Porrima", 190.415175, -1.449375, 2.74f),
+            new BuiltInStar("Vindemiatrix", 195.544170, 10.959150, 2.85f),
+            new BuiltInStar("Heze", 203.673300, -0.595820, 3.38f),
+            new BuiltInStar("Zavijava", 177.673830, 1.764718, 3.59f),
+            new BuiltInStar("Zaniah", 184.976490, -0.666803, 3.89f),
+            new BuiltInStar("Zubeneschamali", 229.251735, -9.382917, 2.61f),
+            new BuiltInStar("Zubenelgenubi", 222.719655, -16.041778, 2.75f),
+            new BuiltInStar("Brachium", 226.017585, -25.281965, 3.25f),
+            new BuiltInStar("Zubenelhakrabi", 233.881575, -14.789537, 3.91f),
+            new BuiltInStar("Kaus Australis", 276.043020, -34.384616, 1.79f),
+            new BuiltInStar("Nunki", 283.816350, -26.296722, 2.05f),
+            new BuiltInStar("Ascella", 285.652980, -29.880105, 2.60f),
+            new BuiltInStar("Kaus Media", 275.248500, -29.828103, 2.72f),
+            new BuiltInStar("Kaus Borealis", 276.992685, -25.421700, 2.82f),
+            new BuiltInStar("Alnasl", 271.452045, -30.424091, 2.98f),
+            new BuiltInStar("Deneb Algedi", 326.760165, -16.127286, 2.85f),
+            new BuiltInStar("Dabih", 305.252805, -14.781367, 3.05f),
+            new BuiltInStar("Algedi", 304.513560, -12.544852, 3.58f),
+            new BuiltInStar("Nashira", 325.022715, -16.662308, 3.69f),
+            new BuiltInStar("Sadalsuud", 322.889730, -5.571172, 2.90f),
+            new BuiltInStar("Sadalmelik", 331.445985, -0.319851, 2.95f),
+            new BuiltInStar("Skat", 343.662555, -15.820820, 3.27f),
+            new BuiltInStar("Albali", 311.918970, -9.495776, 3.78f),
+            new BuiltInStar("Ancha", 334.208475, -7.783290, 4.17f),
+            new BuiltInStar("Alpherg", 22.870875, 15.345823, 3.62f),
+            new BuiltInStar("Alrescha", 30.511755, 2.763759, 3.82f),
+            new BuiltInStar("Torcular", 26.348460, 9.157736, 4.26f),
+            new BuiltInStar("Fumalsamakah", 345.969225, 3.820045, 4.48f),
+            new BuiltInStar("Revati", 18.432855, 7.575354, 5.21f)
         };
 
         private static readonly ConstellationSegment[] ConstellationSegments =
@@ -2491,7 +2736,42 @@ namespace AZ.Atlas
             new ConstellationSegment("Mirzam", "Sirius"),
             new ConstellationSegment("Sirius", "Adhara"),
             new ConstellationSegment("Adhara", "Wezen"),
-            new ConstellationSegment("Wezen", "Aludra")
+            new ConstellationSegment("Wezen", "Aludra"),
+            new ConstellationSegment("Mesarthim", "Sheratan"),
+            new ConstellationSegment("Sheratan", "Hamal"),
+            new ConstellationSegment("Tegmine", "Asellus Borealis"),
+            new ConstellationSegment("Asellus Borealis", "Asellus Australis"),
+            new ConstellationSegment("Asellus Australis", "Acubens"),
+            new ConstellationSegment("Asellus Australis", "Tarf"),
+            new ConstellationSegment("Zavijava", "Porrima"),
+            new ConstellationSegment("Porrima", "Vindemiatrix"),
+            new ConstellationSegment("Porrima", "Zaniah"),
+            new ConstellationSegment("Porrima", "Spica"),
+            new ConstellationSegment("Spica", "Heze"),
+            new ConstellationSegment("Zubenelgenubi", "Zubeneschamali"),
+            new ConstellationSegment("Zubeneschamali", "Zubenelhakrabi"),
+            new ConstellationSegment("Zubenelhakrabi", "Brachium"),
+            new ConstellationSegment("Brachium", "Zubenelgenubi"),
+            new ConstellationSegment("Alnasl", "Kaus Media"),
+            new ConstellationSegment("Kaus Borealis", "Kaus Media"),
+            new ConstellationSegment("Kaus Media", "Kaus Australis"),
+            new ConstellationSegment("Kaus Borealis", "Nunki"),
+            new ConstellationSegment("Nunki", "Ascella"),
+            new ConstellationSegment("Ascella", "Kaus Australis"),
+            new ConstellationSegment("Nunki", "Kaus Media"),
+            new ConstellationSegment("Algedi", "Dabih"),
+            new ConstellationSegment("Dabih", "Nashira"),
+            new ConstellationSegment("Nashira", "Deneb Algedi"),
+            new ConstellationSegment("Deneb Algedi", "Algedi"),
+            new ConstellationSegment("Albali", "Sadalsuud"),
+            new ConstellationSegment("Sadalsuud", "Sadalmelik"),
+            new ConstellationSegment("Sadalmelik", "Ancha"),
+            new ConstellationSegment("Ancha", "Skat"),
+            new ConstellationSegment("Sadalsuud", "Ancha"),
+            new ConstellationSegment("Fumalsamakah", "Revati"),
+            new ConstellationSegment("Revati", "Torcular"),
+            new ConstellationSegment("Torcular", "Alpherg"),
+            new ConstellationSegment("Alpherg", "Alrescha")
         };
 
         private static readonly ConstellationDefinition[] ConstellationDefinitions =
@@ -2543,7 +2823,39 @@ namespace AZ.Atlas
             new ConstellationDefinition(
                 "canis-major",
                 "\u5927\u72ac\u5ea7",
-                "Mirzam", "Sirius", "Adhara", "Wezen", "Aludra")
+                "Mirzam", "Sirius", "Adhara", "Wezen", "Aludra"),
+            new ConstellationDefinition(
+                "aries",
+                "\u767d\u7f8a\u5ea7",
+                "Hamal", "Sheratan", "Mesarthim"),
+            new ConstellationDefinition(
+                "cancer",
+                "\u5de8\u87f9\u5ea7",
+                "Tarf", "Asellus Australis", "Acubens", "Asellus Borealis", "Tegmine"),
+            new ConstellationDefinition(
+                "virgo",
+                "\u5ba4\u5973\u5ea7",
+                "Spica", "Porrima", "Vindemiatrix", "Heze", "Zavijava", "Zaniah"),
+            new ConstellationDefinition(
+                "libra",
+                "\u5929\u79e4\u5ea7",
+                "Zubeneschamali", "Zubenelgenubi", "Brachium", "Zubenelhakrabi"),
+            new ConstellationDefinition(
+                "sagittarius",
+                "\u4eba\u9a6c\u5ea7",
+                "Kaus Australis", "Nunki", "Ascella", "Kaus Media", "Kaus Borealis", "Alnasl"),
+            new ConstellationDefinition(
+                "capricornus",
+                "\u6469\u7faf\u5ea7",
+                "Deneb Algedi", "Dabih", "Algedi", "Nashira"),
+            new ConstellationDefinition(
+                "aquarius",
+                "\u5b9d\u74f6\u5ea7",
+                "Sadalsuud", "Sadalmelik", "Skat", "Albali", "Ancha"),
+            new ConstellationDefinition(
+                "pisces",
+                "\u53cc\u9c7c\u5ea7",
+                "Alpherg", "Alrescha", "Torcular", "Fumalsamakah", "Revati")
         };
     }
 }
