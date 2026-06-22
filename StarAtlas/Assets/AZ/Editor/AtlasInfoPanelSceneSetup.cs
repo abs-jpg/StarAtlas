@@ -72,7 +72,7 @@ namespace AZ.Atlas.Editor
             if (existingView != null && existingView.IsConfigured)
             {
                 repaired |= RepairPanelTransform(existing.GetComponent<RectTransform>(), atlasSystem.transform);
-                repaired |= RepairPanelContentLayout(existingView);
+                repaired |= EnsureConstellationImage(existingView);
                 repaired |= SetLayerRecursively(existing, 0);
                 if (repaired)
                 {
@@ -133,6 +133,13 @@ namespace AZ.Atlas.Editor
                 new Color(0.025f, 0.035f, 0.055f, 0.91f));
             Stretch(background.rectTransform);
 
+            Image constellationImage = CreateImage(
+                "Constellation Image",
+                panelRect,
+                Color.white);
+            ConfigureConstellationImage(constellationImage);
+            constellationImage.gameObject.SetActive(false);
+
             TMP_Text title = CreateText(
                 "Title",
                 panelRect,
@@ -191,7 +198,8 @@ namespace AZ.Atlas.Editor
                 title,
                 summary,
                 detailOne,
-                detailTwo);
+                detailTwo,
+                constellationImage);
             EditorUtility.SetDirty(view);
             EditorUtility.SetDirty(panelObject);
             EditorSceneManager.MarkSceneDirty(scene);
@@ -267,6 +275,59 @@ namespace AZ.Atlas.Editor
                 9f,
                 22f);
             return changed;
+        }
+
+        private static bool EnsureConstellationImage(AtlasInfoPanelView view)
+        {
+            if (view == null || view.PanelRect == null)
+            {
+                return false;
+            }
+
+            bool changed = false;
+            Image image = view.ConstellationImage;
+            if (image == null)
+            {
+                Transform existing = view.PanelRect.Find("Constellation Image");
+                image = existing != null
+                    ? existing.GetComponent<Image>()
+                    : CreateImage(
+                        "Constellation Image",
+                        view.PanelRect,
+                        Color.white);
+                view.SetConstellationImage(image);
+                EditorUtility.SetDirty(view);
+                changed = true;
+            }
+
+            RectTransform rect = image.rectTransform;
+            changed |=
+                rect.anchoredPosition != new Vector2(-205f, 112f) ||
+                rect.sizeDelta != new Vector2(210f, 190f) ||
+                !image.preserveAspect ||
+                image.raycastTarget ||
+                image.gameObject.activeSelf;
+            ConfigureConstellationImage(image);
+            image.gameObject.SetActive(false);
+            EditorUtility.SetDirty(image);
+            return changed;
+        }
+
+        private static void ConfigureConstellationImage(Image image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(-205f, 112f);
+            rect.sizeDelta = new Vector2(210f, 190f);
+            image.preserveAspect = true;
+            image.raycastTarget = false;
         }
 
         private static bool RepairTextLayout(

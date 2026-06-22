@@ -19,15 +19,21 @@ namespace AZ.Atlas
             new Dictionary<string, SolarSystemTarget>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ConstellationTarget> constellationTargets =
             new Dictionary<string, ConstellationTarget>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, StarTarget> starTargets =
+            new Dictionary<string, StarTarget>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<TMP_Text, StarTarget> starTargetsByLabel =
+            new Dictionary<TMP_Text, StarTarget>();
 
         private Camera observerCamera;
-        private ExhibitionCatalog catalog;
+        private AtlasInfoCatalog catalog;
+        private AtlasARStargazingController stargazingController;
         private TMP_FontAsset font;
         private float panelDistance = 1.5f;
         private float panelHorizontalOffset = 0.48f;
 
         private string selectedKey;
         private bool selectedConstellation;
+        private bool selectedStar;
         private Transform activeTarget;
 
         private Canvas panelCanvas;
@@ -37,19 +43,38 @@ namespace AZ.Atlas
         private TMP_Text panelSummary;
         private TMP_Text panelDetailOne;
         private TMP_Text panelDetailTwo;
+        private Image panelConstellationImage;
         private float panelTargetAlpha;
+        private float nextObservationRefreshTime;
+        private AtlasMissionController missionController;
 
         public bool IsInfoPanelVisible => !string.IsNullOrEmpty(selectedKey);
+        public bool IsMissionActive
+        {
+            get
+            {
+                if (missionController == null)
+                {
+                    missionController = FindObjectOfType<AtlasMissionController>(true);
+                }
+
+                return missionController != null && missionController.IsMissionActive;
+            }
+        }
+
+        public event Action<string, AtlasMissionTargetKind, string> TargetSelected;
 
         public void Initialize(
             Camera camera,
-            ExhibitionCatalog infoCatalog,
+            AtlasInfoCatalog infoCatalog,
             TMP_FontAsset textFont,
             float distance,
-            float horizontalOffset)
+            float horizontalOffset,
+            AtlasARStargazingController skyController)
         {
             observerCamera = camera;
             catalog = infoCatalog;
+            stargazingController = skyController;
             font = textFont;
             panelDistance = Mathf.Max(0.5f, distance);
             panelHorizontalOffset = Mathf.Max(0f, horizontalOffset);
@@ -58,11 +83,16 @@ namespace AZ.Atlas
 
         private void LateUpdate()
         {
+            RefreshSelectedObservation();
             UpdatePanelFade();
             UpdateInfoPanelPose();
         }
 
-        public void RegisterSolarSystemBody(string key, string displayName, GameObject bodyRoot)
+        public void RegisterSolarSystemBody(
+            string key,
+            string displayName,
+            GameObject bodyRoot,
+            bool missionEligible = true)
         {
             if (string.IsNullOrEmpty(key) || bodyRoot == null)
             {
@@ -77,7 +107,8 @@ namespace AZ.Atlas
                 {
                     key = key,
                     displayName = displayName,
-                    root = bodyRoot
+                    root = bodyRoot,
+                    missionEligible = missionEligible
                 };
                 solarSystemTargets[key] = target;
             }
@@ -85,9 +116,67 @@ namespace AZ.Atlas
             {
                 target.displayName = displayName;
                 target.root = bodyRoot;
+                target.missionEligible = missionEligible;
+            }
+
+            if (string.Equals(key, "sun", StringComparison.OrdinalIgnoreCase))
+            {
+                target.missionKind = AtlasMissionTargetKind.Star;
+            }
+            else if (string.Equals(key, "moon", StringComparison.OrdinalIgnoreCase))
+            {
+                target.missionKind = AtlasMissionTargetKind.Moon;
+            }
+            else
+            {
+                target.missionKind = AtlasMissionTargetKind.Planet;
             }
 
             EnsurePlanetRayTarget(target);
+        }
+
+        public void RegisterStar(
+            string key,
+            string displayName,
+            TMP_Text label,
+            bool missionEligible,
+            double azimuthDegrees,
+            double altitudeDegrees,
+            float magnitude,
+            double rightAscensionDegrees,
+            double declinationDegrees,
+            float distanceLightYears,
+            string spectralType,
+            string constellationCode)
+        {
+            if (string.IsNullOrEmpty(key) ||
+                string.IsNullOrWhiteSpace(displayName) ||
+                label == null)
+            {
+                return;
+            }
+
+            if (!starTargets.TryGetValue(key, out StarTarget target) ||
+                target == null)
+            {
+                target = new StarTarget { key = key };
+                starTargets[key] = target;
+            }
+
+            target.displayName = displayName;
+            target.label = label;
+            target.azimuthDegrees = azimuthDegrees;
+            target.altitudeDegrees = altitudeDegrees;
+            target.magnitude = magnitude;
+            target.rightAscensionDegrees = rightAscensionDegrees;
+            target.declinationDegrees = declinationDegrees;
+            target.distanceLightYears = distanceLightYears;
+            target.spectralType = spectralType;
+            target.constellationCode = constellationCode;
+            // The mission treats the Sun as its only selectable star.
+            target.missionEligible = false;
+            starTargetsByLabel[label] = target;
+            EnsureStarRayTarget(target);
         }
 
         public void RegisterConstellation(
@@ -98,7 +187,8 @@ namespace AZ.Atlas
             Vector3[] starLocalPositions,
             Vector3 labelLocalPosition,
             TMP_Text[] starNameLabels,
-            TMP_Text constellationNameLabel)
+            TMP_Text constellationNameLabel,
+            bool missionEligible = true)
         {
             if (string.IsNullOrEmpty(key) ||
                 skyParent == null ||
@@ -122,6 +212,7 @@ namespace AZ.Atlas
             target.labelLocalPosition = labelLocalPosition;
             target.starNameLabels = starNameLabels ?? Array.Empty<TMP_Text>();
             target.constellationNameLabel = constellationNameLabel;
+            target.missionEligible = missionEligible;
 
             EnsureConstellationRayTarget(target);
         }
@@ -152,28 +243,114 @@ namespace AZ.Atlas
 
                 selectedKey = key;
                 selectedConstellation = true;
+                selectedStar = false;
                 activeTarget = target.rayTarget.transform;
                 ShowInfo(BuildConstellationInfo(target));
                 return;
             }
 
-            if (!solarSystemTargets.TryGetValue(key, out SolarSystemTarget body) ||
-                body == null ||
-                body.root == null)
+            if (solarSystemTargets.TryGetValue(key, out SolarSystemTarget body) &&
+                body != null &&
+                body.root != null)
+            {
+                selectedKey = key;
+                selectedConstellation = false;
+                selectedStar = false;
+                activeTarget = body.root.transform;
+                ShowInfo(BuildSolarSystemInfo(body));
+                return;
+            }
+
+            if (starTargets.TryGetValue(key, out StarTarget star) &&
+                star != null &&
+                star.label != null)
+            {
+                selectedKey = key;
+                selectedConstellation = false;
+                selectedStar = true;
+                activeTarget = star.label.transform;
+                ShowInfo(BuildStarInfo(star));
+            }
+        }
+
+        public void NotifyMissionTargetSelected(
+            string key,
+            AtlasMissionTargetKind kind,
+            string displayName)
+        {
+            if (!string.IsNullOrEmpty(key))
+            {
+                TargetSelected?.Invoke(key, kind, displayName);
+            }
+        }
+
+        public void CollectMissionCandidates(List<AtlasMissionTarget> results)
+        {
+            if (results == null)
             {
                 return;
             }
 
-            selectedKey = key;
-            selectedConstellation = false;
-            activeTarget = body.root.transform;
-            ShowInfo(BuildSolarSystemInfo(body));
+            results.Clear();
+            foreach (KeyValuePair<string, SolarSystemTarget> pair in solarSystemTargets)
+            {
+                SolarSystemTarget target = pair.Value;
+                if (target == null ||
+                    !target.missionEligible ||
+                    target.root == null ||
+                    !target.root.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                results.Add(new AtlasMissionTarget(
+                    target.key,
+                    target.displayName,
+                    target.missionKind));
+            }
+
+            foreach (KeyValuePair<string, StarTarget> pair in starTargets)
+            {
+                StarTarget target = pair.Value;
+                if (target == null ||
+                    !target.missionEligible ||
+                    target.label == null ||
+                    !target.label.gameObject.activeInHierarchy ||
+                    target.rayTarget == null ||
+                    !target.rayTarget.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                results.Add(new AtlasMissionTarget(
+                    target.key,
+                    target.displayName,
+                    AtlasMissionTargetKind.Star));
+            }
+
+            foreach (KeyValuePair<string, ConstellationTarget> pair in constellationTargets)
+            {
+                ConstellationTarget target = pair.Value;
+                if (target == null ||
+                    !target.missionEligible ||
+                    target.rayTarget == null ||
+                    !target.rayTarget.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                results.Add(new AtlasMissionTarget(
+                    target.key,
+                    target.displayName,
+                    AtlasMissionTargetKind.Constellation));
+            }
         }
 
         public void HideInfoPanel()
         {
             selectedKey = null;
             selectedConstellation = false;
+            selectedStar = false;
             activeTarget = null;
             panelTargetAlpha = 0f;
         }
@@ -224,7 +401,40 @@ namespace AZ.Atlas
                 selectable = target.root.AddComponent<AtlasSelectableTarget>();
             }
 
-            selectable.Configure(this, target.key, false, collider);
+            selectable.Configure(
+                this,
+                target.key,
+                false,
+                collider,
+                true,
+                target.missionEligible ? target.key : null,
+                target.displayName,
+                target.missionKind);
+            target.selectable = selectable;
+        }
+
+        private void EnsureStarRayTarget(StarTarget target)
+        {
+            GameObject hitTarget = ConfigureLabelHitTarget(
+                target.label,
+                "Atlas Star Mission Hit");
+            if (hitTarget == null)
+            {
+                return;
+            }
+
+            AtlasSelectableTarget selectable =
+                hitTarget.GetComponent<AtlasSelectableTarget>();
+            selectable.Configure(
+                this,
+                target.key,
+                false,
+                hitTarget.GetComponent<Collider>(),
+                true,
+                target.missionEligible ? target.key : null,
+                target.displayName,
+                AtlasMissionTargetKind.Star);
+            target.rayTarget = hitTarget;
             target.selectable = selectable;
         }
 
@@ -256,7 +466,8 @@ namespace AZ.Atlas
                 ConfigureConstellationLabelHitTarget(
                     target,
                     starLabel,
-                    $"Atlas Star Name Hit {target.key}");
+                    "Atlas Star Mission Hit",
+                    true);
             }
 
             if (target.constellationNameLabel != null)
@@ -264,7 +475,8 @@ namespace AZ.Atlas
                 target.rayTarget = ConfigureConstellationLabelHitTarget(
                     target,
                     target.constellationNameLabel,
-                    $"Atlas Constellation Name Hit {target.key}");
+                    $"Atlas Constellation Name Hit {target.key}",
+                    false);
                 target.selectable =
                     target.rayTarget != null
                         ? target.rayTarget.GetComponent<AtlasSelectableTarget>()
@@ -275,8 +487,67 @@ namespace AZ.Atlas
         private GameObject ConfigureConstellationLabelHitTarget(
             ConstellationTarget target,
             TMP_Text label,
+            string hitTargetName,
+            bool starNameTarget)
+        {
+            GameObject hitTarget = ConfigureLabelHitTarget(label, hitTargetName);
+            if (hitTarget == null)
+            {
+                return null;
+            }
+
+            string missionKey = target.missionEligible ? target.key : null;
+            string missionName = target.displayName;
+            AtlasMissionTargetKind missionKind =
+                AtlasMissionTargetKind.Constellation;
+            if (starNameTarget &&
+                starTargetsByLabel.TryGetValue(label, out StarTarget starTarget) &&
+                starTarget != null)
+            {
+                missionKey = starTarget.missionEligible ? starTarget.key : null;
+                missionName = starTarget.displayName;
+                missionKind = AtlasMissionTargetKind.Star;
+                starTarget.rayTarget = hitTarget;
+                starTarget.selectable =
+                    hitTarget.GetComponent<AtlasSelectableTarget>();
+
+                AtlasSelectableTarget starSelectable =
+                    hitTarget.GetComponent<AtlasSelectableTarget>();
+                starSelectable.Configure(
+                    this,
+                    starTarget.key,
+                    false,
+                    hitTarget.GetComponent<Collider>(),
+                    true,
+                    target.missionEligible ? target.key : null,
+                    target.displayName,
+                    AtlasMissionTargetKind.Constellation);
+                return hitTarget;
+            }
+
+            AtlasSelectableTarget selectable =
+                hitTarget.GetComponent<AtlasSelectableTarget>();
+            selectable.Configure(
+                this,
+                target.key,
+                true,
+                hitTarget.GetComponent<Collider>(),
+                true,
+                missionKey,
+                missionName,
+                missionKind);
+            return hitTarget;
+        }
+
+        private static GameObject ConfigureLabelHitTarget(
+            TMP_Text label,
             string hitTargetName)
         {
+            if (label == null)
+            {
+                return null;
+            }
+
             Transform hitTransform = label.transform.Find(hitTargetName);
             GameObject hitTarget;
             if (hitTransform == null)
@@ -321,14 +592,11 @@ namespace AZ.Atlas
                 minimumLocalSize);
             collider.enabled = true;
 
-            AtlasSelectableTarget selectable =
-                hitTarget.GetComponent<AtlasSelectableTarget>();
-            if (selectable == null)
+            if (hitTarget.GetComponent<AtlasSelectableTarget>() == null)
             {
-                selectable = hitTarget.AddComponent<AtlasSelectableTarget>();
+                hitTarget.AddComponent<AtlasSelectableTarget>();
             }
 
-            selectable.Configure(this, target.key, true, collider);
             return hitTarget;
         }
 
@@ -352,6 +620,18 @@ namespace AZ.Atlas
                 panelSummary = sceneView.SummaryText;
                 panelDetailOne = sceneView.DetailOneText;
                 panelDetailTwo = sceneView.DetailTwoText;
+                panelConstellationImage = sceneView.ConstellationImage;
+                if (panelConstellationImage == null)
+                {
+                    panelConstellationImage = CreateImage(
+                        "Constellation Image",
+                        panelRect,
+                        Color.white);
+                    sceneView.SetConstellationImage(panelConstellationImage);
+                }
+
+                ConfigureConstellationImageRect(panelConstellationImage);
+                panelConstellationImage.gameObject.SetActive(false);
                 ConfigurePanelTextSizing();
                 sceneView.HideImmediate();
                 return;
@@ -396,6 +676,13 @@ namespace AZ.Atlas
                 panelRect,
                 new Color(0.025f, 0.035f, 0.055f, 0.91f));
             Stretch(background.rectTransform, Vector2.zero, Vector2.zero);
+
+            panelConstellationImage = CreateImage(
+                "Constellation Image",
+                panelRect,
+                Color.white);
+            ConfigureConstellationImageRect(panelConstellationImage);
+            panelConstellationImage.gameObject.SetActive(false);
 
             panelTitle = CreateText(
                 "Title",
@@ -444,7 +731,6 @@ namespace AZ.Atlas
                 panelSummary.enableAutoSizing = true;
                 panelSummary.fontSizeMin = 13f;
                 panelSummary.fontSizeMax = 24f;
-                ConfigureTextRect(panelSummary, new Vector2(0f, 104f), new Vector2(630f, 220f));
             }
 
             if (panelDetailOne != null)
@@ -452,7 +738,6 @@ namespace AZ.Atlas
                 panelDetailOne.enableAutoSizing = true;
                 panelDetailOne.fontSizeMin = 12f;
                 panelDetailOne.fontSizeMax = 22f;
-                ConfigureTextRect(panelDetailOne, new Vector2(0f, -48f), new Vector2(630f, 70f));
             }
 
             if (panelDetailTwo != null)
@@ -460,8 +745,53 @@ namespace AZ.Atlas
                 panelDetailTwo.enableAutoSizing = true;
                 panelDetailTwo.fontSizeMin = 9f;
                 panelDetailTwo.fontSizeMax = 22f;
-                ConfigureTextRect(panelDetailTwo, new Vector2(0f, -182f), new Vector2(630f, 168f));
             }
+        }
+
+        private static void ConfigureConstellationImageRect(Image image)
+        {
+            if (image == null)
+            {
+                return;
+            }
+
+            RectTransform rect = image.rectTransform;
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(-205f, 112f);
+            rect.sizeDelta = new Vector2(210f, 190f);
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+        }
+
+        private void ConfigurePanelLayout(bool showConstellationImage)
+        {
+            if (panelConstellationImage != null)
+            {
+                panelConstellationImage.gameObject.SetActive(showConstellationImage);
+            }
+
+            ConfigureTextRect(
+                panelTitle,
+                new Vector2(0f, 252f),
+                new Vector2(630f, 58f));
+            ConfigureTextRect(
+                panelSummary,
+                showConstellationImage
+                    ? new Vector2(112f, 112f)
+                    : new Vector2(0f, 132f),
+                showConstellationImage
+                    ? new Vector2(370f, 190f)
+                    : new Vector2(630f, 160f));
+            ConfigureTextRect(
+                panelDetailOne,
+                new Vector2(0f, -8f),
+                new Vector2(630f, 82f));
+            ConfigureTextRect(
+                panelDetailTwo,
+                new Vector2(0f, -172f),
+                new Vector2(630f, 224f));
         }
 
         private static void ConfigureTextRect(
@@ -499,6 +829,12 @@ namespace AZ.Atlas
             panelSummary.text = content.summary;
             panelDetailOne.text = content.detailOne;
             panelDetailTwo.text = content.detailTwo;
+            bool showImage = content.constellationImage != null;
+            if (panelConstellationImage != null)
+            {
+                panelConstellationImage.sprite = content.constellationImage;
+            }
+            ConfigurePanelLayout(showImage);
             panelCanvas.gameObject.SetActive(true);
             if (!wasVisible)
             {
@@ -507,8 +843,8 @@ namespace AZ.Atlas
             panelGroup.interactable = true;
             panelGroup.blocksRaycasts = true;
             panelTargetAlpha = 1f;
+            nextObservationRefreshTime = Time.unscaledTime + 1f;
             UpdateInfoPanelPose(true);
-            Debug.Log($"Atlas info panel opened: {content.title}", panelCanvas);
         }
 
         private void UpdatePanelFade()
@@ -583,77 +919,357 @@ namespace AZ.Atlas
 
         private InfoContent BuildSolarSystemInfo(SolarSystemTarget target)
         {
-            ExhibitionCatalogEntry entry = FindCatalogEntry(target.key, target.displayName);
-            if (entry != null)
-            {
-                return new InfoContent
-                {
-                    title = entry.Title,
-                    summary = entry.summary,
-                    detailOne = $"\u76f4\u5f84\uff1a{entry.diameter}    \u8d28\u91cf\uff1a{entry.mass}",
-                    detailTwo =
-                        $"\u516c\u8f6c\u5468\u671f\uff1a{entry.orbitPeriod}    \u81ea\u8f6c\u5468\u671f\uff1a{entry.rotationPeriod}"
-                };
-            }
+            string normalizedKey = NormalizeBodyKey(target.key);
+            AtlasInfoCatalogEntry entry = catalog != null
+                ? catalog.Find(normalizedKey, AtlasInfoEntryType.SolarSystemBody)
+                : null;
+            string title = entry != null
+                ? entry.Title
+                : string.IsNullOrEmpty(target.displayName)
+                    ? target.key
+                    : target.displayName;
+            string summary = entry != null && !string.IsNullOrWhiteSpace(entry.summary)
+                ? entry.summary
+                : "该天体的科普简介尚未在 AtlasInfoCatalog 中填写。";
 
-            if (string.Equals(target.key, "moon", StringComparison.OrdinalIgnoreCase))
+            if (stargazingController != null &&
+                stargazingController.TryGetSolarSystemObservation(
+                    normalizedKey,
+                    out AtlasARStargazingController.AtlasObservationInfo observation))
             {
                 return new InfoContent
                 {
-                    title = "\u6708\u7403",
-                    summary =
-                        "\u6708\u7403\u662f\u5730\u7403\u552f\u4e00\u7684\u5929\u7136\u536b\u661f\uff0c\u8868\u9762\u5e03\u6ee1\u649e\u51fb\u5751\u3001\u6708\u6d77\u548c\u9ad8\u5730\u3002\u5b83\u5df2\u88ab\u5730\u7403\u6f6e\u6c50\u9501\u5b9a\uff0c\u56e0\u6b64\u957f\u671f\u4ee5\u8fd1\u4f3c\u540c\u4e00\u9762\u671d\u5411\u5730\u7403\uff0c\u5176\u5f15\u529b\u4e5f\u662f\u5730\u7403\u6d77\u6d0b\u6f6e\u6c50\u7684\u4e3b\u8981\u6765\u6e90\u3002",
-                    detailOne = "\u76f4\u5f84\uff1a\u7ea63,474.8\u5343\u7c73    \u8d28\u91cf\uff1a\u7ea67.342 \u00d7 10^22\u5343\u514b",
-                    detailTwo = "\u516c\u8f6c\u5468\u671f\uff1a27.32\u5929    \u81ea\u8f6c\u5468\u671f\uff1a27.32\u5929"
+                    title = title,
+                    summary = summary,
+                    detailOne = BuildCurrentPositionText(observation),
+                    detailTwo = BuildObservationScheduleText(observation)
                 };
             }
 
             return new InfoContent
             {
-                title = string.IsNullOrEmpty(target.displayName) ? target.key : target.displayName,
-                summary = "\u8be5\u5929\u4f53\u7684\u8be6\u7ec6\u8d44\u6599\u6682\u672a\u6536\u5f55\u3002",
-                detailOne = string.Empty,
-                detailTwo = string.Empty
+                title = title,
+                summary = summary,
+                detailOne = "当前位置：等待观测点和天体坐标数据。",
+                detailTwo = "升落时间、亮度和推荐观测时间将在定位数据可用后显示。"
             };
         }
 
         private InfoContent BuildConstellationInfo(ConstellationTarget target)
         {
-            GetConstellationCopy(target.key, out string summary, out string mythology);
+            AtlasInfoCatalogEntry entry = catalog != null
+                ? catalog.Find(target.key, AtlasInfoEntryType.Constellation)
+                : null;
+            GetConstellationCopy(target.key, out string fallbackSummary, out string fallbackMythology);
+            string summary = entry != null && !string.IsNullOrWhiteSpace(entry.summary)
+                ? entry.summary
+                : fallbackSummary;
+            string majorStars = entry != null && !string.IsNullOrWhiteSpace(entry.majorStars)
+                ? entry.majorStars
+                : target.majorStars;
+            string mythology = entry != null && !string.IsNullOrWhiteSpace(entry.mythologyAndCulture)
+                ? entry.mythologyAndCulture
+                : fallbackMythology;
             return new InfoContent
             {
-                title = target.displayName,
+                title = entry != null ? entry.Title : target.displayName,
                 summary = summary,
-                detailOne = $"\u4ee3\u8868\u6052\u661f\uff1a{target.majorStars}",
-                detailTwo = $"\u795e\u8bdd\u4e0e\u6587\u5316\uff1a{mythology}"
+                detailOne = $"代表恒星：{majorStars}",
+                detailTwo = $"神话与文化：{mythology}",
+                constellationImage = entry != null ? entry.constellationImage : null
             };
         }
 
-        private ExhibitionCatalogEntry FindCatalogEntry(string key, string displayName)
+        private InfoContent BuildStarInfo(StarTarget target)
         {
-            if (catalog == null || catalog.entries == null)
+            AtlasInfoCatalogEntry entry = catalog != null
+                ? catalog.Find(target.key, AtlasInfoEntryType.Star)
+                : null;
+            string constellationName = GetConstellationDisplayName(
+                target.constellationCode,
+                target.displayName);
+            string title = entry != null ? entry.Title : target.displayName;
+            string summary = entry != null && !string.IsNullOrWhiteSpace(entry.summary)
+                ? entry.summary
+                : string.IsNullOrEmpty(constellationName)
+                    ? $"{title}是一颗能够自行发光的恒星。它在天空中的位置会随观测地点和时间变化。"
+                    : $"{title}是位于{constellationName}方向的一颗恒星。{constellationName}是从地球视角划分的天空区域，并不是一颗单独的恒星。";
+
+            string horizonSide = target.altitudeDegrees >= 0.0
+                ? "地平线上方"
+                : "地平线下方";
+            string detailOne =
+                $"当前方位角：{target.azimuthDegrees:F1}°（{GetAzimuthDirection(target.azimuthDegrees)}）    " +
+                $"高度角：{target.altitudeDegrees:F1}°\n" +
+                $"距离地平线高度：{horizonSide} {Math.Abs(target.altitudeDegrees):F1}°";
+
+            string distance = target.distanceLightYears > 0.01f
+                ? $"{target.distanceLightYears:F1} 光年"
+                : "暂无数据";
+            string spectralType = string.IsNullOrWhiteSpace(target.spectralType)
+                ? "暂无数据"
+                : target.spectralType;
+            string visibility = GetStarVisibilityText(
+                target.altitudeDegrees,
+                target.magnitude);
+            string recommendation = target.altitudeDegrees < 0.0
+                ? "等待它升到地平线上方；高度角超过20°时观测效果更好。"
+                : target.altitudeDegrees < 20.0
+                    ? "当前较贴近地平线，等待高度角超过20°并避开强光。"
+                    : "当前高度适合观测，尽量选择远离城市灯光的区域。";
+
+            string detailTwo =
+                $"当前亮度：视星等 {target.magnitude:F2}    可见性：{visibility}\n" +
+                $"赤经：{target.rightAscensionDegrees:F2}°    赤纬：{target.declinationDegrees:F2}°\n" +
+                $"距离：{distance}    光谱类型：{spectralType}\n" +
+                $"推荐观测：{recommendation}";
+
+            return new InfoContent
             {
-                return null;
+                title = title,
+                summary = summary,
+                detailOne = detailOne,
+                detailTwo = detailTwo
+            };
+        }
+
+        private void RefreshSelectedObservation()
+        {
+            if (selectedConstellation ||
+                string.IsNullOrEmpty(selectedKey) ||
+                Time.unscaledTime < nextObservationRefreshTime ||
+                panelCanvas == null ||
+                !panelCanvas.gameObject.activeSelf)
+            {
+                return;
             }
 
-            string normalized = NormalizeBodyKey(key);
-            for (int i = 0; i < catalog.entries.Count; i++)
+            nextObservationRefreshTime = Time.unscaledTime + 1f;
+            if (selectedStar)
             {
-                ExhibitionCatalogEntry entry = catalog.entries[i];
-                if (entry == null)
+                if (starTargets.TryGetValue(selectedKey, out StarTarget star) &&
+                    star != null)
                 {
-                    continue;
+                    ApplyInfoText(BuildStarInfo(star));
                 }
+                return;
+            }
 
-                if (string.Equals(NormalizeBodyKey(entry.displayName), normalized, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(NormalizeBodyKey(entry.Title), normalized, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(entry.displayName, displayName, StringComparison.OrdinalIgnoreCase))
+            if (!solarSystemTargets.TryGetValue(
+                    selectedKey,
+                    out SolarSystemTarget target) ||
+                target == null)
+            {
+                return;
+            }
+
+            ApplyInfoText(BuildSolarSystemInfo(target));
+        }
+
+        private void ApplyInfoText(InfoContent content)
+        {
+            panelTitle.text = content.title;
+            panelSummary.text = content.summary;
+            panelDetailOne.text = content.detailOne;
+            panelDetailTwo.text = content.detailTwo;
+        }
+
+        private static string BuildCurrentPositionText(
+            AtlasARStargazingController.AtlasObservationInfo observation)
+        {
+            string horizonSide = observation.altitudeDegrees >= 0.0
+                ? "地平线上方"
+                : "地平线下方";
+            return
+                $"当前方位角：{observation.azimuthDegrees:F1}°（{GetAzimuthDirection(observation.azimuthDegrees)}）    " +
+                $"高度角：{observation.altitudeDegrees:F1}°\n" +
+                $"距离地平线高度：{horizonSide} {Math.Abs(observation.altitudeDegrees):F1}°";
+        }
+
+        private static string BuildObservationScheduleText(
+            AtlasARStargazingController.AtlasObservationInfo observation)
+        {
+            string rise = observation.hasRise
+                ? FormatUtc(observation.riseUtc)
+                : observation.alwaysAboveHorizon
+                    ? "未来48小时持续在地平线上"
+                    : "未来48小时无升起";
+            string set = observation.hasSet
+                ? FormatUtc(observation.setUtc)
+                : observation.alwaysAboveHorizon
+                    ? "未来48小时不落"
+                    : "未来48小时无落下";
+            string transit = observation.hasTransit
+                ? $"{FormatUtc(observation.transitUtc)}（最高 {observation.transitAltitudeDegrees:F1}°）"
+                : "暂无";
+            string visibility = GetVisibilityText(observation);
+            string recommendation = GetRecommendedObservationText(observation);
+
+            return
+                $"升起：{rise}    过中天：{transit}\n" +
+                $"落下：{set}\n" +
+                $"当前亮度：视星等 {observation.magnitude:F1}    可见性：{visibility}\n" +
+                $"推荐观测时间：{recommendation}";
+        }
+
+        private static string GetVisibilityText(
+            AtlasARStargazingController.AtlasObservationInfo observation)
+        {
+            if (observation.altitudeDegrees < 0.0)
+            {
+                return "位于地平线下，当前不可见";
+            }
+
+            if (observation.key == "sun")
+            {
+                return "可见，禁止裸眼或无滤光设备直视";
+            }
+
+            if (observation.altitudeDegrees < 10.0)
+            {
+                return "贴近地平线，易受建筑和大气影响";
+            }
+
+            if (observation.sunAltitudeDegrees > -6.0 && observation.magnitude > -3.0f)
+            {
+                return "天光较强，肉眼较难观察";
+            }
+
+            if (observation.magnitude <= 1.5f)
+            {
+                return "条件良好时肉眼清晰可见";
+            }
+
+            if (observation.magnitude <= 6.0f)
+            {
+                return "暗空环境下可见，双筒镜效果更好";
+            }
+
+            return "通常需要双筒镜或望远镜";
+        }
+
+        private static string GetStarVisibilityText(
+            double altitudeDegrees,
+            float magnitude)
+        {
+            if (altitudeDegrees < 0.0)
+            {
+                return "位于地平线下，当前不可见";
+            }
+
+            if (altitudeDegrees < 10.0)
+            {
+                return "贴近地平线，易受建筑和大气影响";
+            }
+
+            if (magnitude <= 1.5f)
+            {
+                return "肉眼清晰可见";
+            }
+
+            if (magnitude <= 3.5f)
+            {
+                return "普通夜空下肉眼可见";
+            }
+
+            if (magnitude <= 6.0f)
+            {
+                return "需要较暗天空，城市中可能不可见";
+            }
+
+            return "通常需要双筒镜或望远镜";
+        }
+
+        private static string GetConstellationDisplayName(
+            string constellationCode,
+            string starDisplayName)
+        {
+            if (!string.IsNullOrWhiteSpace(starDisplayName))
+            {
+                int suffix = starDisplayName.IndexOf('座');
+                if (suffix >= 1)
                 {
-                    return entry;
+                    return starDisplayName.Substring(0, suffix + 1);
                 }
             }
 
-            return null;
+            switch ((constellationCode ?? string.Empty).Trim())
+            {
+                case "And": return "仙女座";
+                case "Aqr": return "宝瓶座";
+                case "Aql": return "天鹰座";
+                case "Ari": return "白羊座";
+                case "Aur": return "御夫座";
+                case "Boo": return "牧夫座";
+                case "Cnc": return "巨蟹座";
+                case "CVn": return "猎犬座";
+                case "CMa": return "大犬座";
+                case "CMi": return "小犬座";
+                case "Cap": return "摩羯座";
+                case "Car": return "船底座";
+                case "Cas": return "仙后座";
+                case "Cen": return "半人马座";
+                case "Cep": return "仙王座";
+                case "Cet": return "鲸鱼座";
+                case "Cyg": return "天鹅座";
+                case "Gem": return "双子座";
+                case "Her": return "武仙座";
+                case "Leo": return "狮子座";
+                case "Lib": return "天秤座";
+                case "Lyr": return "天琴座";
+                case "Ori": return "猎户座";
+                case "Oph": return "蛇夫座";
+                case "Peg": return "飞马座";
+                case "Per": return "英仙座";
+                case "Psc": return "双鱼座";
+                case "Sgr": return "人马座";
+                case "Sco": return "天蝎座";
+                case "Tau": return "金牛座";
+                case "UMa": return "大熊座";
+                case "UMi": return "小熊座";
+                case "Vir": return "处女座";
+                default: return string.Empty;
+            }
+        }
+
+        private static string GetRecommendedObservationText(
+            AtlasARStargazingController.AtlasObservationInfo observation)
+        {
+            if (observation.key == "sun")
+            {
+                return "日出后至日落前；必须使用合格的太阳滤光设备。";
+            }
+
+            string transit = observation.hasTransit
+                ? FormatUtc(observation.transitUtc)
+                : "高度角较高时";
+            if (observation.key == "mercury" || observation.key == "venus")
+            {
+                return $"日出前或日落后的暮光时段，优先选择接近 {transit} 的高高度时刻。";
+            }
+
+            if (observation.key == "moon")
+            {
+                return $"月球升起后、接近 {transit} 且高度角超过20°时。";
+            }
+
+            return $"当地夜间、接近 {transit} 前后约1小时。";
+        }
+
+        private static string FormatUtc(DateTime utc)
+        {
+            return utc.ToUniversalTime().ToString("MM-dd HH:mm 'UTC'");
+        }
+
+        private static string GetAzimuthDirection(double azimuthDegrees)
+        {
+            string[] directions =
+            {
+                "北", "东北", "东", "东南",
+                "南", "西南", "西", "西北"
+            };
+            int index = (int)Math.Floor((azimuthDegrees + 22.5) / 45.0) % 8;
+            return directions[index < 0 ? index + 8 : index];
         }
 
         private static string NormalizeBodyKey(string value)
@@ -727,11 +1343,11 @@ namespace AZ.Atlas
                     mythology = "\u53e4\u5e0c\u814a\u795e\u8bdd\u4e2d\uff0c\u5de8\u87f9\u5728\u8d6b\u62c9\u514b\u52d2\u65af\u4e0e\u4e5d\u5934\u86c7\u6218\u6597\u65f6\u53d7\u8d6b\u62c9\u6d3e\u9063\u524d\u53bb\u963b\u6320\uff0c\u6218\u8d25\u540e\u88ab\u7f6e\u4e8e\u5929\u7a7a\u3002";
                     break;
                 case "virgo":
-                    summary = "\u5ba4\u5973\u5ea7\u662f\u5168\u5929\u9762\u79ef\u7b2c\u4e8c\u5927\u7684\u661f\u5ea7\uff0c\u4e5f\u662f\u6700\u5927\u7684\u9ec4\u9053\u661f\u5ea7\u3002\u89d2\u5bbf\u4e00\u660e\u4eae\u4e14\u63a5\u8fd1\u9ec4\u9053\uff1b\u661f\u5ea7\u5317\u90e8\u901a\u5411\u5ba4\u5973\u5ea7\u661f\u7cfb\u56e2\uff0c\u5176\u4e2d\u5305\u62ec\u5de8\u692d\u5706\u661f\u7cfbM87\u3002";
+                    summary = "\u5904\u5973\u5ea7\uff0c\u53c8\u53eb\u5ba4\u5973\u5ea7\uff0c\u662f\u5168\u5929\u9762\u79ef\u7b2c\u4e8c\u5927\u7684\u661f\u5ea7\uff0c\u4e5f\u662f\u6700\u5927\u7684\u9ec4\u9053\u661f\u5ea7\u3002\u89d2\u5bbf\u4e00\u660e\u4eae\u4e14\u63a5\u8fd1\u9ec4\u9053\uff1b\u661f\u5ea7\u5317\u90e8\u901a\u5411\u5904\u5973\u5ea7\u661f\u7cfb\u56e2\uff0c\u5176\u4e2d\u5305\u62ec\u5de8\u692d\u5706\u661f\u7cfbM87\u3002";
                     mythology = "\u5e38\u89c1\u5e0c\u814a\u4f20\u7edf\u5c06\u5b83\u4e0e\u519c\u4e1a\u5973\u795e\u5fb7\u58a8\u5fd2\u8033\u3001\u73c0\u8033\u585e\u798f\u6d85\uff0c\u6216\u624b\u6301\u6b63\u4e49\u5929\u79e4\u7684\u963f\u65af\u7279\u8d56\u4e9a\u8054\u7cfb\u8d77\u6765\u3002";
                     break;
                 case "libra":
-                    summary = "\u5929\u79e4\u5ea7\u4f4d\u4e8e\u5ba4\u5973\u5ea7\u4e0e\u5929\u874e\u5ea7\u4e4b\u95f4\uff0c\u662f\u9ec4\u9053\u5341\u4e8c\u661f\u5ea7\u4e2d\u552f\u4e00\u4ee5\u5668\u7269\u547d\u540d\u7684\u661f\u5ea7\u3002\u56db\u9897\u4e3b\u661f\u5f62\u6210\u8f83\u6697\u7684\u56db\u8fb9\u5f62\uff0c\u53e4\u4ee3\u4e00\u5ea6\u88ab\u89c6\u4e3a\u5929\u874e\u7684\u53cc\u87af\u3002";
+                    summary = "\u5929\u79e4\u5ea7\u4f4d\u4e8e\u5904\u5973\u5ea7\u4e0e\u5929\u874e\u5ea7\u4e4b\u95f4\uff0c\u662f\u9ec4\u9053\u5341\u4e8c\u661f\u5ea7\u4e2d\u552f\u4e00\u4ee5\u5668\u7269\u547d\u540d\u7684\u661f\u5ea7\u3002\u56db\u9897\u4e3b\u661f\u5f62\u6210\u8f83\u6697\u7684\u56db\u8fb9\u5f62\uff0c\u53e4\u4ee3\u4e00\u5ea6\u88ab\u89c6\u4e3a\u5929\u874e\u7684\u53cc\u87af\u3002";
                     mythology = "\u5b83\u901a\u5e38\u88ab\u89e3\u91ca\u4e3a\u6b63\u4e49\u5973\u795e\u963f\u65af\u7279\u8d56\u4e9a\u624b\u4e2d\u7684\u5929\u79e4\uff0c\u8c61\u5f81\u8861\u91cf\u3001\u516c\u6b63\u4e0e\u79cb\u5206\u65f6\u663c\u591c\u5e73\u8861\u3002";
                     break;
                 case "scorpius":
@@ -820,9 +1436,9 @@ namespace AZ.Atlas
                 case "cancer":
                     return "\u5e0c\u814a\u795e\u8bdd\u4e2d\uff0c\u8d6b\u62c9\u6d3e\u5de8\u87f9\u534f\u52a9\u4e5d\u5934\u86c7\u963b\u6320\u8d6b\u62c9\u514b\u52d2\u65af\uff0c\u5de8\u87f9\u867d\u88ab\u8e29\u6b7b\u4ecd\u88ab\u5347\u4e0a\u5929\u7a7a\u3002\u5728\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u5de8\u87f9\u5ea7\u533a\u57df\u5305\u542b\u9b3c\u5bbf\uff0c\u5176\u4e2d\u8702\u5de2\u661f\u56e2M44\u88ab\u79f0\u4e3a\u79ef\u5c38\u6c14\uff0c\u53cd\u6620\u53e4\u4eba\u5bf9\u6726\u80e7\u661f\u56e2\u7684\u72ec\u7279\u60f3\u8c61\uff1b\u53e4\u4ee3\u4e24\u6cb3\u4e0e\u57c3\u53ca\u6587\u5316\u4e5f\u5e38\u4ee5\u7532\u58f3\u52a8\u7269\u8868\u793a\u592a\u9633\u8f6c\u5411\u3002";
                 case "virgo":
-                    return "\u5ba4\u5973\u5ea7\u5728\u5e0c\u814a\u7f57\u9a6c\u4f20\u7edf\u4e2d\u53ef\u5bf9\u5e94\u519c\u4e1a\u5973\u795e\u5fb7\u58a8\u5fd2\u8033\u3001\u73c0\u8033\u585e\u798f\u6d85\uff0c\u6216\u624b\u6301\u6b63\u4e49\u5929\u79e4\u7684\u963f\u65af\u7279\u8d56\u4e9a\uff0c\u56e0\u6b64\u517c\u6709\u4e30\u6536\u4e0e\u6b63\u4e49\u7684\u8c61\u5f81\u3002\u5728\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u8fd9\u7247\u5e7f\u9614\u5929\u533a\u8de8\u8d8a\u89d2\u5bbf\u3001\u4ea2\u5bbf\u53ca\u592a\u5fae\u57a3\uff0c\u89d2\u5bbf\u4e00\u88ab\u89c6\u4e3a\u4e1c\u65b9\u82cd\u9f99\u4e4b\u89d2\uff1b\u5b83\u4e5f\u957f\u671f\u7528\u4e8e\u6625\u5b63\u8282\u4ee4\u5224\u65ad\u3002";
+                    return "\u5904\u5973\u5ea7\u5728\u5e0c\u814a\u7f57\u9a6c\u4f20\u7edf\u4e2d\u53ef\u5bf9\u5e94\u519c\u4e1a\u5973\u795e\u5fb7\u58a8\u5fd2\u8033\u3001\u73c0\u8033\u585e\u798f\u6d85\uff0c\u6216\u624b\u6301\u6b63\u4e49\u5929\u79e4\u7684\u963f\u65af\u7279\u8d56\u4e9a\uff0c\u56e0\u6b64\u517c\u6709\u4e30\u6536\u4e0e\u6b63\u4e49\u7684\u8c61\u5f81\u3002\u5728\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u8fd9\u7247\u5e7f\u9614\u5929\u533a\u8de8\u8d8a\u89d2\u5bbf\u3001\u4ea2\u5bbf\u53ca\u592a\u5fae\u57a3\uff0c\u89d2\u5bbf\u4e00\u88ab\u89c6\u4e3a\u4e1c\u65b9\u82cd\u9f99\u4e4b\u89d2\uff1b\u5b83\u4e5f\u957f\u671f\u7528\u4e8e\u6625\u5b63\u8282\u4ee4\u5224\u65ad\u3002";
                 case "libra":
-                    return "\u5929\u79e4\u5ea7\u65e9\u671f\u66fe\u88ab\u89c6\u4e3a\u5929\u874e\u7684\u53cc\u87af\uff0c\u540e\u6765\u5728\u7f57\u9a6c\u65f6\u4ee3\u6210\u4e3a\u72ec\u7acb\u7684\u5929\u79e4\uff0c\u8c61\u5f81\u6b63\u4e49\u3001\u79e9\u5e8f\u4ee5\u53ca\u663c\u591c\u5e73\u8861\u3002\u5b83\u5e38\u4e0e\u5ba4\u5973\u5ea7\u6240\u4ee3\u8868\u7684\u6b63\u4e49\u5973\u795e\u76f8\u914d\uff1b\u5728\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u8fd9\u7247\u533a\u57df\u5206\u5c5e\u6c10\u5bbf\u3001\u4ea2\u5bbf\u7b49\u661f\u5b98\uff0c\u5305\u542b\u5929\u8f90\u3001\u9635\u8f66\u7b49\u4e0e\u8f66\u9a6c\u548c\u519b\u9635\u6709\u5173\u7684\u610f\u8c61\u3002";
+                    return "\u5929\u79e4\u5ea7\u65e9\u671f\u66fe\u88ab\u89c6\u4e3a\u5929\u874e\u7684\u53cc\u87af\uff0c\u540e\u6765\u5728\u7f57\u9a6c\u65f6\u4ee3\u6210\u4e3a\u72ec\u7acb\u7684\u5929\u79e4\uff0c\u8c61\u5f81\u6b63\u4e49\u3001\u79e9\u5e8f\u4ee5\u53ca\u663c\u591c\u5e73\u8861\u3002\u5b83\u5e38\u4e0e\u5904\u5973\u5ea7\u6240\u4ee3\u8868\u7684\u6b63\u4e49\u5973\u795e\u76f8\u914d\uff1b\u5728\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u8fd9\u7247\u533a\u57df\u5206\u5c5e\u6c10\u5bbf\u3001\u4ea2\u5bbf\u7b49\u661f\u5b98\uff0c\u5305\u542b\u5929\u8f90\u3001\u9635\u8f66\u7b49\u4e0e\u8f66\u9a6c\u548c\u519b\u9635\u6709\u5173\u7684\u610f\u8c61\u3002";
                 case "sagittarius":
                     return "\u897f\u65b9\u4f20\u7edf\u5c06\u4eba\u9a6c\u5ea7\u63cf\u7ed8\u4e3a\u6301\u5f13\u5c04\u624b\uff0c\u90e8\u5206\u6545\u4e8b\u628a\u5b83\u4e0e\u53d1\u660e\u5f13\u672f\u7684\u514b\u6d1b\u6258\u65af\u8054\u7cfb\uff0c\u800c\u4e0d\u4e00\u5b9a\u662f\u8457\u540d\u7684\u5580\u620e\u3002\u4e2d\u56fd\u4f20\u7edf\u4e2d\uff0c\u5176\u201c\u8336\u58f6\u201d\u4e3b\u661f\u5927\u591a\u5c5e\u4e8e\u5357\u6597\u516d\u661f\uff0c\u5373\u4e8c\u5341\u516b\u5bbf\u4e2d\u7684\u6597\u5bbf\uff0c\u6c11\u95f4\u6709\u201c\u5357\u6597\u6ce8\u751f\u3001\u5317\u6597\u6ce8\u6b7b\u201d\u7684\u8bf4\u6cd5\uff1b\u94f6\u6cb3\u4e2d\u5fc3\u65b9\u5411\u4e5f\u8ba9\u8fd9\u91cc\u5728\u591a\u79cd\u6587\u5316\u4e2d\u6210\u4e3a\u5929\u6cb3\u4e0e\u795e\u57df\u7684\u5bc6\u96c6\u533a\u57df\u3002";
                 case "capricornus":
@@ -994,6 +1610,26 @@ namespace AZ.Atlas
             public string displayName;
             public GameObject root;
             public AtlasSelectableTarget selectable;
+            public bool missionEligible;
+            public AtlasMissionTargetKind missionKind;
+        }
+
+        private sealed class StarTarget
+        {
+            public string key;
+            public string displayName;
+            public TMP_Text label;
+            public GameObject rayTarget;
+            public AtlasSelectableTarget selectable;
+            public bool missionEligible;
+            public double azimuthDegrees;
+            public double altitudeDegrees;
+            public float magnitude;
+            public double rightAscensionDegrees;
+            public double declinationDegrees;
+            public float distanceLightYears;
+            public string spectralType;
+            public string constellationCode;
         }
 
         private sealed class ConstellationTarget
@@ -1008,6 +1644,32 @@ namespace AZ.Atlas
             public TMP_Text constellationNameLabel;
             public GameObject rayTarget;
             public AtlasSelectableTarget selectable;
+            public bool missionEligible;
+        }
+
+        public struct AtlasMissionTarget
+        {
+            public string key;
+            public string displayName;
+            public AtlasMissionTargetKind kind;
+
+            public AtlasMissionTarget(
+                string targetKey,
+                string targetDisplayName,
+                AtlasMissionTargetKind targetKind)
+            {
+                key = targetKey;
+                displayName = targetDisplayName;
+                kind = targetKind;
+            }
+        }
+
+        public enum AtlasMissionTargetKind
+        {
+            Planet,
+            Moon,
+            Star,
+            Constellation
         }
 
         private struct InfoContent
@@ -1016,6 +1678,7 @@ namespace AZ.Atlas
             public string summary;
             public string detailOne;
             public string detailTwo;
+            public Sprite constellationImage;
         }
     }
 }

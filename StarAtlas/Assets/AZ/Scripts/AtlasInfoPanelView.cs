@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AZ.Atlas
 {
@@ -13,6 +14,7 @@ namespace AZ.Atlas
         [SerializeField] private TMP_Text summaryText;
         [SerializeField] private TMP_Text detailOneText;
         [SerializeField] private TMP_Text detailTwoText;
+        [SerializeField] private Image constellationImage;
 
         public Canvas PanelCanvas => panelCanvas;
         public CanvasGroup CanvasGroup => canvasGroup;
@@ -21,6 +23,7 @@ namespace AZ.Atlas
         public TMP_Text SummaryText => summaryText;
         public TMP_Text DetailOneText => detailOneText;
         public TMP_Text DetailTwoText => detailTwoText;
+        public Image ConstellationImage => constellationImage;
 
         public bool IsConfigured =>
             panelCanvas != null &&
@@ -38,7 +41,8 @@ namespace AZ.Atlas
             TMP_Text title,
             TMP_Text summary,
             TMP_Text detailOne,
-            TMP_Text detailTwo)
+            TMP_Text detailTwo,
+            Image image = null)
         {
             panelCanvas = canvas;
             canvasGroup = group;
@@ -47,6 +51,12 @@ namespace AZ.Atlas
             summaryText = summary;
             detailOneText = detailOne;
             detailTwoText = detailTwo;
+            constellationImage = image;
+        }
+
+        public void SetConstellationImage(Image image)
+        {
+            constellationImage = image;
         }
 
         public void BindCamera(Camera camera)

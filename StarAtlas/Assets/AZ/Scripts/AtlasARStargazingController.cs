@@ -68,6 +68,29 @@ namespace AZ.Atlas
         [SerializeField, Min(0f)] private float constellationNameVerticalOffset = 0.65f;
         [SerializeField, Range(-5f, 5f)] private float constellationNameHorizontalOffset;
         [SerializeField] private Color constellationNameColor = new Color(0.72f, 0.84f, 1f, 0.92f);
+        [SerializeField] private ConstellationNameOffset[] constellationNameOffsets =
+        {
+            new ConstellationNameOffset { displayName = "北斗七星", key = "big-dipper" },
+            new ConstellationNameOffset { displayName = "猎户座", key = "orion" },
+            new ConstellationNameOffset { displayName = "仙后座", key = "cassiopeia" },
+            new ConstellationNameOffset { displayName = "天鹅座", key = "cygnus" },
+            new ConstellationNameOffset { displayName = "天琴座", key = "lyra" },
+            new ConstellationNameOffset { displayName = "天蝎座", key = "scorpius" },
+            new ConstellationNameOffset { displayName = "狮子座", key = "leo" },
+            new ConstellationNameOffset { displayName = "飞马座", key = "pegasus" },
+            new ConstellationNameOffset { displayName = "金牛座", key = "taurus" },
+            new ConstellationNameOffset { displayName = "双子座", key = "gemini" },
+            new ConstellationNameOffset { displayName = "天鹰座", key = "aquila" },
+            new ConstellationNameOffset { displayName = "大犬座", key = "canis-major" },
+            new ConstellationNameOffset { displayName = "白羊座", key = "aries" },
+            new ConstellationNameOffset { displayName = "巨蟹座", key = "cancer" },
+            new ConstellationNameOffset { displayName = "处女座", key = "virgo" },
+            new ConstellationNameOffset { displayName = "天秤座", key = "libra" },
+            new ConstellationNameOffset { displayName = "人马座", key = "sagittarius" },
+            new ConstellationNameOffset { displayName = "摩羯座", key = "capricornus" },
+            new ConstellationNameOffset { displayName = "宝瓶座", key = "aquarius" },
+            new ConstellationNameOffset { displayName = "双鱼座", key = "pisces" }
+        };
 
         [Header("Object Labels")]
         [SerializeField] private bool showObjectLabels = true;
@@ -77,6 +100,11 @@ namespace AZ.Atlas
         [SerializeField, Min(0.01f)] private float labelWorldHeight = 0.7f;
         [SerializeField, Min(0.01f)] private float labelMaxWidth = 3f;
         [SerializeField, Min(0f)] private float labelVerticalOffset = 0.22f;
+        [Tooltip("Vertical offset of generated star names. -0.2 places them below the star.")]
+        [SerializeField, Range(-5f, 5f)] private float starLabelVerticalOffset = -0.2f;
+        [Header("Individual Star Label Offsets")]
+        [SerializeField, Range(-2f, 2f)] private float rhoBootisAdditionalVerticalOffset = -0.45f;
+        [SerializeField, Range(-2f, 2f)] private float izarAdditionalVerticalOffset = -0.45f;
         [SerializeField] private Color labelColor = new Color(1f, 1f, 1f, 0.88f);
 
         [Header("Guide Lines")]
@@ -113,7 +141,7 @@ namespace AZ.Atlas
 
         [Header("Selection Interaction")]
         [SerializeField] private bool enableFocusInteraction = true;
-        [SerializeField] private ExhibitionCatalog focusInfoCatalog;
+        [SerializeField] private AtlasInfoCatalog focusInfoCatalog;
         [SerializeField, Min(0.5f)] private float infoPanelDistance = 1.5f;
         [SerializeField, Min(0f)] private float infoPanelHorizontalOffset = 0.48f;
 
@@ -124,6 +152,8 @@ namespace AZ.Atlas
         private readonly Dictionary<string, TextMeshPro> constellationLabelInstances =
             new Dictionary<string, TextMeshPro>();
         private readonly List<SkyRenderObject> latestObjects = new List<SkyRenderObject>();
+        private readonly Dictionary<string, ObservationEventCache> observationEventCache =
+            new Dictionary<string, ObservationEventCache>(StringComparer.OrdinalIgnoreCase);
         private readonly List<Material> runtimeBodyMaterials = new List<Material>();
         private readonly List<LineRenderer> horizonLineSegments = new List<LineRenderer>();
         private readonly List<LineRenderer> sunPathLineSegments = new List<LineRenderer>();
@@ -142,7 +172,89 @@ namespace AZ.Atlas
         private float lastRenderedScaleSignature = -1f;
         private Coroutine apiRoutine;
         private DateTime latestRenderUtc = DateTime.UtcNow;
+        private float simulationOffsetHours;
         private AtlasFocusController focusController;
+
+        public DateTime CurrentSimulationUtc =>
+            DateTime.UtcNow.AddHours(simulationOffsetHours);
+
+        public float SimulationOffsetHours => simulationOffsetHours;
+        public float StarLabelVerticalOffset => starLabelVerticalOffset;
+
+        public bool TryGetSolarSystemObservation(
+            string bodyKey,
+            out AtlasObservationInfo observation)
+        {
+            observation = new AtlasObservationInfo();
+            if (locationProvider == null || !locationProvider.HasLocation)
+            {
+                return false;
+            }
+
+            string key = NormalizeSolarSystemKey(bodyKey);
+            DateTime utc = CurrentSimulationUtc.ToUniversalTime();
+            if (!TryGetBodyAltAz(key, utc, out AltAz current))
+            {
+                return false;
+            }
+
+            float magnitude = GetApproximatePlanetMagnitude(key);
+            for (int i = 0; i < latestObjects.Count; i++)
+            {
+                SkyRenderObject item = latestObjects[i];
+                string itemKey = NormalizeSolarSystemKey(
+                    string.IsNullOrEmpty(item.key) ? item.displayName : item.key);
+                if (string.Equals(itemKey, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    magnitude = item.magnitude;
+                    break;
+                }
+            }
+
+            if (key == "sun")
+            {
+                magnitude = -26.74f;
+            }
+            else if (key == "moon" && Mathf.Approximately(magnitude, 0f))
+            {
+                magnitude = -12.7f;
+            }
+
+            EquatorialCoordinate sunEquatorial = AtlasAstronomy.GetSunEquatorial(utc);
+            AltAz sun = AtlasAstronomy.EquatorialToHorizontal(
+                sunEquatorial.RightAscensionDegrees,
+                sunEquatorial.DeclinationDegrees,
+                locationProvider.Latitude,
+                locationProvider.Longitude,
+                utc);
+
+            observation.key = key;
+            observation.utc = utc;
+            observation.latitude = locationProvider.Latitude;
+            observation.longitude = locationProvider.Longitude;
+            observation.azimuthDegrees = current.AzimuthDegrees;
+            observation.altitudeDegrees = current.AltitudeDegrees;
+            observation.sunAltitudeDegrees = sun.AltitudeDegrees;
+            observation.magnitude = magnitude;
+
+            if (observationEventCache.TryGetValue(
+                    key,
+                    out ObservationEventCache cached) &&
+                Math.Abs((utc - cached.calculatedUtc).TotalSeconds) <= 30.0 &&
+                Math.Abs(locationProvider.Latitude - cached.latitude) <= 0.000001 &&
+                Math.Abs(locationProvider.Longitude - cached.longitude) <= 0.000001)
+            {
+                cached.ApplyTo(ref observation);
+            }
+            else
+            {
+                CalculateUpcomingBodyEvents(key, utc, ref observation);
+                observationEventCache[key] =
+                    new ObservationEventCache(observation);
+            }
+
+            return true;
+        }
 
         private void Awake()
         {
@@ -215,14 +327,18 @@ namespace AZ.Atlas
                 return;
             }
 
-            if (useSkyMonitorApi && skyApiClient != null)
+            DateTime utc = CurrentSimulationUtc;
+            bool useLiveApi =
+                useSkyMonitorApi &&
+                skyApiClient != null &&
+                Mathf.Abs(simulationOffsetHours) < 0.001f;
+            if (useLiveApi)
             {
                 if (apiRoutine != null)
                 {
                     StopCoroutine(apiRoutine);
                 }
 
-                DateTime utc = DateTime.UtcNow;
                 apiRoutine = StartCoroutine(skyApiClient.FetchChart(
                     locationProvider.Latitude,
                     locationProvider.Longitude,
@@ -244,7 +360,30 @@ namespace AZ.Atlas
                 return;
             }
 
-            RenderBuiltInStars(DateTime.UtcNow);
+            RenderBuiltInStars(utc);
+        }
+
+        public void SetSimulationOffsetHours(float offsetHours)
+        {
+            simulationOffsetHours = Mathf.Clamp(offsetHours, -24f, 24f);
+            if (apiRoutine != null)
+            {
+                StopCoroutine(apiRoutine);
+                apiRoutine = null;
+            }
+
+            if (locationProvider != null && locationProvider.HasLocation)
+            {
+                RenderBuiltInStars(CurrentSimulationUtc);
+            }
+
+            nextRefreshTime = Time.time + Mathf.Max(1f, skyRefreshSeconds);
+        }
+
+        public void ResetSimulationTime()
+        {
+            simulationOffsetHours = 0f;
+            RefreshSkyNow();
         }
 
         public void CalibrateCurrentViewAsNorth()
@@ -275,6 +414,19 @@ namespace AZ.Atlas
             {
                 RenderLatestObjects();
             }
+        }
+
+        public void SetStarLabelVerticalOffset(float value)
+        {
+            starLabelVerticalOffset = Mathf.Clamp(value, -1.5f, 1.5f);
+            if (latestObjects.Count == 0)
+            {
+                return;
+            }
+
+            RenderLabels();
+            RenderConstellationInteractionTargets();
+            lastRenderedScaleSignature = GetScaleSignature();
         }
 
         private void ResolveReferences()
@@ -373,7 +525,12 @@ namespace AZ.Atlas
                         displayName = GetApiObjectDisplayName(item),
                         azimuthDegrees = item.azimuth_deg,
                         altitudeDegrees = item.altitude_deg,
-                        magnitude = item.magnitude
+                        magnitude = item.magnitude,
+                        rightAscensionDegrees = item.ra_deg,
+                        declinationDegrees = item.dec_deg,
+                        distanceLightYears = item.distance_ly,
+                        spectralType = item.spectral_type,
+                        constellation = item.constellation
                     });
                 }
             }
@@ -443,7 +600,9 @@ namespace AZ.Atlas
                     displayName = GetChineseStarDisplayName(star.name),
                     azimuthDegrees = altAz.AzimuthDegrees,
                     altitudeDegrees = altAz.AltitudeDegrees,
-                    magnitude = star.magnitude
+                    magnitude = star.magnitude,
+                    rightAscensionDegrees = star.raDegrees,
+                    declinationDegrees = star.decDegrees
                 });
             }
 
@@ -638,6 +797,8 @@ namespace AZ.Atlas
                     azimuthDegrees = altAz.AzimuthDegrees,
                     altitudeDegrees = altAz.AltitudeDegrees,
                     magnitude = star.magnitude,
+                    rightAscensionDegrees = star.raDegrees,
+                    declinationDegrees = star.decDegrees,
                     isFeatured = true
                 });
             }
@@ -1043,7 +1204,11 @@ namespace AZ.Atlas
                 FacePlanetInstance(instance);
                 UpdatePlanetarySystem(instance, key);
 
-                focusController?.RegisterSolarSystemBody(key, item.displayName, instance);
+                focusController?.RegisterSolarSystemBody(
+                    key,
+                    item.displayName,
+                    instance,
+                    item.altitudeDegrees >= 5f);
             }
 
             foreach (KeyValuePair<string, GameObject> pair in planetInstances)
@@ -1115,6 +1280,26 @@ namespace AZ.Atlas
                 label.transform.localScale = Vector3.one * GetLabelLocalScale();
                 ApplyLabelRect(label);
                 FaceLabelInstance(label);
+
+                if (string.Equals(
+                        item.category,
+                        "star",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    focusController?.RegisterStar(
+                        labelKey,
+                        labelText,
+                        label,
+                        item.altitudeDegrees >= 5f,
+                        item.azimuthDegrees,
+                        item.altitudeDegrees,
+                        item.magnitude,
+                        item.rightAscensionDegrees,
+                        item.declinationDegrees,
+                        item.distanceLightYears,
+                        item.spectralType,
+                        item.constellation);
+                }
             }
 
             foreach (KeyValuePair<string, TextMeshPro> pair in labelInstances)
@@ -1178,6 +1363,7 @@ namespace AZ.Atlas
                 List<Vector3> positions = new List<Vector3>();
                 List<string> availableStarNames = new List<string>();
                 List<TMP_Text> availableStarLabels = new List<TMP_Text>();
+                int starsAboveMissionHorizon = 0;
 
                 for (int starIndex = 0; starIndex < definition.starNames.Length; starIndex++)
                 {
@@ -1192,6 +1378,10 @@ namespace AZ.Atlas
                         star.altitudeDegrees) * GetScaledStarSphereRadius();
                     positions.Add(position);
                     availableStarNames.Add(starName);
+                    if (star.altitudeDegrees >= 5f)
+                    {
+                        starsAboveMissionHorizon++;
+                    }
 
                     string labelKey = GetStableSkyObjectKey(star);
                     if (labelInstances.TryGetValue(labelKey, out TextMeshPro starLabel) &&
@@ -1224,7 +1414,8 @@ namespace AZ.Atlas
                     positions.ToArray(),
                     labelPosition,
                     availableStarLabels.ToArray(),
-                    constellationLabel);
+                    constellationLabel,
+                    starsAboveMissionHorizon >= 2);
             }
         }
 
@@ -1257,6 +1448,7 @@ namespace AZ.Atlas
             float scale = GetSkyDistanceAndSizeMultiplier();
             float verticalOffset = constellationNameVerticalOffset * scale;
             float horizontalOffset = constellationNameHorizontalOffset * scale;
+            Vector2 individualOffset = GetConstellationNameOffset(definition.key);
             Vector3 horizontalDirection = Vector3.Cross(Vector3.up, centerDirection);
             if (horizontalDirection.sqrMagnitude < 0.0001f)
             {
@@ -1270,8 +1462,47 @@ namespace AZ.Atlas
             localPosition =
                 centerDirection * GetScaledStarSphereRadius()
                 + Vector3.down * verticalOffset
-                + horizontalDirection * horizontalOffset;
+                + horizontalDirection * (horizontalOffset + individualOffset.x * scale)
+                + Vector3.up * individualOffset.y * scale;
             return true;
+        }
+
+        private Vector2 GetConstellationNameOffset(string key)
+        {
+            if (constellationNameOffsets == null)
+            {
+                return Vector2.zero;
+            }
+
+            for (int i = 0; i < constellationNameOffsets.Length; i++)
+            {
+                if (string.Equals(
+                        constellationNameOffsets[i].key,
+                        key,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return constellationNameOffsets[i].offset;
+                }
+            }
+
+            return Vector2.zero;
+        }
+
+        private float GetConstellationNameOffsetSignature()
+        {
+            if (constellationNameOffsets == null)
+            {
+                return 0f;
+            }
+
+            float signature = 0f;
+            for (int i = 0; i < constellationNameOffsets.Length; i++)
+            {
+                signature += constellationNameOffsets[i].offset.x * (i + 1) * 0.001f;
+                signature += constellationNameOffsets[i].offset.y * (i + 1) * 0.002f;
+            }
+
+            return signature;
         }
 
         private TextMeshPro GetOrCreateConstellationLabel(string key)
@@ -1369,15 +1600,38 @@ namespace AZ.Atlas
                 item.altitudeDegrees);
             bool isBody = IsSolarSystemBody(item);
             float radius = isBody ? GetScaledPlanetSphereRadius() : GetScaledStarSphereRadius();
-            float offset = labelVerticalOffset * GetSkyDistanceAndSizeMultiplier();
+            float scale = GetSkyDistanceAndSizeMultiplier();
+            float verticalOffset = isBody
+                ? -labelVerticalOffset * scale
+                : (starLabelVerticalOffset + GetIndividualStarLabelVerticalOffset(item)) * scale;
 
             if (isBody)
             {
                 string key = NormalizeSolarSystemKey(string.IsNullOrEmpty(item.key) ? item.displayName : item.key);
-                offset += GetScaledSolarSystemBodyScale(item, key) * 0.65f;
+                verticalOffset -= GetScaledSolarSystemBodyScale(item, key) * 0.65f;
             }
 
-            return direction * radius + Vector3.down * offset;
+            return direction * radius + Vector3.up * verticalOffset;
+        }
+
+        private float GetIndividualStarLabelVerticalOffset(SkyRenderObject item)
+        {
+            string key = (item.key ?? string.Empty).Trim().ToLowerInvariant();
+            string displayName = (item.displayName ?? string.Empty).Replace(" ", string.Empty);
+            if (displayName.Contains("\u7267\u592b\u5ea7\u03c1") ||
+                (key.Contains("rho") &&
+                 (key.Contains("boo") || key.Contains("bootis"))))
+            {
+                return rhoBootisAdditionalVerticalOffset;
+            }
+
+            if (displayName.Contains("\u6897\u6cb3\u4e00") ||
+                string.Equals(key, "izar", StringComparison.OrdinalIgnoreCase))
+            {
+                return izarAdditionalVerticalOffset;
+            }
+
+            return 0f;
         }
 
         private bool ShouldShowLabel(SkyRenderObject item)
@@ -1761,6 +2015,10 @@ namespace AZ.Atlas
                    + constellationNameWorldHeight * 0.09f
                    + constellationNameVerticalOffset * 0.1f
                    + constellationNameHorizontalOffset * 0.11f
+                   + starLabelVerticalOffset * 0.12f
+                   + rhoBootisAdditionalVerticalOffset * 0.013f
+                   + izarAdditionalVerticalOffset * 0.017f
+                   + GetConstellationNameOffsetSignature()
                    + (includePlanetaryRingsAndMoons ? 500000f : 0f)
                    + (orientPlanetarySystemsFromRealPoles ? 600000f : 0f);
         }
@@ -1922,7 +2180,146 @@ namespace AZ.Atlas
                 focusInfoCatalog,
                 labelFont,
                 infoPanelDistance,
-                infoPanelHorizontalOffset);
+                infoPanelHorizontalOffset,
+                this);
+        }
+
+        private bool TryGetBodyAltAz(string bodyKey, DateTime utc, out AltAz altAz)
+        {
+            altAz = new AltAz();
+            EquatorialCoordinate equatorial;
+            switch (NormalizeSolarSystemKey(bodyKey))
+            {
+                case "sun":
+                    equatorial = AtlasAstronomy.GetSunEquatorial(utc);
+                    break;
+                case "moon":
+                    equatorial = AtlasAstronomy.GetMoonEquatorial(utc);
+                    break;
+                default:
+                    if (!AtlasAstronomy.TryGetPlanetEquatorial(
+                            NormalizeSolarSystemKey(bodyKey),
+                            utc,
+                            out equatorial))
+                    {
+                        return false;
+                    }
+                    break;
+            }
+
+            altAz = AtlasAstronomy.EquatorialToHorizontal(
+                equatorial.RightAscensionDegrees,
+                equatorial.DeclinationDegrees,
+                locationProvider.Latitude,
+                locationProvider.Longitude,
+                utc);
+            return true;
+        }
+
+        private void CalculateUpcomingBodyEvents(
+            string bodyKey,
+            DateTime startUtc,
+            ref AtlasObservationInfo observation)
+        {
+            const int stepMinutes = 5;
+            const int searchHours = 48;
+            int sampleCount = searchHours * 60 / stepMinutes;
+            int transitSampleCount = 24 * 60 / stepMinutes;
+            double horizon = GetApparentHorizonAltitude(bodyKey);
+
+            if (!TryGetBodyAltAz(bodyKey, startUtc, out AltAz previous))
+            {
+                return;
+            }
+
+            DateTime previousTime = startUtc;
+            double previousOffset = previous.AltitudeDegrees - horizon;
+            bool foundAbove = previousOffset >= 0.0;
+            bool foundBelow = previousOffset < 0.0;
+            double highestAltitude = previous.AltitudeDegrees;
+            DateTime highestTime = startUtc;
+
+            for (int i = 1; i <= sampleCount; i++)
+            {
+                DateTime sampleTime = startUtc.AddMinutes(i * stepMinutes);
+                if (!TryGetBodyAltAz(bodyKey, sampleTime, out AltAz sample))
+                {
+                    continue;
+                }
+
+                double currentOffset = sample.AltitudeDegrees - horizon;
+                foundAbove |= currentOffset >= 0.0;
+                foundBelow |= currentOffset < 0.0;
+
+                if (i <= transitSampleCount &&
+                    sample.AltitudeDegrees > highestAltitude)
+                {
+                    highestAltitude = sample.AltitudeDegrees;
+                    highestTime = sampleTime;
+                }
+
+                if (!observation.hasRise &&
+                    previousOffset < 0.0 &&
+                    currentOffset >= 0.0)
+                {
+                    observation.riseUtc = InterpolateHorizonCrossing(
+                        previousTime,
+                        sampleTime,
+                        previousOffset,
+                        currentOffset);
+                    observation.hasRise = true;
+                }
+
+                if (!observation.hasSet &&
+                    previousOffset >= 0.0 &&
+                    currentOffset < 0.0)
+                {
+                    observation.setUtc = InterpolateHorizonCrossing(
+                        previousTime,
+                        sampleTime,
+                        previousOffset,
+                        currentOffset);
+                    observation.hasSet = true;
+                }
+
+                previousTime = sampleTime;
+                previousOffset = currentOffset;
+            }
+
+            observation.hasTransit = true;
+            observation.transitUtc = highestTime;
+            observation.transitAltitudeDegrees = highestAltitude;
+            observation.alwaysAboveHorizon = foundAbove && !foundBelow;
+            observation.alwaysBelowHorizon = foundBelow && !foundAbove;
+        }
+
+        private static DateTime InterpolateHorizonCrossing(
+            DateTime start,
+            DateTime end,
+            double startOffset,
+            double endOffset)
+        {
+            double denominator = startOffset - endOffset;
+            double fraction = Math.Abs(denominator) < 1e-9
+                ? 0.5
+                : startOffset / denominator;
+            fraction = Math.Max(0.0, Math.Min(1.0, fraction));
+            long ticks = start.Ticks +
+                         (long)((end.Ticks - start.Ticks) * fraction);
+            return new DateTime(ticks, DateTimeKind.Utc);
+        }
+
+        private static double GetApparentHorizonAltitude(string bodyKey)
+        {
+            switch (NormalizeSolarSystemKey(bodyKey))
+            {
+                case "sun":
+                    return -0.833;
+                case "moon":
+                    return 0.125;
+                default:
+                    return -0.566;
+            }
         }
 
         private Material GetStarMaterial()
@@ -2230,10 +2627,10 @@ namespace AZ.Atlas
                 case "Acubens": return "\u5de8\u87f9\u5ea7\u03b1";
                 case "Asellus Borealis": return "\u9b3c\u5bbf\u56db";
                 case "Tegmine": return "\u5de8\u87f9\u5ea7\u03b6";
-                case "Porrima": return "\u5ba4\u5973\u5ea7\u03b3";
+                case "Porrima": return "\u5904\u5973\u5ea7\u03b3";
                 case "Heze": return "\u89d2\u5bbf\u4e8c";
-                case "Zavijava": return "\u5ba4\u5973\u5ea7\u03b2";
-                case "Zaniah": return "\u5ba4\u5973\u5ea7\u03b7";
+                case "Zavijava": return "\u5904\u5973\u5ea7\u03b2";
+                case "Zaniah": return "\u5904\u5973\u5ea7\u03b7";
                 case "Zubeneschamali": return "\u5929\u79e4\u5ea7\u03b2";
                 case "Zubenelgenubi": return "\u5929\u79e4\u5ea7\u03b1";
                 case "Brachium": return "\u5929\u79e4\u5ea7\u03c3";
@@ -2341,7 +2738,7 @@ namespace AZ.Atlas
                 case "ser": return "\u5de8\u86c7\u5ea7";
                 case "tri": return "\u4e09\u89d2\u5ea7";
                 case "uma": return "\u5927\u718a\u5ea7";
-                case "vir": return "\u5ba4\u5973\u5ea7";
+                case "vir": return "\u5904\u5973\u5ea7";
                 default: return string.Empty;
             }
         }
@@ -2488,6 +2885,77 @@ namespace AZ.Atlas
             public float magnitude;
             public double diameterKilometers;
             public bool isFeatured;
+            public double rightAscensionDegrees;
+            public double declinationDegrees;
+            public float distanceLightYears;
+            public string spectralType;
+            public string constellation;
+        }
+
+        public struct AtlasObservationInfo
+        {
+            public string key;
+            public DateTime utc;
+            public double latitude;
+            public double longitude;
+            public double azimuthDegrees;
+            public double altitudeDegrees;
+            public double sunAltitudeDegrees;
+            public float magnitude;
+            public bool hasRise;
+            public DateTime riseUtc;
+            public bool hasSet;
+            public DateTime setUtc;
+            public bool hasTransit;
+            public DateTime transitUtc;
+            public double transitAltitudeDegrees;
+            public bool alwaysAboveHorizon;
+            public bool alwaysBelowHorizon;
+        }
+
+        private struct ObservationEventCache
+        {
+            public DateTime calculatedUtc;
+            public double latitude;
+            public double longitude;
+            public bool hasRise;
+            public DateTime riseUtc;
+            public bool hasSet;
+            public DateTime setUtc;
+            public bool hasTransit;
+            public DateTime transitUtc;
+            public double transitAltitudeDegrees;
+            public bool alwaysAboveHorizon;
+            public bool alwaysBelowHorizon;
+
+            public ObservationEventCache(AtlasObservationInfo source)
+            {
+                calculatedUtc = source.utc;
+                latitude = source.latitude;
+                longitude = source.longitude;
+                hasRise = source.hasRise;
+                riseUtc = source.riseUtc;
+                hasSet = source.hasSet;
+                setUtc = source.setUtc;
+                hasTransit = source.hasTransit;
+                transitUtc = source.transitUtc;
+                transitAltitudeDegrees = source.transitAltitudeDegrees;
+                alwaysAboveHorizon = source.alwaysAboveHorizon;
+                alwaysBelowHorizon = source.alwaysBelowHorizon;
+            }
+
+            public void ApplyTo(ref AtlasObservationInfo target)
+            {
+                target.hasRise = hasRise;
+                target.riseUtc = riseUtc;
+                target.hasSet = hasSet;
+                target.setUtc = setUtc;
+                target.hasTransit = hasTransit;
+                target.transitUtc = transitUtc;
+                target.transitAltitudeDegrees = transitAltitudeDegrees;
+                target.alwaysAboveHorizon = alwaysAboveHorizon;
+                target.alwaysBelowHorizon = alwaysBelowHorizon;
+            }
         }
 
         private struct BuiltInStar
@@ -2530,6 +2998,14 @@ namespace AZ.Atlas
                 this.displayName = displayName;
                 this.starNames = starNames;
             }
+        }
+
+        [Serializable]
+        private struct ConstellationNameOffset
+        {
+            public string displayName;
+            public string key;
+            public Vector2 offset;
         }
 
         private static readonly string[] LocalPlanetKeys =
@@ -2834,7 +3310,7 @@ namespace AZ.Atlas
                 "Tarf", "Asellus Australis", "Acubens", "Asellus Borealis", "Tegmine"),
             new ConstellationDefinition(
                 "virgo",
-                "\u5ba4\u5973\u5ea7",
+                "\u5904\u5973\u5ea7",
                 "Spica", "Porrima", "Vindemiatrix", "Heze", "Zavijava", "Zaniah"),
             new ConstellationDefinition(
                 "libra",

@@ -1,0 +1,218 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f9441ed99f4c77a9a7e14c1de3984b, type: 3}
+  m_Name: AtlasInfoCatalog
+  m_EditorClassIdentifier:
+  entries:
+  - key: sun
+    displayName: "\u592A\u9633"
+    entryType: 0
+    summary: "太阳是太阳系的中心恒星，提供地球生命所需的主要光和热。Atlas中的位置会随观测地点和模拟时间变化；观测太阳时必须使用合格的太阳滤光设备，禁止裸眼或通过无滤光望远镜直视。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: moon
+    displayName: "\u6708\u7403"
+    entryType: 0
+    summary: "月球是地球唯一的天然卫星。它的升落、过中天位置和可见亮度随日期、时间与观测地点明显变化，月相还会影响夜空亮度和适合观察的地表细节。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: mercury
+    displayName: "\u6C34\u661F"
+    entryType: 0
+    summary: "水星是最靠近太阳的行星，通常只在日出前或日落后的低空短暂出现。它与太阳角距离较小，观测窗口短，寻找时应避开太阳并选择开阔地平线。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: venus
+    displayName: "\u91D1\u661F"
+    entryType: 0
+    summary: "金星是天空中最明亮的行星之一，常以晨星或昏星出现。它始终位于太阳附近的天空区域，因此最佳观测通常发生在黎明前或黄昏后。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: mars
+    displayName: "\u706B\u661F"
+    entryType: 0
+    summary: "火星因富含氧化铁的表面而呈红色。它的亮度会随地球和火星的相对位置显著变化，在接近冲日时整夜可见且最适合望远镜观测。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: jupiter
+    displayName: "\u6728\u661F"
+    entryType: 0
+    summary: "木星是太阳系最大的行星，也是夜空中容易辨认的明亮目标。双筒镜或小型望远镜通常可以看到它的四颗伽利略卫星，较高的高度角能明显改善观测清晰度。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: saturn
+    displayName: "\u571F\u661F"
+    entryType: 0
+    summary: "土星以宽阔而明亮的行星环著称。肉眼看起来像稳定的亮点，使用小型望远镜即可分辨星环；接近过中天、远离地平线时，大气扰动更小。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: uranus
+    displayName: "\u5929\u738B\u661F"
+    entryType: 0
+    summary: "天王星是一颗冰巨星，亮度接近肉眼观测极限。暗空下可借助星图和双筒镜寻找，望远镜中通常呈很小的青绿色圆面。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: neptune
+    displayName: "\u6D77\u738B\u661F"
+    entryType: 0
+    summary: "海王星是距离太阳最远的主要行星，肉眼不可见。观测通常需要望远镜并依靠精确星图定位，接近过中天时更容易获得稳定图像。"
+    majorStars:
+    mythologyAndCulture:
+    constellationImage: {fileID: 0}
+  - key: big-dipper
+    displayName: "\u5317\u6597\u4E03\u661F"
+    entryType: 1
+    summary: "北斗七星是大熊座中最醒目的星群，由斗身四星和斗柄三星组成。由天枢、天璇向外延长约五倍可找到北极星，因此长期用于辨别北方。"
+    majorStars: "\u5929\u67A2\u3001\u5929\u7487\u3001\u5929\u7391\u3001\u5929\u6743\u3001\u7389\u8861\u3001\u5F00\u9633\u3001\u6447\u5149"
+    mythologyAndCulture: "中国传统将北斗用于辨别方向、时辰和季节，并形成丰富的北斗信仰。不同地区也曾把这组星想象成车、犁、长柄勺或熊的一部分。"
+    constellationImage: {fileID: 0}
+  - key: orion
+    displayName: "\u730E\u6237\u5EA7"
+    entryType: 1
+    summary: "猎户座是冬季夜空最醒目的星座之一，三颗几乎排成直线的腰带星非常容易辨认。参宿四、参宿七和猎户座大星云都是重要观测目标。"
+    majorStars: "\u53C2\u5BBF\u56DB\u3001\u53C2\u5BBF\u4E03\u3001\u53C2\u5BBF\u4E00\u3001\u53C2\u5BBF\u4E8C\u3001\u53C2\u5BBF\u4E09"
+    mythologyAndCulture: "希腊传统把它视为猎人俄里翁；中国传统中其主体属于参宿，并与心宿形成参商不相见的文化意象。"
+    constellationImage: {fileID: 0}
+  - key: cassiopeia
+    displayName: "\u4ED9\u540E\u5EA7"
+    entryType: 1
+    summary: "仙后座由五颗较亮恒星组成醒目的W形，位于北天高纬区域，是寻找北极星和辨认秋冬星空的重要路标。"
+    majorStars: "\u738B\u826F\u56DB\u3001\u738B\u826F\u4E00\u3001\u7B56\u3001\u9601\u9053\u4E09\u3001\u738B\u826F\u4E09"
+    mythologyAndCulture: "希腊神话中的王后卡西奥佩娅因夸耀美貌触怒海神；中国星官中，这一区域包含王良、阁道等星官。"
+    constellationImage: {fileID: 0}
+  - key: cygnus
+    displayName: "\u5929\u9E45\u5EA7"
+    entryType: 1
+    summary: "天鹅座沿银河延伸，主要亮星构成北十字。天津四是夏季大三角的一角，附近星野和星云适合双筒镜与摄影观测。"
+    majorStars: "\u5929\u6D25\u56DB\u3001\u8F87\u9053\u589E\u4E03\u3001\u5929\u6D25\u4E8C\u3001\u5929\u6D25\u4E5D"
+    mythologyAndCulture: "欧洲传统常把它与天鹅或北十字联系；中国传统的天津星官横跨银河，象征天河上的渡口与桥梁。"
+    constellationImage: {fileID: 0}
+  - key: lyra
+    displayName: "\u5929\u7434\u5EA7"
+    entryType: 1
+    summary: "天琴座面积不大，但主星织女一十分明亮，是夏季大三角的一角。环状星云M57位于其中，是小型望远镜的经典目标。"
+    majorStars: "\u7EC7\u5973\u4E00\u3001\u6E10\u53F0\u4E8C\u3001\u6E10\u53F0\u4E09"
+    mythologyAndCulture: "希腊神话把它视为俄耳甫斯的竖琴；中国文化中织女一代表织女，与牛郎星和七夕传说紧密相连。"
+    constellationImage: {fileID: 0}
+  - key: scorpius
+    displayName: "\u5929\u874E\u5EA7"
+    entryType: 1
+    summary: "天蝎座是夏季南方天空醒目的黄道星座，红色的心宿二标记蝎心，弯曲星链勾勒出蝎身和尾部。"
+    majorStars: "\u5FC3\u5BBF\u4E8C\u3001\u5C3E\u5BBF\u516B\u3001\u623F\u5BBF\u56DB\u3001\u5C3E\u5BBF\u4E94"
+    mythologyAndCulture: "希腊神话中巨蝎与猎人俄里翁的命运相连；中国传统将该区域分入房宿、心宿和尾宿，心宿二又称大火。"
+    constellationImage: {fileID: 0}
+  - key: leo
+    displayName: "\u72EE\u5B50\u5EA7"
+    entryType: 1
+    summary: "狮子座是春季代表性的黄道星座，镰刀形星群勾勒头部和鬃毛，轩辕十四位于狮子心脏附近。"
+    majorStars: "\u8F69\u8F95\u5341\u56DB\u3001\u4E94\u5E1D\u5EA7\u4E00\u3001\u897F\u4E0A\u76F8\u3001\u8F69\u8F95\u5341\u4E8C"
+    mythologyAndCulture: "希腊神话把它视为赫拉克勒斯制服的涅墨亚狮子；中国传统中该区域涉及轩辕和太微垣等星官。"
+    constellationImage: {fileID: 0}
+  - key: pegasus
+    displayName: "\u98DE\u9A6C\u5EA7"
+    entryType: 1
+    summary: "飞马座以秋季四边形著称，是辨认秋季北天和寻找仙女座星系的重要起点。四边形的一角实际属于仙女座。"
+    majorStars: "\u5BA4\u5BBF\u4E00\u3001\u5BA4\u5BBF\u4E8C\u3001\u58C1\u5BBF\u4E00\u3001\u58C1\u5BBF\u4E8C"
+    mythologyAndCulture: "希腊神话中的飞马佩加索斯帮助英雄完成冒险；中国传统将这一区域分入室宿、壁宿等星官。"
+    constellationImage: {fileID: 0}
+  - key: taurus
+    displayName: "\u91D1\u725B\u5EA7"
+    entryType: 1
+    summary: "金牛座是冬季醒目的黄道星座，毕宿五和毕星团形成V形牛脸，附近的昴星团肉眼即可辨认。"
+    majorStars: "\u6BD5\u5BBF\u4E94\u3001\u5929\u5173\u3001\u4E94\u8F66\u4E94\u3001\u6BD5\u5BBF\u516B"
+    mythologyAndCulture: "希腊神话中宙斯化作白牛接近欧罗巴；中国传统中毕宿与昴宿同属西方白虎，并用于节令判断。"
+    constellationImage: {fileID: 0}
+  - key: gemini
+    displayName: "\u53CC\u5B50\u5EA7"
+    entryType: 1
+    summary: "双子座由北河二和北河三标出双胞胎的头部，两列星链向南延伸，是冬季重要黄道星座。"
+    majorStars: "\u5317\u6CB3\u4E8C\u3001\u5317\u6CB3\u4E09\u3001\u4E95\u5BBF\u4E09\u3001\u4E95\u5BBF\u4E00"
+    mythologyAndCulture: "希腊神话中它代表卡斯托尔与波吕克斯两兄弟；中国传统中主要亮星属于北河星官。"
+    constellationImage: {fileID: 0}
+  - key: aquila
+    displayName: "\u5929\u9E70\u5EA7"
+    entryType: 1
+    summary: "天鹰座沿银河分布，主星牛郎星是夏季大三角的一角，两侧辅星使其很容易辨认。"
+    majorStars: "\u6CB3\u9F13\u4E8C\u3001\u6CB3\u9F13\u4E00\u3001\u6CB3\u9F13\u4E09"
+    mythologyAndCulture: "希腊神话中天鹰常被视为宙斯的神鸟；中国文化中牛郎星属于牛郎织女和七夕传说。"
+    constellationImage: {fileID: 0}
+  - key: canis-major
+    displayName: "\u5927\u72AC\u5EA7"
+    entryType: 1
+    summary: "大犬座位于猎户座东南方，拥有全天最亮恒星天狼星，是冬季星空最醒目的路标之一。"
+    majorStars: "\u5929\u72FC\u661F\u3001\u5F27\u77E2\u4E00\u3001\u5F27\u77E2\u4E8C\u3001\u5F27\u77E2\u4E03"
+    mythologyAndCulture: "希腊传统把它视为猎人俄里翁的猎犬；中国传统中天狼象征边疆威胁，附近弧矢星官像一张弓。"
+    constellationImage: {fileID: 0}
+  - key: aries
+    displayName: "\u767D\u7F8A\u5EA7"
+    entryType: 1
+    summary: "白羊座是较暗的黄道星座，几颗主星形成弯曲短线。它曾靠近古代春分点，因此在历法文化中地位特殊。"
+    majorStars: "\u5A04\u5BBF\u4E09\u3001\u5A04\u5BBF\u4E00\u3001\u5A04\u5BBF\u4E8C"
+    mythologyAndCulture: "希腊神话中的金羊救走佛里克索斯与赫勒；中国传统中该区域主要对应娄宿和胃宿。"
+    constellationImage: {fileID: 0}
+  - key: cancer
+    displayName: "\u5DE8\u87F9\u5EA7"
+    entryType: 1
+    summary: "巨蟹座整体较暗，位于双子座与狮子座之间。蜂巢星团M44在暗空中可见朦胧光斑，是其最醒目的深空目标。"
+    majorStars: "\u67F3\u5BBF\u589E\u4E09\u3001\u9B3C\u5BBF\u4E09\u3001\u9B3C\u5BBF\u56DB"
+    mythologyAndCulture: "希腊神话中巨蟹曾协助九头蛇阻挡赫拉克勒斯；中国传统中这一区域包含鬼宿和积尸气。"
+    constellationImage: {fileID: 0}
+  - key: virgo
+    displayName: "\u5904\u5973\u5EA7"
+    entryType: 1
+    summary: "处女座又叫室女座，是面积很大的春季黄道星座，主星角宿一是春季大三角的重要顶点。该方向还分布着丰富的室女座星系团成员。"
+    majorStars: "\u89D2\u5BBF\u4E00\u3001\u592A\u5FAE\u5DE6\u57A3\u4E00\u3001\u592A\u5FAE\u53F3\u57A3\u4E00"
+    mythologyAndCulture: "希腊罗马传统常把它与农业女神或正义女神联系；中国传统中该区域跨越角宿、亢宿和太微垣。"
+    constellationImage: {fileID: 0}
+  - key: libra
+    displayName: "\u5929\u79E4\u5EA7"
+    entryType: 1
+    summary: "天秤座位于处女座和天蝎座之间，主星构成不规则四边形。其亮星名称仍保留早期被视为天蝎双螯的历史。"
+    majorStars: "\u6C10\u5BBF\u4E00\u3001\u6C10\u5BBF\u56DB\u3001\u6C10\u5BBF\u4E09"
+    mythologyAndCulture: "罗马时代它成为独立的天秤，象征正义与平衡；中国传统中这一区域分属氐宿等星官。"
+    constellationImage: {fileID: 0}
+  - key: sagittarius
+    displayName: "\u4EBA\u9A6C\u5EA7"
+    entryType: 1
+    summary: "人马座位于银河最浓密的方向，主星形成著名的茶壶形星群，壶嘴指向银河系中心。这里聚集了许多星云和星团。"
+    majorStars: "\u6597\u5BBF\u56DB\u3001\u7B95\u5BBF\u4E09\u3001\u6597\u5BBF\u4E8C\u3001\u6597\u5BBF\u4E09"
+    mythologyAndCulture: "西方传统把它描绘成持弓的人马射手；中国传统中茶壶主星大多属于南斗六星，即二十八宿中的斗宿。"
+    constellationImage: {fileID: 0}
+  - key: capricornus
+    displayName: "\u6469\u7FAF\u5EA7"
+    entryType: 1
+    summary: "摩羯座是较暗的黄道星座，几颗主星组成宽阔三角形。北半球夏末至秋季较适合观测。"
+    majorStars: "\u725B\u5BBF\u4E8C\u3001\u5792\u58C1\u9635\u56DB\u3001\u5792\u58C1\u9635\u4E09"
+    mythologyAndCulture: "古代传统把它描绘为半羊半鱼的海羊；中国星官体系中这一区域包含牛宿和垒壁阵等。"
+    constellationImage: {fileID: 0}
+  - key: aquarius
+    displayName: "\u5B9D\u74F6\u5EA7"
+    entryType: 1
+    summary: "宝瓶座面积很大但整体较暗，可由宝瓶口和向南延伸的星链辨认。星座内有球状星团M2和螺旋星云。"
+    majorStars: "\u5371\u5BBF\u4E00\u3001\u865A\u5BBF\u4E00\u3001\u575F\u5893\u4E00"
+    mythologyAndCulture: "古代西亚和希腊传统都将它与持瓶者和水联系；中国传统将这里分入女宿、虚宿和危宿等区域。"
+    constellationImage: {fileID: 0}
+  - key: pisces
+    displayName: "\u53CC\u9C7C\u5EA7"
+    entryType: 1
+    summary: "双鱼座由两条较暗星链构成，北半球秋季可见。当前春分点位于该星座区域，使它在历法和岁差讨论中经常出现。"
+    majorStars: "\u53F3\u66F4\u4E8C\u3001\u5916\u5C4F\u4E03\u3001\u5916\u5C4F\u4E00"
+    mythologyAndCulture: "希腊神话中两位神为躲避怪物化作两条鱼，并以绳相连；中国传统中这一区域涉及奎宿和壁宿。"
+    constellationImage: {fileID: 0}

@@ -12,6 +12,10 @@ namespace AZ.Atlas
         [SerializeField] private AtlasFocusController focusController;
         [SerializeField] private string targetKey;
         [SerializeField] private bool constellation;
+        [SerializeField] private bool openInfoPanel = true;
+        [SerializeField] private string missionTargetKey;
+        [SerializeField] private string missionDisplayName;
+        [SerializeField] private AtlasFocusController.AtlasMissionTargetKind missionTargetKind;
 
         public string TargetKey => targetKey;
         public bool IsConstellation => constellation;
@@ -20,26 +24,44 @@ namespace AZ.Atlas
             AtlasFocusController controller,
             string key,
             bool isConstellation,
-            Collider targetCollider)
+            Collider targetCollider,
+            bool shouldOpenInfoPanel,
+            string missionKey,
+            string missionName,
+            AtlasFocusController.AtlasMissionTargetKind missionKind)
         {
             focusController = controller;
             targetKey = key;
             constellation = isConstellation;
+            openInfoPanel = shouldOpenInfoPanel;
+            missionTargetKey = missionKey;
+            missionDisplayName = missionName;
+            missionTargetKind = missionKind;
             EnsureRayInteraction(targetCollider);
         }
 
         public void OnRayPointerClick(PointerEventData eventData)
         {
-            if (focusController != null && !string.IsNullOrEmpty(targetKey))
+            if (focusController == null)
             {
-                Debug.Log(
-                    $"Atlas ray selected {(constellation ? "constellation" : "body")}: {targetKey}",
-                    gameObject);
-                focusController.ToggleInfoPanel(targetKey, constellation);
+                Debug.LogWarning("Atlas ray target is missing its controller.", gameObject);
+                return;
             }
-            else
+
+            bool missionWasActive = focusController.IsMissionActive;
+            if (!string.IsNullOrEmpty(missionTargetKey))
             {
-                Debug.LogWarning("Atlas ray target is missing its controller or key.", gameObject);
+                focusController.NotifyMissionTargetSelected(
+                    missionTargetKey,
+                    missionTargetKind,
+                    missionDisplayName);
+            }
+
+            if (!missionWasActive &&
+                openInfoPanel &&
+                !string.IsNullOrEmpty(targetKey))
+            {
+                focusController.ToggleInfoPanel(targetKey, constellation);
             }
         }
 

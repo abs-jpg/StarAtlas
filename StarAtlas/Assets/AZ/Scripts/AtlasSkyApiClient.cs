@@ -127,5 +127,8 @@ namespace AZ.Atlas
         public double azimuth_deg;
         public double altitude_deg;
         public float magnitude;
+        public float distance_ly;
+        public string spectral_type;
+        public string constellation;
     }
 }
