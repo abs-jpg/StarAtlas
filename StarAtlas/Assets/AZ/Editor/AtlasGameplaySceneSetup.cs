@@ -329,8 +329,8 @@ namespace AZ.Atlas.Editor
                 return;
             }
 
-            scrollRect.anchoredPosition = new Vector2(0f, 29f);
-            scrollRect.sizeDelta = new Vector2(-40f, -372f);
+            scrollRect.anchoredPosition = new Vector2(0f, -10f);
+            scrollRect.sizeDelta = new Vector2(-40f, -450f);
             EditorUtility.SetDirty(scrollRect);
         }
 

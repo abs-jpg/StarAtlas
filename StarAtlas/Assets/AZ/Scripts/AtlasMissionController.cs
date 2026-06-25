@@ -11,6 +11,7 @@ namespace AZ.Atlas
     public sealed class AtlasMissionController : MonoBehaviour
     {
         private const int RequiredCorrectTargets = 3;
+        private const float FeedbackDelaySeconds = 1.05f;
 
         [SerializeField] private AtlasFocusController focusController;
         [SerializeField] private RectTransform panelRect;
@@ -21,6 +22,11 @@ namespace AZ.Atlas
         [SerializeField] private TMP_Text progressText;
         [SerializeField] private Button startButton;
         [SerializeField] private Button exitButton;
+
+        [Header("Camera HUD")]
+        [SerializeField] private bool createCameraHud = true;
+        [SerializeField] private Camera hudCamera;
+        [SerializeField] private AtlasMissionHudPanel hudPanel;
 
         private readonly List<AtlasFocusController.AtlasMissionTarget> candidates =
             new List<AtlasFocusController.AtlasMissionTarget>();
@@ -106,6 +112,7 @@ namespace AZ.Atlas
             }
 
             SetStatus("天空位置已变化，正在为你更换一个可见目标。");
+            SetHudFeedback("<color=#FFAA45>天空位置变化，正在换题</color>");
             SelectNextTarget();
         }
 
@@ -160,6 +167,7 @@ namespace AZ.Atlas
             currentTarget = default;
             StopNextTargetRoutine();
             UnsubscribeFromSelection();
+            HideHud();
             if (panelGroup != null)
             {
                 panelGroup.alpha = 0f;
@@ -179,6 +187,7 @@ namespace AZ.Atlas
                 return;
             }
 
+            SubscribeToSelection();
             focusController.CollectMissionCandidates(candidates);
             if (candidates.Count == 0)
             {
@@ -193,6 +202,7 @@ namespace AZ.Atlas
             StopNextTargetRoutine();
             nextTargetValidationTime = Time.unscaledTime + 1f;
             ApplyActiveLayout();
+            ShowHud();
             SelectNextTarget();
         }
 
@@ -286,12 +296,23 @@ namespace AZ.Atlas
                 string.Equals(currentTarget.key, key, StringComparison.OrdinalIgnoreCase);
             if (!correct)
             {
+                acceptingSelection = false;
+                StopNextTargetRoutine();
+                string chosenName = string.IsNullOrWhiteSpace(displayName)
+                    ? "未命名目标"
+                    : displayName;
                 SetStatus(
-                    $"<color=#FF6B6B>选择错误</color>：“{displayName}”不是本轮目标，请继续寻找。");
+                    $"<color=#FF6B6B>选择错误</color>：你点的是“{chosenName}”。\n" +
+                    $"正确目标是“{currentTarget.displayName}”，正在进入下一题...");
+                SetHudFeedback(
+                    $"<color=#FF6B6B>错误</color>：点了“{chosenName}”，正确是“{currentTarget.displayName}”");
+                SetProgress($"{completedTargets} / {RequiredCorrectTargets}");
+                nextTargetRoutine = StartCoroutine(AdvanceToNextTarget(FeedbackDelaySeconds));
                 return;
             }
 
             acceptingSelection = false;
+            StopNextTargetRoutine();
             completedTargets++;
             if (completedTargets >= RequiredCorrectTargets)
             {
@@ -304,6 +325,8 @@ namespace AZ.Atlas
                 SetStatus(
                     "<color=#62E6A5>选择正确，任务完成。</color>\n" +
                     "三次定位全部正确，你已经完成本轮 AR 寻星。");
+                SetHudTarget("任务完成");
+                SetHudFeedback("<color=#62E6A5>正确</color>：三次定位全部完成");
                 SetProgress("3 / 3");
                 SetStartButtonText("再来一轮");
                 return;
@@ -312,7 +335,9 @@ namespace AZ.Atlas
             SetStatus(
                 $"<color=#62E6A5>选择正确</color>：找到“{displayName}”。\n" +
                 "正在准备下一个目标...");
-            nextTargetRoutine = StartCoroutine(AdvanceToNextTarget());
+            SetHudFeedback(
+                $"<color=#62E6A5>正确</color>：找到“{displayName}”，准备下一题");
+            nextTargetRoutine = StartCoroutine(AdvanceToNextTarget(FeedbackDelaySeconds));
         }
 
         private void SelectNextTarget()
@@ -333,6 +358,8 @@ namespace AZ.Atlas
                 missionActive = false;
                 acceptingSelection = false;
                 SetStatus("当前天空中没有新的未重复目标，请调整时间或观测地点后重新开始。");
+                SetHudTarget("暂无新目标");
+                SetHudFeedback("请调整时间或观测地点后重新开始。");
                 SetStartButtonText("重新开始");
                 return;
             }
@@ -350,13 +377,16 @@ namespace AZ.Atlas
             SetStatus(
                 $"请转动头部寻找{targetType}：<color=#FFAA45>{currentTarget.displayName}</color>\n" +
                 "将射线移到名称或模型上并点击确认。");
+            SetHudTarget(
+                $"目标 {completedTargets + 1}/{RequiredCorrectTargets}：{targetType} {currentTarget.displayName}");
+            SetHudFeedback("转头寻找目标，点击名称或模型");
             SetProgress($"{completedTargets} / {RequiredCorrectTargets}");
             SetStartButtonText("重新开始");
         }
 
-        private IEnumerator AdvanceToNextTarget()
+        private IEnumerator AdvanceToNextTarget(float delaySeconds)
         {
-            yield return new WaitForSecondsRealtime(0.85f);
+            yield return new WaitForSecondsRealtime(delaySeconds);
             nextTargetRoutine = null;
             if (missionActive)
             {
@@ -397,6 +427,7 @@ namespace AZ.Atlas
             SetStatus("准备好后开始第一轮寻星。");
             SetProgress("0 / 3");
             SetStartButtonText("开始任务");
+            HideHud();
         }
 
         private void ApplyRulesLayout()
@@ -561,6 +592,169 @@ namespace AZ.Atlas
             for (int i = 0; i < labels.Length; i++)
             {
                 labels[i].text = value;
+            }
+        }
+
+        private void ShowHud()
+        {
+            if (!createCameraHud)
+            {
+                return;
+            }
+
+            EnsureHud();
+            hudPanel?.SetVisible(true);
+        }
+
+        private void HideHud()
+        {
+            hudPanel?.SetVisible(false);
+        }
+
+        private void SetHudTarget(string value)
+        {
+            EnsureHud();
+            hudPanel?.SetTarget(value);
+        }
+
+        private void SetHudFeedback(string value)
+        {
+            EnsureHud();
+            hudPanel?.SetFeedback(value);
+        }
+
+        private void EnsureHud()
+        {
+            if (!createCameraHud)
+            {
+                return;
+            }
+
+            ResolveHudCamera();
+            if (hudPanel == null)
+            {
+                GameObject hudObject = new GameObject(
+                    "Atlas Mission Screen HUD",
+                    typeof(RectTransform),
+                    typeof(Canvas),
+                    typeof(CanvasScaler),
+                    typeof(GraphicRaycaster),
+                    typeof(CanvasGroup),
+                    typeof(Image));
+                RectTransform hudRect = hudObject.GetComponent<RectTransform>();
+
+                Canvas canvas = hudObject.GetComponent<Canvas>();
+                canvas.renderMode = RenderMode.WorldSpace;
+                canvas.sortingOrder = 1000;
+                canvas.worldCamera = hudCamera;
+
+                CanvasScaler scaler = hudObject.GetComponent<CanvasScaler>();
+                scaler.dynamicPixelsPerUnit = 12f;
+                scaler.referencePixelsPerUnit = 100f;
+
+                Image background = hudObject.GetComponent<Image>();
+                background.color = new Color(0.018f, 0.04f, 0.07f, 0.34f);
+                background.raycastTarget = false;
+
+                CanvasGroup hudGroup = hudObject.GetComponent<CanvasGroup>();
+                hudGroup.alpha = 0f;
+                hudGroup.interactable = false;
+                hudGroup.blocksRaycasts = false;
+
+                TMP_Text targetText = CreateHudText(
+                    "Mission Target",
+                    hudRect,
+                    "目标",
+                    20f,
+                    FontStyles.Bold,
+                    TextAlignmentOptions.MidlineLeft,
+                    new Color(1f, 0.72f, 0.28f, 1f),
+                    new Vector2(12f, 42f),
+                    new Vector2(-12f, -6f));
+
+                TMP_Text feedbackText = CreateHudText(
+                    "Mission Feedback",
+                    hudRect,
+                    "准备开始寻星。",
+                    18f,
+                    FontStyles.Normal,
+                    TextAlignmentOptions.MidlineLeft,
+                    new Color(0.86f, 0.94f, 1f, 1f),
+                    new Vector2(12f, 6f),
+                    new Vector2(-12f, -42f));
+
+                hudPanel = hudObject.AddComponent<AtlasMissionHudPanel>();
+                hudPanel.Configure(hudCamera, targetText, feedbackText);
+                return;
+            }
+
+            hudPanel.Configure(
+                hudCamera,
+                hudPanel.TargetText,
+                hudPanel.FeedbackText);
+        }
+
+        private TMP_Text CreateHudText(
+            string objectName,
+            RectTransform parent,
+            string value,
+            float fontSize,
+            FontStyles fontStyle,
+            TextAlignmentOptions alignment,
+            Color color,
+            Vector2 offsetMin,
+            Vector2 offsetMax)
+        {
+            GameObject textObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(TextMeshProUGUI));
+            textObject.transform.SetParent(parent, false);
+
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
+
+            TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+            text.text = value;
+            text.fontSize = fontSize;
+            text.fontStyle = fontStyle;
+            text.alignment = alignment;
+            text.color = color;
+            text.enableWordWrapping = false;
+            text.overflowMode = TextOverflowModes.Ellipsis;
+            text.raycastTarget = false;
+            if (titleText != null && titleText.font != null)
+            {
+                text.font = titleText.font;
+            }
+
+            return text;
+        }
+
+        private void ResolveHudCamera()
+        {
+            if (hudCamera != null)
+            {
+                return;
+            }
+
+            hudCamera = Camera.main;
+            if (hudCamera != null)
+            {
+                return;
+            }
+
+            Camera[] cameras = FindObjectsOfType<Camera>();
+            for (int i = 0; i < cameras.Length; i++)
+            {
+                if (cameras[i] != null && cameras[i].isActiveAndEnabled)
+                {
+                    hudCamera = cameras[i];
+                    return;
+                }
             }
         }
 

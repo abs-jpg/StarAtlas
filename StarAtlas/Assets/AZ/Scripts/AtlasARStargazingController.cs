@@ -13,6 +13,7 @@ namespace AZ.Atlas
         private const float ParticleLifetime = 999999f;
         private const double EarthDiameterKilometers = 12742.0;
         private const float LabelBaseFontSize = 3f;
+        private const float DefaultStarLabelVerticalOffset = -0.2f;
 
         [Header("References")]
         [SerializeField] private Camera observerCamera;
@@ -100,11 +101,6 @@ namespace AZ.Atlas
         [SerializeField, Min(0.01f)] private float labelWorldHeight = 0.7f;
         [SerializeField, Min(0.01f)] private float labelMaxWidth = 3f;
         [SerializeField, Min(0f)] private float labelVerticalOffset = 0.22f;
-        [Tooltip("Vertical offset of generated star names. -0.2 places them below the star.")]
-        [SerializeField, Range(-5f, 5f)] private float starLabelVerticalOffset = -0.2f;
-        [Header("Individual Star Label Offsets")]
-        [SerializeField, Range(-2f, 2f)] private float rhoBootisAdditionalVerticalOffset = -0.45f;
-        [SerializeField, Range(-2f, 2f)] private float izarAdditionalVerticalOffset = -0.45f;
         [SerializeField] private Color labelColor = new Color(1f, 1f, 1f, 0.88f);
 
         [Header("Guide Lines")]
@@ -179,7 +175,7 @@ namespace AZ.Atlas
             DateTime.UtcNow.AddHours(simulationOffsetHours);
 
         public float SimulationOffsetHours => simulationOffsetHours;
-        public float StarLabelVerticalOffset => starLabelVerticalOffset;
+        public float StarLabelVerticalOffset => DefaultStarLabelVerticalOffset;
 
         public bool TryGetSolarSystemObservation(
             string bodyKey,
@@ -418,7 +414,6 @@ namespace AZ.Atlas
 
         public void SetStarLabelVerticalOffset(float value)
         {
-            starLabelVerticalOffset = Mathf.Clamp(value, -1.5f, 1.5f);
             if (latestObjects.Count == 0)
             {
                 return;
@@ -1603,7 +1598,7 @@ namespace AZ.Atlas
             float scale = GetSkyDistanceAndSizeMultiplier();
             float verticalOffset = isBody
                 ? -labelVerticalOffset * scale
-                : (starLabelVerticalOffset + GetIndividualStarLabelVerticalOffset(item)) * scale;
+                : DefaultStarLabelVerticalOffset * scale;
 
             if (isBody)
             {
@@ -1612,26 +1607,6 @@ namespace AZ.Atlas
             }
 
             return direction * radius + Vector3.up * verticalOffset;
-        }
-
-        private float GetIndividualStarLabelVerticalOffset(SkyRenderObject item)
-        {
-            string key = (item.key ?? string.Empty).Trim().ToLowerInvariant();
-            string displayName = (item.displayName ?? string.Empty).Replace(" ", string.Empty);
-            if (displayName.Contains("\u7267\u592b\u5ea7\u03c1") ||
-                (key.Contains("rho") &&
-                 (key.Contains("boo") || key.Contains("bootis"))))
-            {
-                return rhoBootisAdditionalVerticalOffset;
-            }
-
-            if (displayName.Contains("\u6897\u6cb3\u4e00") ||
-                string.Equals(key, "izar", StringComparison.OrdinalIgnoreCase))
-            {
-                return izarAdditionalVerticalOffset;
-            }
-
-            return 0f;
         }
 
         private bool ShouldShowLabel(SkyRenderObject item)
@@ -2015,9 +1990,7 @@ namespace AZ.Atlas
                    + constellationNameWorldHeight * 0.09f
                    + constellationNameVerticalOffset * 0.1f
                    + constellationNameHorizontalOffset * 0.11f
-                   + starLabelVerticalOffset * 0.12f
-                   + rhoBootisAdditionalVerticalOffset * 0.013f
-                   + izarAdditionalVerticalOffset * 0.017f
+                   + DefaultStarLabelVerticalOffset * 0.12f
                    + GetConstellationNameOffsetSignature()
                    + (includePlanetaryRingsAndMoons ? 500000f : 0f)
                    + (orientPlanetarySystemsFromRealPoles ? 600000f : 0f);

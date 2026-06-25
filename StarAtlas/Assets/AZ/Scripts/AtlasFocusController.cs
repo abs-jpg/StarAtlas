@@ -278,10 +278,7 @@ namespace AZ.Atlas
             AtlasMissionTargetKind kind,
             string displayName)
         {
-            if (!string.IsNullOrEmpty(key))
-            {
-                TargetSelected?.Invoke(key, kind, displayName);
-            }
+            TargetSelected?.Invoke(key, kind, displayName);
         }
 
         public void CollectMissionCandidates(List<AtlasMissionTarget> results)

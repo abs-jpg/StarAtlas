@@ -13,6 +13,7 @@ namespace AZ.Atlas
         [SerializeField] private string targetKey;
         [SerializeField] private bool constellation;
         [SerializeField] private bool openInfoPanel = true;
+        [SerializeField] private string targetDisplayName;
         [SerializeField] private string missionTargetKey;
         [SerializeField] private string missionDisplayName;
         [SerializeField] private AtlasFocusController.AtlasMissionTargetKind missionTargetKind;
@@ -34,6 +35,9 @@ namespace AZ.Atlas
             targetKey = key;
             constellation = isConstellation;
             openInfoPanel = shouldOpenInfoPanel;
+            targetDisplayName = !string.IsNullOrWhiteSpace(missionName)
+                ? missionName
+                : key;
             missionTargetKey = missionKey;
             missionDisplayName = missionName;
             missionTargetKind = missionKind;
@@ -49,6 +53,22 @@ namespace AZ.Atlas
             }
 
             bool missionWasActive = focusController.IsMissionActive;
+            if (missionWasActive)
+            {
+                string resolvedKey = !string.IsNullOrEmpty(missionTargetKey)
+                    ? missionTargetKey
+                    : targetKey;
+                string resolvedName = !string.IsNullOrWhiteSpace(missionDisplayName)
+                    ? missionDisplayName
+                    : targetDisplayName;
+
+                focusController.NotifyMissionTargetSelected(
+                    resolvedKey,
+                    missionTargetKind,
+                    resolvedName);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(missionTargetKey))
             {
                 focusController.NotifyMissionTargetSelected(
