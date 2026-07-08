@@ -185,6 +185,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &2871678712737585853
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +375,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &3232386767315320328
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +565,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &3322725245577985740
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,6 +755,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &3693679923451264291
 GameObject:
   m_ObjectHideFlags: 0
@@ -1178,6 +1198,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &4965672928047364443
 GameObject:
   m_ObjectHideFlags: 0
@@ -1363,6 +1388,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &7481466108972863486
 GameObject:
   m_ObjectHideFlags: 0
@@ -1548,6 +1578,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &7722064418160930563
 GameObject:
   m_ObjectHideFlags: 0
@@ -1733,6 +1768,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1 &9162669842470330089
 GameObject:
   m_ObjectHideFlags: 0
@@ -1918,6 +1958,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99d82ebdc220135418d1f8c65867e46d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followInitialParent: 1
+  detachFromRotatingParent: 1
+  faceCamera: 1
+  followTarget: {fileID: 0}
+  stableParent: {fileID: 0}
 --- !u!1001 &2543209571171941132
 PrefabInstance:
   m_ObjectHideFlags: 0

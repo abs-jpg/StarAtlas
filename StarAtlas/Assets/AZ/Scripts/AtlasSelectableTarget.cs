@@ -91,12 +91,14 @@ namespace AZ.Atlas
             {
                 return;
             }
+            targetCollider.enabled = true;
 
             ColliderSurface surface = GetComponent<ColliderSurface>();
             if (surface == null)
             {
                 surface = gameObject.AddComponent<ColliderSurface>();
             }
+            surface.enabled = true;
 
             SetPrivateField(surface, "_collider", targetCollider);
 
@@ -105,6 +107,7 @@ namespace AZ.Atlas
             {
                 interactable = gameObject.AddComponent<RayInteractable>();
             }
+            interactable.enabled = true;
 
             SetPrivateField(interactable, "_surface", surface);
             SetPrivateField(interactable, "_selectSurface", surface);

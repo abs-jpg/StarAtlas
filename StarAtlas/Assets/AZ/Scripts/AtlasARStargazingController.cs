@@ -28,7 +28,9 @@ namespace AZ.Atlas
         [SerializeField] private bool useBuiltInStarsWhenApiFails = true;
 
         [Header("North Alignment")]
-        [SerializeField] private bool useCompassHeading = true;
+        [SerializeField] private bool useCompassHeading = false;
+        [SerializeField] private bool continuousCompassAlignment;
+        [SerializeField] private bool centerSkyOnObserver = true;
         [SerializeField] private float manualNorthYawOffsetDegrees;
         [SerializeField, Range(0f, 1f)] private float compassSmoothing = 0.12f;
 
@@ -71,23 +73,23 @@ namespace AZ.Atlas
         [SerializeField] private Color constellationNameColor = new Color(0.72f, 0.84f, 1f, 0.92f);
         [SerializeField] private ConstellationNameOffset[] constellationNameOffsets =
         {
-            new ConstellationNameOffset { displayName = "北斗七星", key = "big-dipper" },
+            new ConstellationNameOffset { displayName = "北斗七星", key = "big-dipper", offset = new Vector2(0.2f, 0f) },
             new ConstellationNameOffset { displayName = "猎户座", key = "orion" },
             new ConstellationNameOffset { displayName = "仙后座", key = "cassiopeia" },
             new ConstellationNameOffset { displayName = "天鹅座", key = "cygnus" },
-            new ConstellationNameOffset { displayName = "天琴座", key = "lyra" },
+            new ConstellationNameOffset { displayName = "天琴座", key = "lyra", offset = new Vector2(0f, -0.4f) },
             new ConstellationNameOffset { displayName = "天蝎座", key = "scorpius" },
             new ConstellationNameOffset { displayName = "狮子座", key = "leo" },
             new ConstellationNameOffset { displayName = "飞马座", key = "pegasus" },
             new ConstellationNameOffset { displayName = "金牛座", key = "taurus" },
-            new ConstellationNameOffset { displayName = "双子座", key = "gemini" },
-            new ConstellationNameOffset { displayName = "天鹰座", key = "aquila" },
+            new ConstellationNameOffset { displayName = "双子座", key = "gemini", offset = new Vector2(0f, -0.8f) },
+            new ConstellationNameOffset { displayName = "天鹰座", key = "aquila", offset = new Vector2(0f, -0.3f) },
             new ConstellationNameOffset { displayName = "大犬座", key = "canis-major" },
             new ConstellationNameOffset { displayName = "白羊座", key = "aries" },
             new ConstellationNameOffset { displayName = "巨蟹座", key = "cancer" },
             new ConstellationNameOffset { displayName = "处女座", key = "virgo" },
             new ConstellationNameOffset { displayName = "天秤座", key = "libra" },
-            new ConstellationNameOffset { displayName = "人马座", key = "sagittarius" },
+            new ConstellationNameOffset { displayName = "人马座", key = "sagittarius", offset = new Vector2(0f, -0.3f) },
             new ConstellationNameOffset { displayName = "摩羯座", key = "capricornus" },
             new ConstellationNameOffset { displayName = "宝瓶座", key = "aquarius" },
             new ConstellationNameOffset { displayName = "双鱼座", key = "pisces" }
@@ -140,6 +142,7 @@ namespace AZ.Atlas
         [SerializeField] private AtlasInfoCatalog focusInfoCatalog;
         [SerializeField, Min(0.5f)] private float infoPanelDistance = 1.5f;
         [SerializeField, Min(0f)] private float infoPanelHorizontalOffset = 0.48f;
+        [SerializeField, Range(0.2f, 4f)] private float constellationNameHitBoxScale = 1f;
 
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Vector3> planetLocalPositions =
@@ -297,6 +300,7 @@ namespace AZ.Atlas
         private void Update()
         {
             ResolveReferences();
+            UpdateFocusInteractionSettings();
             UpdateNorthAlignment();
             FollowObserverPosition();
             RefreshRenderIfScaleChanged();
@@ -475,7 +479,11 @@ namespace AZ.Atlas
                 return;
             }
 
-            skyRoot.position = observerCamera.transform.position;
+            if (centerSkyOnObserver)
+            {
+                skyRoot.position = observerCamera.transform.position;
+            }
+
             skyRoot.rotation = Quaternion.Euler(0f, currentNorthYawOffsetDegrees, 0f);
             UpdatePlanetFacing();
         }
@@ -484,6 +492,7 @@ namespace AZ.Atlas
         {
             float targetOffset = manualNorthYawOffsetDegrees;
             if (useCompassHeading &&
+                continuousCompassAlignment &&
                 observerCamera != null &&
                 Input.compass.enabled &&
                 Input.compass.timestamp > 0.0)
@@ -2131,6 +2140,29 @@ namespace AZ.Atlas
             }
         }
 
+        private void UpdateFocusInteractionSettings()
+        {
+            if (focusController == null)
+            {
+                return;
+            }
+
+            if (focusController.SetConstellationNameHitBoxScale(GetConstellationNameHitBoxScale()))
+            {
+                RenderConstellationInteractionTargets();
+            }
+        }
+
+        private float GetConstellationNameHitBoxScale()
+        {
+            if (constellationNameHitBoxScale <= 0f)
+            {
+                return 1f;
+            }
+
+            return Mathf.Clamp(constellationNameHitBoxScale, 0.2f, 4f);
+        }
+
         private void EnsureFocusController()
         {
             if (!enableFocusInteraction)
@@ -2154,6 +2186,7 @@ namespace AZ.Atlas
                 labelFont,
                 infoPanelDistance,
                 infoPanelHorizontalOffset,
+                GetConstellationNameHitBoxScale(),
                 this);
         }
 

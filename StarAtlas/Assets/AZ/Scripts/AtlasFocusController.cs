@@ -14,6 +14,7 @@ namespace AZ.Atlas
         private const string PlanetRayTargetName = "Atlas Ray Target";
         private const float PanelCanvasScale = 0.00105f;
         private const int PanelRenderLayer = 0;
+        private const float DefaultConstellationNameHitBoxScale = 1f;
 
         private readonly Dictionary<string, SolarSystemTarget> solarSystemTargets =
             new Dictionary<string, SolarSystemTarget>(StringComparer.OrdinalIgnoreCase);
@@ -30,6 +31,7 @@ namespace AZ.Atlas
         private TMP_FontAsset font;
         private float panelDistance = 1.5f;
         private float panelHorizontalOffset = 0.48f;
+        private float constellationNameHitBoxScale = DefaultConstellationNameHitBoxScale;
 
         private string selectedKey;
         private bool selectedConstellation;
@@ -64,12 +66,40 @@ namespace AZ.Atlas
 
         public event Action<string, AtlasMissionTargetKind, string> TargetSelected;
 
+        public bool SetConstellationNameHitBoxScale(float scale)
+        {
+            float normalizedScale = NormalizeConstellationNameHitBoxScale(scale);
+            if (Mathf.Abs(constellationNameHitBoxScale - normalizedScale) < 0.0001f)
+            {
+                return false;
+            }
+
+            constellationNameHitBoxScale = normalizedScale;
+            return true;
+        }
+
+        private float GetConstellationNameHitBoxScale()
+        {
+            return NormalizeConstellationNameHitBoxScale(constellationNameHitBoxScale);
+        }
+
+        private static float NormalizeConstellationNameHitBoxScale(float scale)
+        {
+            if (scale <= 0f)
+            {
+                return DefaultConstellationNameHitBoxScale;
+            }
+
+            return Mathf.Clamp(scale, 0.2f, 4f);
+        }
+
         public void Initialize(
             Camera camera,
             AtlasInfoCatalog infoCatalog,
             TMP_FontAsset textFont,
             float distance,
             float horizontalOffset,
+            float constellationHitBoxScale,
             AtlasARStargazingController skyController)
         {
             observerCamera = camera;
@@ -78,6 +108,7 @@ namespace AZ.Atlas
             font = textFont;
             panelDistance = Mathf.Max(0.5f, distance);
             panelHorizontalOffset = Mathf.Max(0f, horizontalOffset);
+            SetConstellationNameHitBoxScale(constellationHitBoxScale);
             EnsureInfoPanel();
         }
 
@@ -354,6 +385,15 @@ namespace AZ.Atlas
 
         private void EnsurePlanetRayTarget(SolarSystemTarget target)
         {
+            Collider bodyCollider = FindExistingBodyCollider(target.root);
+            if (bodyCollider != null)
+            {
+                RemoveGeneratedPlanetRayTarget(target.root.transform.Find(PlanetRayTargetName));
+                bodyCollider.enabled = true;
+                ConfigurePlanetSelectable(target, bodyCollider);
+                return;
+            }
+
             Transform targetTransform = target.root.transform.Find(PlanetRayTargetName);
             GameObject targetObject;
             if (targetTransform == null)
@@ -392,6 +432,11 @@ namespace AZ.Atlas
                 localBounds.size + padding,
                 Vector3.one * minimumLocalHitSize);
 
+            ConfigurePlanetSelectable(target, collider);
+        }
+
+        private void ConfigurePlanetSelectable(SolarSystemTarget target, Collider targetCollider)
+        {
             AtlasSelectableTarget selectable = target.root.GetComponent<AtlasSelectableTarget>();
             if (selectable == null)
             {
@@ -402,12 +447,30 @@ namespace AZ.Atlas
                 this,
                 target.key,
                 false,
-                collider,
+                targetCollider,
                 true,
                 target.missionEligible ? target.key : null,
                 target.displayName,
                 target.missionKind);
             target.selectable = selectable;
+        }
+
+        private void RemoveGeneratedPlanetRayTarget(Transform targetTransform)
+        {
+            if (targetTransform == null)
+            {
+                return;
+            }
+
+            targetTransform.gameObject.SetActive(false);
+            if (Application.isPlaying)
+            {
+                Destroy(targetTransform.gameObject);
+            }
+            else
+            {
+                DestroyImmediate(targetTransform.gameObject);
+            }
         }
 
         private void EnsureStarRayTarget(StarTarget target)
@@ -454,17 +517,7 @@ namespace AZ.Atlas
 
             for (int i = 0; i < target.starNameLabels.Length; i++)
             {
-                TMP_Text starLabel = target.starNameLabels[i];
-                if (starLabel == null)
-                {
-                    continue;
-                }
-
-                ConfigureConstellationLabelHitTarget(
-                    target,
-                    starLabel,
-                    "Atlas Star Mission Hit",
-                    true);
+                DisableLabelHitTarget(target.starNameLabels[i], "Atlas Star Mission Hit");
             }
 
             if (target.constellationNameLabel != null)
@@ -487,7 +540,10 @@ namespace AZ.Atlas
             string hitTargetName,
             bool starNameTarget)
         {
-            GameObject hitTarget = ConfigureLabelHitTarget(label, hitTargetName);
+            GameObject hitTarget = ConfigureLabelHitTarget(
+                label,
+                hitTargetName,
+                starNameTarget ? DefaultConstellationNameHitBoxScale : GetConstellationNameHitBoxScale());
             if (hitTarget == null)
             {
                 return null;
@@ -538,7 +594,8 @@ namespace AZ.Atlas
 
         private static GameObject ConfigureLabelHitTarget(
             TMP_Text label,
-            string hitTargetName)
+            string hitTargetName,
+            float hitBoxScale = DefaultConstellationNameHitBoxScale)
         {
             if (label == null)
             {
@@ -557,13 +614,26 @@ namespace AZ.Atlas
                 hitTarget = hitTransform.gameObject;
             }
 
+            hitTarget.SetActive(true);
             hitTarget.layer = label.gameObject.layer;
             hitTarget.transform.localPosition = Vector3.zero;
             hitTarget.transform.localRotation = Quaternion.identity;
             hitTarget.transform.localScale = Vector3.one;
 
-            label.ForceMeshUpdate();
+            label.ForceMeshUpdate(true, true);
             Bounds textBounds = label.textBounds;
+            Vector3 boundsCenter = textBounds.center;
+            Vector3 boundsSize = textBounds.size;
+            if (boundsSize.x <= 0.0001f || boundsSize.y <= 0.0001f)
+            {
+                Vector2 renderedSize = label.GetRenderedValues(false);
+                boundsCenter = Vector3.zero;
+                boundsSize = new Vector3(
+                    Mathf.Max(0.0001f, renderedSize.x),
+                    Mathf.Max(0.0001f, renderedSize.y),
+                    Mathf.Max(0.0001f, boundsSize.z));
+            }
+
             Vector3 lossyScale = label.transform.lossyScale;
             float scaleX = Mathf.Max(0.000001f, Mathf.Abs(lossyScale.x));
             float scaleY = Mathf.Max(0.000001f, Mathf.Abs(lossyScale.y));
@@ -583,18 +653,52 @@ namespace AZ.Atlas
                 0.1f / scaleX,
                 0.06f / scaleY,
                 0.045f / scaleZ);
-            collider.center = textBounds.center;
-            collider.size = MaxComponents(
-                textBounds.size + localPadding,
+            Vector3 baseColliderSize = MaxComponents(
+                boundsSize + localPadding,
                 minimumLocalSize);
+            float safeHitBoxScale = NormalizeConstellationNameHitBoxScale(hitBoxScale);
+            collider.center = boundsCenter;
+            collider.size = MaxComponents(
+                baseColliderSize * safeHitBoxScale,
+                Vector3.one * 0.001f);
             collider.enabled = true;
 
-            if (hitTarget.GetComponent<AtlasSelectableTarget>() == null)
+            AtlasSelectableTarget selectable = hitTarget.GetComponent<AtlasSelectableTarget>();
+            if (selectable == null)
             {
-                hitTarget.AddComponent<AtlasSelectableTarget>();
+                selectable = hitTarget.AddComponent<AtlasSelectableTarget>();
             }
+            selectable.enabled = true;
 
             return hitTarget;
+        }
+
+        private static void DisableLabelHitTarget(TMP_Text label, string hitTargetName)
+        {
+            if (label == null)
+            {
+                return;
+            }
+
+            Transform hitTarget = label.transform.Find(hitTargetName);
+            if (hitTarget == null)
+            {
+                return;
+            }
+
+            Collider[] colliders = hitTarget.GetComponents<Collider>();
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                colliders[i].enabled = false;
+            }
+
+            MonoBehaviour[] behaviours = hitTarget.GetComponents<MonoBehaviour>();
+            for (int i = 0; i < behaviours.Length; i++)
+            {
+                behaviours[i].enabled = false;
+            }
+
+            hitTarget.gameObject.SetActive(false);
         }
 
         private void EnsureInfoPanel()
@@ -1447,6 +1551,68 @@ namespace AZ.Atlas
                 default:
                     return fallback;
             }
+        }
+
+        private static Collider FindExistingBodyCollider(GameObject root)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            Collider rootCollider = SelectBestBodyCollider(root.GetComponents<Collider>());
+            if (rootCollider != null)
+            {
+                return rootCollider;
+            }
+
+            return SelectBestBodyCollider(root.GetComponentsInChildren<Collider>(true));
+        }
+
+        private static Collider SelectBestBodyCollider(Collider[] colliders)
+        {
+            if (colliders == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] is SphereCollider && IsExistingBodyCollider(colliders[i]))
+                {
+                    return colliders[i];
+                }
+            }
+
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (IsExistingBodyCollider(colliders[i]))
+                {
+                    return colliders[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static bool IsExistingBodyCollider(Collider collider)
+        {
+            if (collider == null)
+            {
+                return false;
+            }
+
+            if (collider.transform.name == PlanetRayTargetName)
+            {
+                return false;
+            }
+
+            if (collider.GetComponentInParent<ExhibitionPlanetarySystem>() != null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static void CalculateMainBodyLocalBounds(GameObject root, out Bounds bounds)
