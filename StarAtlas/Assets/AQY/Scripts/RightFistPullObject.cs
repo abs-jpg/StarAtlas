@@ -7,6 +7,7 @@ public class RightFistPullObject : MonoBehaviour
     [Header("目标设置")]
     [Tooltip("需要被拉到面前的物体 (例如 UI 面板或 3D 模型)")]
     public Transform targetObject;
+    public HandType HandType = HandType.LeftHand;
     
     [Tooltip("玩家的头部相机 (RKCameraRig 或 MainCamera)")]
     public Transform cameraRig;
@@ -29,7 +30,7 @@ public class RightFistPullObject : MonoBehaviour
         if (targetObject == null || cameraRig == null) return;
 
         // 获取当前右手的手势状态
-        GestureType currentState = GesEventInput.Instance?.GetGestureType(HandType.RightHand) ?? GestureType.None;
+        GestureType currentState = GesEventInput.Instance?.GetGestureType(HandType) ?? GestureType.None;
 
         // 检测右手握拳的瞬间 (当前是 Grip，且上一帧不是 Grip)
         if (currentState == GestureType.Grip && prevRightState != GestureType.Grip)
