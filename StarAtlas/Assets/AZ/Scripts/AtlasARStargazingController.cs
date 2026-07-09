@@ -141,7 +141,9 @@ namespace AZ.Atlas
         [SerializeField] private bool enableFocusInteraction = true;
         [SerializeField] private AtlasInfoCatalog focusInfoCatalog;
         [SerializeField, Min(0.5f)] private float infoPanelDistance = 1.5f;
-        [SerializeField, Min(0f)] private float infoPanelHorizontalOffset = 0.48f;
+        [SerializeField] private float infoPanelHorizontalOffset = 0.48f;
+        [SerializeField] private float infoPanelVerticalOffset = 0.03f;
+        [SerializeField, Min(0.1f)] private float infoPanelFollowSmoothing = 10f;
         [SerializeField, Range(0.2f, 4f)] private float constellationNameHitBoxScale = 1f;
 
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
@@ -569,7 +571,7 @@ namespace AZ.Atlas
             }
 
             chineseName = GetChineseStarDisplayName(item.name_en);
-            return string.IsNullOrEmpty(chineseName) ? "\u672a\u547d\u540d\u6052\u661f" : chineseName;
+            return string.IsNullOrEmpty(chineseName) ? string.Empty : chineseName;
         }
 
         private void RenderBuiltInStars(DateTime utc)
@@ -1642,6 +1644,11 @@ namespace AZ.Atlas
                 return GetSolarSystemDisplayName(key, item.displayName);
             }
 
+            if (string.Equals(item.category, "star", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.IsNullOrWhiteSpace(item.displayName) ? string.Empty : item.displayName;
+            }
+
             return string.IsNullOrEmpty(item.displayName) ? item.key : item.displayName;
         }
 
@@ -2147,6 +2154,12 @@ namespace AZ.Atlas
                 return;
             }
 
+            focusController.SetInfoPanelPositionSettings(
+                infoPanelDistance,
+                infoPanelHorizontalOffset,
+                infoPanelVerticalOffset,
+                infoPanelFollowSmoothing);
+
             if (focusController.SetConstellationNameHitBoxScale(GetConstellationNameHitBoxScale()))
             {
                 RenderConstellationInteractionTargets();
@@ -2186,6 +2199,8 @@ namespace AZ.Atlas
                 labelFont,
                 infoPanelDistance,
                 infoPanelHorizontalOffset,
+                infoPanelVerticalOffset,
+                infoPanelFollowSmoothing,
                 GetConstellationNameHitBoxScale(),
                 this);
         }

@@ -31,6 +31,8 @@ namespace AZ.Atlas
         private TMP_FontAsset font;
         private float panelDistance = 1.5f;
         private float panelHorizontalOffset = 0.48f;
+        private float panelVerticalOffset = 0.03f;
+        private float panelFollowSmoothing = 10f;
         private float constellationNameHitBoxScale = DefaultConstellationNameHitBoxScale;
 
         private string selectedKey;
@@ -46,6 +48,7 @@ namespace AZ.Atlas
         private TMP_Text panelDetailOne;
         private TMP_Text panelDetailTwo;
         private Image panelConstellationImage;
+        private Button panelCloseButton;
         private float panelTargetAlpha;
         private float nextObservationRefreshTime;
         private AtlasMissionController missionController;
@@ -78,6 +81,18 @@ namespace AZ.Atlas
             return true;
         }
 
+        public void SetInfoPanelPositionSettings(
+            float distance,
+            float horizontalOffset,
+            float verticalOffset,
+            float followSmoothing)
+        {
+            panelDistance = Mathf.Max(0.5f, distance);
+            panelHorizontalOffset = horizontalOffset;
+            panelVerticalOffset = verticalOffset;
+            panelFollowSmoothing = Mathf.Max(0.1f, followSmoothing);
+        }
+
         private float GetConstellationNameHitBoxScale()
         {
             return NormalizeConstellationNameHitBoxScale(constellationNameHitBoxScale);
@@ -99,6 +114,8 @@ namespace AZ.Atlas
             TMP_FontAsset textFont,
             float distance,
             float horizontalOffset,
+            float verticalOffset,
+            float followSmoothing,
             float constellationHitBoxScale,
             AtlasARStargazingController skyController)
         {
@@ -106,8 +123,11 @@ namespace AZ.Atlas
             catalog = infoCatalog;
             stargazingController = skyController;
             font = textFont;
-            panelDistance = Mathf.Max(0.5f, distance);
-            panelHorizontalOffset = Mathf.Max(0f, horizontalOffset);
+            SetInfoPanelPositionSettings(
+                distance,
+                horizontalOffset,
+                verticalOffset,
+                followSmoothing);
             SetConstellationNameHitBoxScale(constellationHitBoxScale);
             EnsureInfoPanel();
         }
@@ -734,6 +754,7 @@ namespace AZ.Atlas
                 ConfigureConstellationImageRect(panelConstellationImage);
                 panelConstellationImage.gameObject.SetActive(false);
                 ConfigurePanelTextSizing();
+                EnsureInfoPanelCloseButton();
                 sceneView.HideImmediate();
                 return;
             }
@@ -821,6 +842,7 @@ namespace AZ.Atlas
             panelSummary.fontSizeMin = 15f;
             panelSummary.fontSizeMax = 24f;
             ConfigurePanelTextSizing();
+            EnsureInfoPanelCloseButton();
 
             canvasObject.SetActive(false);
         }
@@ -848,6 +870,207 @@ namespace AZ.Atlas
                 panelDetailTwo.fontSizeMax = 22f;
             }
         }
+
+        private void EnsureInfoPanelCloseButton()
+        {
+            if (panelRect == null)
+            {
+                return;
+            }
+
+            Transform existing = panelRect.Find("Swap3");
+            GameObject buttonObject;
+            if (existing != null)
+            {
+                buttonObject = existing.gameObject;
+            }
+            else
+            {
+                Button template = FindCloseButtonTemplate();
+                buttonObject = template != null
+                    ? Instantiate(template.gameObject, panelRect, false)
+                    : CreateFallbackCloseButtonObject(panelRect);
+                buttonObject.name = "Swap3";
+            }
+
+            buttonObject.transform.SetParent(panelRect, false);
+            buttonObject.SetActive(true);
+            SetLayerRecursively(buttonObject, PanelRenderLayer);
+
+            RectTransform rect = buttonObject.GetComponent<RectTransform>();
+            if (rect == null)
+            {
+                Debug.LogWarning("Atlas info panel close button needs a RectTransform.", buttonObject);
+                return;
+            }
+
+            rect.anchorMin = Vector2.one;
+            rect.anchorMax = Vector2.one;
+            rect.pivot = Vector2.one;
+            rect.anchoredPosition = new Vector2(-22f, -22f);
+            rect.sizeDelta = new Vector2(132f, 58f);
+            rect.localScale = Vector3.one;
+            rect.localRotation = Quaternion.identity;
+
+            panelCloseButton = buttonObject.GetComponent<Button>();
+            if (panelCloseButton == null)
+            {
+                panelCloseButton = buttonObject.AddComponent<Button>();
+            }
+
+            Graphic targetGraphic = buttonObject.GetComponent<Graphic>();
+            if (targetGraphic == null)
+            {
+                targetGraphic = buttonObject.GetComponentInChildren<Graphic>(true);
+            }
+
+            if (targetGraphic != null)
+            {
+                targetGraphic.raycastTarget = true;
+                panelCloseButton.targetGraphic = targetGraphic;
+            }
+
+            TMP_Text[] labels = buttonObject.GetComponentsInChildren<TMP_Text>(true);
+            for (int i = 0; i < labels.Length; i++)
+            {
+                TMP_Text label = labels[i];
+                label.text = "返回";
+                label.fontSize = 28f;
+                label.alignment = TextAlignmentOptions.Center;
+                label.raycastTarget = false;
+                if (font != null)
+                {
+                    label.font = font;
+                }
+            }
+
+            panelCloseButton.onClick = new Button.ButtonClickedEvent();
+            panelCloseButton.onClick.AddListener(HideInfoPanel);
+            panelCloseButton.interactable = true;
+            ConfigureInfoPanelCloseCollider(buttonObject, rect);
+        }
+
+        private void ConfigureInfoPanelCloseCollider(GameObject buttonObject, RectTransform rect)
+        {
+            if (buttonObject == null || rect == null)
+            {
+                return;
+            }
+
+            BoxCollider boxCollider = buttonObject.GetComponent<BoxCollider>();
+            if (boxCollider == null)
+            {
+                boxCollider = buttonObject.AddComponent<BoxCollider>();
+            }
+
+            Vector2 size = rect.sizeDelta;
+            if (size.x <= 0.001f || size.y <= 0.001f)
+            {
+                size = rect.rect.size;
+            }
+
+            size.x = Mathf.Max(1f, size.x);
+            size.y = Mathf.Max(1f, size.y);
+            boxCollider.size = new Vector3(size.x, size.y, 32f);
+            boxCollider.center = new Vector3(
+                (0.5f - rect.pivot.x) * size.x,
+                (0.5f - rect.pivot.y) * size.y,
+                0f);
+            boxCollider.isTrigger = false;
+            boxCollider.enabled = true;
+
+            AtlasInfoPanelCloseTarget closeTarget = buttonObject.GetComponent<AtlasInfoPanelCloseTarget>();
+            if (closeTarget == null)
+            {
+                closeTarget = buttonObject.AddComponent<AtlasInfoPanelCloseTarget>();
+            }
+
+            closeTarget.Configure(this, panelCloseButton, boxCollider);
+        }
+
+        private Button FindCloseButtonTemplate()
+        {
+            Button[] buttons = FindObjectsOfType<Button>(true);
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Button button = buttons[i];
+                if (button == null || button.transform == null)
+                {
+                    continue;
+                }
+
+                if (panelRect != null && button.transform.IsChildOf(panelRect))
+                {
+                    continue;
+                }
+
+                if (string.Equals(button.name, "ButtonBasic_White_Pull", StringComparison.OrdinalIgnoreCase))
+                {
+                    return button;
+                }
+            }
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                Button button = buttons[i];
+                if (button == null || button.transform == null)
+                {
+                    continue;
+                }
+
+                if (panelRect != null && button.transform.IsChildOf(panelRect))
+                {
+                    continue;
+                }
+
+                if (button.name.IndexOf("ButtonBasic", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return button;
+                }
+            }
+
+            return null;
+        }
+
+        private GameObject CreateFallbackCloseButtonObject(RectTransform parent)
+        {
+            GameObject buttonObject = new GameObject(
+                "Swap3",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image),
+                typeof(Button));
+            buttonObject.transform.SetParent(parent, false);
+
+            Image image = buttonObject.GetComponent<Image>();
+            image.color = new Color(1f, 1f, 1f, 0.16f);
+            image.raycastTarget = true;
+
+            GameObject labelObject = new GameObject(
+                "Label",
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(TextMeshProUGUI));
+            labelObject.transform.SetParent(buttonObject.transform, false);
+            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+            Stretch(labelRect, Vector2.zero, Vector2.zero);
+
+            TextMeshProUGUI label = labelObject.GetComponent<TextMeshProUGUI>();
+            label.text = "返回";
+            label.fontSize = 28f;
+            label.alignment = TextAlignmentOptions.Center;
+            label.color = Color.white;
+            label.raycastTarget = false;
+            if (font != null)
+            {
+                label.font = font;
+            }
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = image;
+            return buttonObject;
+        }
+
 
         private static void ConfigureConstellationImageRect(Image image)
         {
@@ -973,42 +1196,32 @@ namespace AZ.Atlas
         {
             if (panelCanvas == null ||
                 !panelCanvas.gameObject.activeSelf ||
-                observerCamera == null ||
-                activeTarget == null)
+                observerCamera == null)
             {
                 return;
             }
 
             Transform cameraTransform = observerCamera.transform;
             panelRect.localScale = Vector3.one * PanelCanvasScale;
-            Vector3 targetDirection = activeTarget.position - cameraTransform.position;
-            if (targetDirection.sqrMagnitude < 0.0001f)
+            Vector3 viewDirection = cameraTransform.forward;
+            if (viewDirection.sqrMagnitude < 0.0001f)
             {
-                targetDirection = cameraTransform.forward;
+                viewDirection = Vector3.forward;
             }
 
-            targetDirection.Normalize();
-            float targetSide = Vector3.Dot(targetDirection, cameraTransform.right);
-            float panelSide = targetSide >= 0f ? -1f : 1f;
-            Vector3 sideDirection = Vector3.Cross(cameraTransform.up, targetDirection);
-            if (sideDirection.sqrMagnitude < 0.0001f)
-            {
-                sideDirection = cameraTransform.right;
-            }
-
-            sideDirection.Normalize();
+            viewDirection.Normalize();
             Vector3 desiredPosition =
                 cameraTransform.position +
-                targetDirection * panelDistance +
-                sideDirection * (panelHorizontalOffset * panelSide) +
-                cameraTransform.up * 0.03f;
+                viewDirection * panelDistance +
+                cameraTransform.right * panelHorizontalOffset +
+                cameraTransform.up * panelVerticalOffset;
 
             panelRect.position = snap
                 ? desiredPosition
                 : Vector3.Lerp(
                     panelRect.position,
                     desiredPosition,
-                    1f - Mathf.Exp(-14f * Time.deltaTime));
+                    1f - Mathf.Exp(-panelFollowSmoothing * Time.deltaTime));
             Vector3 direction = panelRect.position - cameraTransform.position;
             if (direction.sqrMagnitude > 0.0001f)
             {
