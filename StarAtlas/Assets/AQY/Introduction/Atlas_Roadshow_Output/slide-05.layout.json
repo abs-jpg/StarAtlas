@@ -1,0 +1,991 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/diowrf",
+    "id": "diowrf",
+    "slide": 5,
+    "layoutId": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#02060D",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d4vmtwra",
+      "id": "1",
+      "bbox": [
+        1040,
+        72,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6dcbulwv",
+      "id": "2",
+      "bbox": [
+        1160,
+        118,
+        3,
+        3
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vy90je9c",
+      "id": "3",
+      "bbox": [
+        980,
+        182,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/o7qpg3ex",
+      "id": "4",
+      "bbox": [
+        1110,
+        250,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dsji5sne",
+      "id": "5",
+      "bbox": [
+        1198,
+        348,
+        2.8,
+        2.8
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/61032lsz",
+      "id": "6",
+      "bbox": [
+        1025,
+        438,
+        3,
+        3
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vmtwra5g",
+      "id": "7",
+      "bbox": [
+        1158,
+        548,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ovahoza1",
+      "id": "8",
+      "bbox": [
+        930,
+        610,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dg7adsji",
+      "id": "9",
+      "bbox": [
+        70,
+        650,
+        2.8,
+        2.8
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1032lszq",
+      "id": "10",
+      "bbox": [
+        178,
+        590,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/cfa9w3m9",
+      "id": "11",
+      "bbox": [
+        1210,
+        60,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/judg7ads",
+      "id": "12",
+      "bbox": [
+        910,
+        130,
+        260,
+        160
+      ],
+      "geometry": "line",
+      "lineColor": "#2A7FFF",
+      "lineWidth": 1.4
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u9knih4b",
+      "id": "13",
+      "bbox": [
+        1170,
+        290,
+        -130,
+        210
+      ],
+      "geometry": "line",
+      "lineColor": "#2A7FFF",
+      "lineWidth": 1.4
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1orytsvu",
+      "id": "14",
+      "bbox": [
+        70,
+        46,
+        520,
+        28
+      ],
+      "geometry": "rect",
+      "text": "04 Core Function",
+      "textPreview": "04 Core Function",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "04 Core Function"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "04 Core Function",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "04 Core Function",
+              "fontSize": 16,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c7u54zid",
+      "id": "15",
+      "bbox": [
+        70,
+        82,
+        760,
+        70
+      ],
+      "geometry": "rect",
+      "text": "核心功能 1：太阳系展览馆",
+      "textPreview": "核心功能 1：太阳系展览馆",
+      "resolvedFontSize": 42,
+      "resolvedTextStyle": {
+        "fontSize": 42,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "核心功能 1：太阳系展览馆"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "核心功能 1：太阳系展览馆",
+          "resolvedTextStyle": {
+            "fontSize": 42,
+            "color": "#F8FBFF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "核心功能 1：太阳系展览馆",
+              "fontSize": 42,
+              "color": "#F8FBFF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/jm1cfa9w",
+      "id": "16",
+      "bbox": [
+        72,
+        148,
+        850,
+        44
+      ],
+      "geometry": "rect",
+      "text": "面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。",
+      "textPreview": "面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。",
+      "resolvedFontSize": 19,
+      "resolvedTextStyle": {
+        "fontSize": 19,
+        "typeface": "+mn-lt",
+        "color": "#B8C7D9",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。",
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "color": "#B8C7D9"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。",
+              "fontSize": 19,
+              "color": "#B8C7D9"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/u18jqh0f",
+      "id": "17",
+      "bbox": [
+        70,
+        198,
+        170,
+        4
+      ],
+      "geometry": "rect",
+      "fillColor": "#FF9B24",
+      "lineColor": "#FF9B24",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5gbq1ory",
+      "id": "18",
+      "bbox": [
+        70,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 19,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/vmtwra5g",
+      "id": "19",
+      "bbox": [
+        76,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "展览馆.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "adc5043b-a2a1-48fc-834f-3c0c769dd2c3",
+        "contentType": "image/png",
+        "byteLength": 336717
+      }
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/c3ylc7u5",
+      "id": "20",
+      "bbox": [
+        76,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1kre1w7m",
+      "id": "21",
+      "bbox": [
+        86,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "底部星体托盘：可增减预制体",
+      "textPreview": "底部星体托盘：可增减预制体",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "底部星体托盘：可增减预制体"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "底部星体托盘：可增减预制体",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "底部星体托盘：可增减预制体",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/uxc3ylc7",
+      "id": "22",
+      "bbox": [
+        463,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 23,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/cbulwval",
+      "id": "23",
+      "bbox": [
+        469,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "展览馆详情.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "bdba1612-593d-4d6a-99fe-c2df06235274",
+        "contentType": "image/png",
+        "byteLength": 1096338
+      }
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/crmhk3q5",
+      "id": "24",
+      "bbox": [
+        469,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1cfa9w3m",
+      "id": "25",
+      "bbox": [
+        479,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "星环与卫星：拖出后展示细节",
+      "textPreview": "星环与卫星：拖出后展示细节",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "星环与卫星：拖出后展示细节"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "星环与卫星：拖出后展示细节",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "星环与卫星：拖出后展示细节",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ulwval87",
+      "id": "26",
+      "bbox": [
+        856,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 27,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/czed8v6p",
+      "id": "27",
+      "bbox": [
+        862,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "展览馆详情2.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "7bc67fbb-293a-43af-8460-46d38f8f17d0",
+        "contentType": "image/png",
+        "byteLength": 1059668
+      }
+    },
+    {
+      "order": 28,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8nqxs72x",
+      "id": "28",
+      "bbox": [
+        862,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 29,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/18jqh0fe",
+      "id": "29",
+      "bbox": [
+        872,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "信息面板：物理参数与交互滑条",
+      "textPreview": "信息面板：物理参数与交互滑条",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "信息面板：物理参数与交互滑条"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "信息面板：物理参数与交互滑条",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "信息面板：物理参数与交互滑条",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 30,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7qpg3ex0",
+      "id": "30",
+      "bbox": [
+        96,
+        542,
+        1086,
+        82
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#07131D",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 31,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i5sneloj",
+      "id": "31",
+      "bbox": [
+        126,
+        566,
+        120,
+        26
+      ],
+      "geometry": "rect",
+      "text": "功能价值",
+      "textPreview": "功能价值",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "fontSize": 20,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "功能价值"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "功能价值",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "功能价值",
+              "fontSize": 20,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 32,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pwb2hwfy",
+      "id": "32",
+      "bbox": [
+        250,
+        562,
+        860,
+        38
+      ],
+      "geometry": "rect",
+      "text": "统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。",
+      "textPreview": "统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结"
+          },
+          {
+            "index": 2,
+            "text": "构与行星环境差异。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#F8FBFF"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。",
+              "fontSize": 18,
+              "color": "#F8FBFF"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

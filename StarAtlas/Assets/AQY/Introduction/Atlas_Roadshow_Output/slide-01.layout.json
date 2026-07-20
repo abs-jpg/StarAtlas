@@ -1,0 +1,364 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/q4hicc",
+    "id": "q4hicc",
+    "slide": 1,
+    "layoutId": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#02060D",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/fu18jqh0",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect",
+      "alt": "AR glasses in space",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "rect"
+      },
+      "asset": {
+        "assetId": "162433eb-6159-4bc3-af56-3edbbda584b0",
+        "contentType": "image/png",
+        "byteLength": 1693222
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xc3ylc7u",
+      "id": "2",
+      "bbox": [
+        0,
+        0,
+        560,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#02060D",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4r65wjud",
+      "id": "3",
+      "bbox": [
+        78,
+        145,
+        600,
+        104
+      ],
+      "geometry": "rect",
+      "text": "Atlas",
+      "textPreview": "Atlas",
+      "resolvedFontSize": 78,
+      "resolvedTextStyle": {
+        "fontSize": 78,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Atlas"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Atlas",
+          "resolvedTextStyle": {
+            "fontSize": 78,
+            "color": "#F8FBFF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Atlas",
+              "fontSize": 78,
+              "color": "#F8FBFF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fepkzupw",
+      "id": "4",
+      "bbox": [
+        84,
+        256,
+        620,
+        42
+      ],
+      "geometry": "rect",
+      "text": "AR 沉浸式星空探索与科教平台",
+      "textPreview": "AR 沉浸式星空探索与科教平台",
+      "resolvedFontSize": 28,
+      "resolvedTextStyle": {
+        "fontSize": 28,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "AR 沉浸式星空探索与科教平台"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "AR 沉浸式星空探索与科教平台",
+          "resolvedTextStyle": {
+            "fontSize": 28,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "AR 沉浸式星空探索与科教平台",
+              "fontSize": 28,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/mtwra5gb",
+      "id": "5",
+      "bbox": [
+        84,
+        322,
+        520,
+        72
+      ],
+      "geometry": "rect",
+      "text": "把真实天体位置、太阳系展览与寻星任务带到眼前",
+      "textPreview": "把真实天体位置、太阳系展览与寻星任务带到眼前",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "+mn-lt",
+        "color": "#B8C7D9",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "把真实天体位置、太阳系展览与寻星任务带到眼前"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "把真实天体位置、太阳系展览与寻星任务带到眼前",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "color": "#B8C7D9"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "把真实天体位置、太阳系展览与寻星任务带到眼前",
+              "fontSize": 22,
+              "color": "#B8C7D9"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xkf6dcbu",
+      "id": "6",
+      "bbox": [
+        84,
+        425,
+        148,
+        5
+      ],
+      "geometry": "rect",
+      "fillColor": "#FF9B24",
+      "lineColor": "#FF9B24",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4zidonyd",
+      "id": "7",
+      "bbox": [
+        84,
+        462,
+        260,
+        32
+      ],
+      "geometry": "rect",
+      "text": "路演演示稿",
+      "textPreview": "路演演示稿",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#58C7FF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "路演演示稿"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "路演演示稿",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#58C7FF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "路演演示稿",
+              "fontSize": 18,
+              "color": "#58C7FF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

@@ -33,6 +33,7 @@ namespace AZ.Atlas
         private float panelHorizontalOffset = 0.48f;
         private float panelVerticalOffset = 0.03f;
         private float panelFollowSmoothing = 10f;
+        private float panelVerticalFollowDeadZone = 0.2f;
         private float constellationNameHitBoxScale = DefaultConstellationNameHitBoxScale;
 
         private string selectedKey;
@@ -85,12 +86,14 @@ namespace AZ.Atlas
             float distance,
             float horizontalOffset,
             float verticalOffset,
-            float followSmoothing)
+            float followSmoothing,
+            float verticalFollowDeadZone)
         {
             panelDistance = Mathf.Max(0.5f, distance);
             panelHorizontalOffset = horizontalOffset;
             panelVerticalOffset = verticalOffset;
             panelFollowSmoothing = Mathf.Max(0.1f, followSmoothing);
+            panelVerticalFollowDeadZone = Mathf.Max(0f, verticalFollowDeadZone);
         }
 
         private float GetConstellationNameHitBoxScale()
@@ -116,6 +119,7 @@ namespace AZ.Atlas
             float horizontalOffset,
             float verticalOffset,
             float followSmoothing,
+            float verticalFollowDeadZone,
             float constellationHitBoxScale,
             AtlasARStargazingController skyController)
         {
@@ -127,7 +131,8 @@ namespace AZ.Atlas
                 distance,
                 horizontalOffset,
                 verticalOffset,
-                followSmoothing);
+                followSmoothing,
+                verticalFollowDeadZone);
             SetConstellationNameHitBoxScale(constellationHitBoxScale);
             EnsureInfoPanel();
         }
@@ -1216,6 +1221,14 @@ namespace AZ.Atlas
                 cameraTransform.right * panelHorizontalOffset +
                 cameraTransform.up * panelVerticalOffset;
 
+            if (!snap && panelVerticalFollowDeadZone > 0f)
+            {
+                desiredPosition = ApplyVerticalFollowDeadZone(
+                    desiredPosition,
+                    panelRect.position,
+                    cameraTransform.up);
+            }
+
             panelRect.position = snap
                 ? desiredPosition
                 : Vector3.Lerp(
@@ -1229,6 +1242,28 @@ namespace AZ.Atlas
                     direction.normalized,
                     cameraTransform.up);
             }
+        }
+
+        private Vector3 ApplyVerticalFollowDeadZone(
+            Vector3 desiredPosition,
+            Vector3 currentPosition,
+            Vector3 verticalAxis)
+        {
+            if (verticalAxis.sqrMagnitude < 0.0001f)
+            {
+                verticalAxis = Vector3.up;
+            }
+
+            verticalAxis.Normalize();
+            float verticalDelta = Vector3.Dot(desiredPosition - currentPosition, verticalAxis);
+            float absoluteDelta = Mathf.Abs(verticalDelta);
+            if (absoluteDelta <= panelVerticalFollowDeadZone)
+            {
+                return desiredPosition - verticalAxis * verticalDelta;
+            }
+
+            return desiredPosition -
+                   verticalAxis * Mathf.Sign(verticalDelta) * panelVerticalFollowDeadZone;
         }
 
         private InfoContent BuildSolarSystemInfo(SolarSystemTarget target)

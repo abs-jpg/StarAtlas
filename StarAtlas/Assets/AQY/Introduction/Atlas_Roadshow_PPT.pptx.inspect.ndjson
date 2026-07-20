@@ -1,0 +1,362 @@
+{"kind":"deck","id":"pr/9nmmjp","name":"Deck"}
+{"kind":"layout","layoutId":"f14a4f49-b6e2-480d-8925-977c7c493958","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"73f870c3-ac4e-48b2-8a93-d2813422603e","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/q4hicc","slide":1,"title":"Atlas","textShapes":4}
+{"kind":"shape","id":"sh/xc3ylc7u","slide":1,"bbox":[0,0,560,720]}
+{"kind":"textbox","id":"sh/4r65wjud","slide":1,"text":"Atlas","textPreview":"Atlas","textChars":5,"textLines":1,"bbox":[78,145,600,104]}
+{"kind":"textbox","id":"sh/fepkzupw","slide":1,"text":"AR 沉浸式星空探索与科教平台","textPreview":"AR 沉浸式星空探索与科教平台","textChars":15,"textLines":1,"bbox":[84,256,620,42]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":1,"text":"把真实天体位置、太阳系展览与寻星任务带到眼前","textPreview":"把真实天体位置、太阳系展览与寻星任务带到眼前","textChars":22,"textLines":1,"bbox":[84,322,520,72]}
+{"kind":"shape","id":"sh/xkf6dcbu","slide":1,"bbox":[84,425,148,5]}
+{"kind":"textbox","id":"sh/4zidonyd","slide":1,"text":"路演演示稿","textPreview":"路演演示稿","textChars":5,"textLines":1,"bbox":[84,462,260,32]}
+{"kind":"image","id":"im/fu18jqh0","slide":1,"name":"","geometry":"rect","alt":"AR glasses in space","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/q4hicc","slide":1,"text":""}
+{"kind":"slide","id":"sl/6wytxj","slide":2,"title":"01 现状分析","textShapes":16}
+{"kind":"shape","id":"sh/yd0z6103","slide":2,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/90je9cvi","slide":2,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/gfmlkjm1","slide":2,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/rmhk3q5o","slide":2,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/y1kre1w7","slide":2,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/9s36hcrm","slide":2,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/g7adsji5","slide":2,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/nih4byhg","slide":2,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/yxobm58z","slide":2,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/obm58z25","slide":2,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/hwfyxobm","slide":2,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/65wjudg7","slide":2,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/zqtcj6to","slide":2,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/oza1gvy9","slide":2,"text":"01 现状分析","textPreview":"01 现状分析","textChars":7,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/hk3q5o7q","slide":2,"text":"背景：星空学习需要走出二维屏幕","textPreview":"背景：星空学习需要走出二维屏幕","textChars":15,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/6xkf6dcb","slide":2,"text":"天文知识天然依赖方位、尺度、时间变化和空间感，传统图文与手机屏幕难以同时解决。","textPreview":"天文知识天然依赖方位、尺度、时间变化和空间感，传统图文与手机屏幕难以同时解决。","textChars":39,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/zed8v6ps","slide":2,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/orytsvu9","slide":2,"bbox":[72,246,348,300]}
+{"kind":"textbox","id":"sh/hcrmhk3q","slide":2,"text":"科教端","textPreview":"科教端","textChars":3,"textLines":1,"bbox":[104,274,240,36]}
+{"kind":"textbox","id":"sh/5gbq1ory","slide":2,"text":"• 学生难把星座、方位角、高度角建立空间联系","textPreview":"• 学生难把星座、方位角、高度角建立空间联系","textChars":22,"textLines":1,"bbox":[104,326,286,56]}
+{"kind":"textbox","id":"sh/cvixczed","slide":2,"text":"• 课堂演示多依赖图片和视频，缺少可操作的实时天空","textPreview":"• 课堂演示多依赖图片和视频，缺少可操作的实时天空","textChars":25,"textLines":1,"bbox":[104,378,286,56]}
+{"kind":"textbox","id":"sh/nap4r65w","slide":2,"text":"• 研学与科普馆需要能快速吸引注意力的互动内容","textPreview":"• 研学与科普馆需要能快速吸引注意力的互动内容","textChars":23,"textLines":1,"bbox":[104,430,286,56]}
+{"kind":"shape","id":"sh/upwb2hwf","slide":2,"bbox":[466,246,348,300]}
+{"kind":"textbox","id":"sh/54zidony","slide":2,"text":"爱好者端","textPreview":"爱好者端","textChars":4,"textLines":1,"bbox":[498,274,240,36]}
+{"kind":"textbox","id":"sh/cj6tovah","slide":2,"text":"• 想知道眼前那颗星到底是什么","textPreview":"• 想知道眼前那颗星到底是什么","textChars":15,"textLines":1,"bbox":[498,326,286,56]}
+{"kind":"textbox","id":"sh/nyd0z610","slide":2,"text":"• 需要结合地点、时间、星座与行星可见性","textPreview":"• 需要结合地点、时间、星座与行星可见性","textChars":20,"textLines":1,"bbox":[498,378,286,56]}
+{"kind":"textbox","id":"sh/udg7adsj","slide":2,"text":"• 希望不低头看手机，直接对着天空完成识别","textPreview":"• 希望不低头看手机，直接对着天空完成识别","textChars":21,"textLines":1,"bbox":[498,430,286,56]}
+{"kind":"shape","id":"sh/1032lszq","slide":2,"bbox":[860,246,348,300]}
+{"kind":"textbox","id":"sh/cfa9w3m9","slide":2,"text":"Atlas 的对应方法","textPreview":"Atlas 的对应方法","textChars":11,"textLines":1,"bbox":[892,274,280,36]}
+{"kind":"textbox","id":"sh/m94fu18j","slide":2,"text":"• AR 眼镜里叠加真实方位的天体","textPreview":"• AR 眼镜里叠加真实方位的天体","textChars":17,"textLines":1,"bbox":[892,326,282,56]}
+{"kind":"textbox","id":"sh/fu18jqh0","slide":2,"text":"• 展览馆把太阳系模型、星环卫星和数据面板做成可抓取体验","textPreview":"• 展览馆把太阳系模型、星环卫星和数据面板做成可抓取体验","textChars":28,"textLines":1,"bbox":[892,378,282,56]}
+{"kind":"textbox","id":"sh/4fu18jqh","slide":2,"text":"• 寻星任务把观察行为变成有反馈的学习玩法","textPreview":"• 寻星任务把观察行为变成有反馈的学习玩法","textChars":21,"textLines":1,"bbox":[892,430,282,56]}
+{"kind":"textbox","id":"sh/x0nuxc3y","slide":2,"text":"参考：国务院《全民科学素质行动规划纲要（2021-2035年）》强调面向青少年和公众提升科学素质。","textPreview":"参考：国务院《全民科学素质行动规划纲要（2021-2035年）》强调面向青少年和公众提升科学素质。","textChars":49,"textLines":1,"bbox":[78,626,1020,28]}
+{"kind":"notes","id":"nt/6wytxj","slide":2,"text":""}
+{"kind":"slide","id":"sl/c7cqa5","slide":3,"title":"02 目标人群","textShapes":15}
+{"kind":"shape","id":"sh/epkzupwb","slide":3,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/pg3ex0nu","slide":3,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/wval87ed","slide":3,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/7mp0bi9s","slide":3,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/e1w7mp0b","slide":3,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/psfil0rq","slide":3,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/w7mp0bi9","slide":3,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/7u54zido","slide":3,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/ed8bat47","slide":3,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/onyd0z61","slide":3,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/d8v6psfi","slide":3,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/6hcrmhk3","slide":3,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/z25kb6xk","slide":3,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/ovahoza1","slide":3,"text":"02 目标人群","textPreview":"02 目标人群","textChars":7,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/dg7adsji","slide":3,"text":"需求规模：科教是最清晰的落地入口","textPreview":"需求规模：科教是最清晰的落地入口","textChars":16,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/6tovahoz","slide":3,"text":"把“需要多少人”拆成学校、教师、学生和科普场景，可直接对应 Atlas 的课堂与研学使用方式。","textPreview":"把“需要多少人”拆成学校、教师、学生和科普场景，可直接对应 Atlas 的课堂与研学使用方式。","textChars":47,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/vahoza1g","slide":3,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/o7qpg3ex","slide":3,"bbox":[78,236,220,126]}
+{"kind":"textbox","id":"sh/dsji5sne","slide":3,"text":"约 2.91 亿","textPreview":"约 2.91 亿","textChars":8,"textLines":1,"bbox":[96,252,184,42]}
+{"kind":"textbox","id":"sh/hk3q5o7q","slide":3,"text":"全国学历教育在校生，可作为天文科普与科学课程潜在人群","textPreview":"全国学历教育在校生，可作为天文科普与科学课程潜在人群","textChars":26,"textLines":1,"bbox":[92,298,192,42]}
+{"kind":"shape","id":"sh/oza1gvy9","slide":3,"bbox":[322,236,220,126]}
+{"kind":"textbox","id":"sh/zed8v6ps","slide":3,"text":"约 1885 万","textPreview":"约 1885 万","textChars":8,"textLines":1,"bbox":[340,252,184,42]}
+{"kind":"textbox","id":"sh/6xkf6dcb","slide":3,"text":"专任教师，决定课堂工具和课程资源的采用效率","textPreview":"专任教师，决定课堂工具和课程资源的采用效率","textChars":21,"textLines":1,"bbox":[336,298,192,42]}
+{"kind":"shape","id":"sh/hwfyxobm","slide":3,"bbox":[566,236,220,126]}
+{"kind":"textbox","id":"sh/obm58z25","slide":3,"text":"约 49 万所","textPreview":"约 49 万所","textChars":7,"textLines":1,"bbox":[584,252,184,42]}
+{"kind":"textbox","id":"sh/zqtcj6to","slide":3,"text":"各级各类学校，为校内科教与研学活动提供场景","textPreview":"各级各类学校，为校内科教与研学活动提供场景","textChars":21,"textLines":1,"bbox":[580,298,192,42]}
+{"kind":"shape","id":"sh/65wjudg7","slide":3,"bbox":[826,228,360,344]}
+{"kind":"textbox","id":"sh/h0fepkzu","slide":3,"text":"Atlas 场景适配度","textPreview":"Atlas 场景适配度","textChars":11,"textLines":1,"bbox":[856,256,260,28]}
+{"kind":"shape","id":"sh/ixczed8v","slide":3,"bbox":[78,410,708,162]}
+{"kind":"textbox","id":"sh/bi9s36hc","slide":3,"text":"核心需求对应","textPreview":"核心需求对应","textChars":6,"textLines":1,"bbox":[108,435,260,30]}
+{"kind":"textbox","id":"sh/032lszqt","slide":3,"text":"• 把抽象天文概念变成“抬头可见、伸手可点”的空间对象","textPreview":"• 把抽象天文概念变成“抬头可见、伸手可点”的空间对象","textChars":27,"textLines":1,"bbox":[110,482,616,36]}
+{"kind":"textbox","id":"sh/tovahoza","slide":3,"text":"• 用真实地点、时间与天体方位连接课本知识和天空观察","textPreview":"• 用真实地点、时间与天体方位连接课本知识和天空观察","textChars":26,"textLines":1,"bbox":[110,514,616,36]}
+{"kind":"textbox","id":"sh/i9s36hcr","slide":3,"text":"• 以任务、面板和可交互模型提升课堂参与度与科普传播效果","textPreview":"• 以任务、面板和可交互模型提升课堂参与度与科普传播效果","textChars":28,"textLines":1,"bbox":[110,546,616,36]}
+{"kind":"textbox","id":"sh/bulwval8","slide":3,"text":"数据口径：教育部 2024 年全国教育事业发展统计公报；右侧为场景适配度评分（5分制），用于路演表达，不代表市场收入预测。","textPreview":"数据口径：教育部 2024 年全国教育事业发展统计公报；右侧为场景适配度评分（5分制），用于路演表达，不代表市场收入预测。","textChars":61,"textLines":1,"bbox":[78,626,1040,30]}
+{"kind":"chart","id":"ch/s72x4nap","slide":3,"name":"","chartType":"bar","bbox":[858,306,286,210]}
+{"kind":"notes","id":"nt/c7cqa5","slide":3,"text":""}
+{"kind":"slide","id":"sl/0n4bbc","slide":4,"title":"03 Team","textShapes":15}
+{"kind":"shape","id":"sh/7u54zido","slide":4,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/wfyxobm5","slide":4,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/l0rqd4vm","slide":4,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/eloj2t83","slide":4,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/36hcrmhk","slide":4,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/wra5gbq1","slide":4,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/lc7u54zi","slide":4,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/epkzupwb","slide":4,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/7adsji5s","slide":4,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/nqxs72x4","slide":4,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/u54zidon","slide":4,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/5sneloj2","slide":4,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/cbulwval","slide":4,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/neloj2t8","slide":4,"text":"03 Team","textPreview":"03 Team","textChars":7,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/ytsvu9kn","slide":4,"text":"团队介绍","textPreview":"团队介绍","textChars":4,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/5kb6xkf6","slide":4,"text":"两人小队，分别负责产品内容与工程实现，保留后续替换头像、姓名和经历的位置。","textPreview":"两人小队，分别负责产品内容与工程实现，保留后续替换头像、姓名和经历的位置。","textChars":37,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/czed8v6p","slide":4,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/n29gr2p8","slide":4,"bbox":[128,250,462,310]}
+{"kind":"shape","id":"sh/yhgn29gr","slide":4,"bbox":[164,292,120,120]}
+{"kind":"textbox","id":"sh/6hcrmhk3","slide":4,"text":"头像","textPreview":"头像","textChars":2,"textLines":1,"bbox":[164,334,120,32]}
+{"kind":"textbox","id":"sh/z25kb6xk","slide":4,"text":"团队成员 01","textPreview":"团队成员 01","textChars":7,"textLines":1,"bbox":[318,300,220,36]}
+{"kind":"textbox","id":"sh/onyd0z61","slide":4,"text":"产品 / 天文内容 / 路演表达","textPreview":"产品 / 天文内容 / 路演表达","textChars":16,"textLines":1,"bbox":[318,350,230,56]}
+{"kind":"textbox","id":"sh/d8v6psfi","slide":4,"text":"• 项目职责 / 专业背景","textPreview":"• 项目职责 / 专业背景","textChars":13,"textLines":1,"bbox":[318,430,230,36]}
+{"kind":"textbox","id":"sh/6tovahoz","slide":4,"text":"• 核心贡献 / 作品经验","textPreview":"• 核心贡献 / 作品经验","textChars":13,"textLines":1,"bbox":[318,462,230,36]}
+{"kind":"textbox","id":"sh/vahoza1g","slide":4,"text":"• 联系方式 / 学校信息","textPreview":"• 联系方式 / 学校信息","textChars":13,"textLines":1,"bbox":[318,494,230,36]}
+{"kind":"shape","id":"sh/ovahoza1","slide":4,"bbox":[688,250,462,310]}
+{"kind":"shape","id":"sh/dg7adsji","slide":4,"bbox":[724,292,120,120]}
+{"kind":"textbox","id":"sh/61032lsz","slide":4,"text":"头像","textPreview":"头像","textChars":2,"textLines":1,"bbox":[724,334,120,32]}
+{"kind":"textbox","id":"sh/vmtwra5g","slide":4,"text":"团队成员 02","textPreview":"团队成员 02","textChars":7,"textLines":1,"bbox":[878,300,220,36]}
+{"kind":"textbox","id":"sh/loj2t83i","slide":4,"text":"Unity / AR 交互 / 数据接入","textPreview":"Unity / AR 交互 / 数据接入","textChars":20,"textLines":1,"bbox":[878,350,230,56]}
+{"kind":"textbox","id":"sh/w3m94fu1","slide":4,"text":"• 项目职责 / 专业背景","textPreview":"• 项目职责 / 专业背景","textChars":13,"textLines":1,"bbox":[878,430,230,36]}
+{"kind":"textbox","id":"sh/3itgfmlk","slide":4,"text":"• 核心贡献 / 作品经验","textPreview":"• 核心贡献 / 作品经验","textChars":13,"textLines":1,"bbox":[878,462,230,36]}
+{"kind":"textbox","id":"sh/ex0nuxc3","slide":4,"text":"• 联系方式 / 学校信息","textPreview":"• 联系方式 / 学校信息","textChars":13,"textLines":1,"bbox":[878,494,230,36]}
+{"kind":"notes","id":"nt/0n4bbc","slide":4,"text":""}
+{"kind":"slide","id":"sl/diowrf","slide":5,"title":"04 Core Function","textShapes":8}
+{"kind":"shape","id":"sh/d4vmtwra","slide":5,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/6dcbulwv","slide":5,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/vy90je9c","slide":5,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/o7qpg3ex","slide":5,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/dsji5sne","slide":5,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/61032lsz","slide":5,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/vmtwra5g","slide":5,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/ovahoza1","slide":5,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/dg7adsji","slide":5,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/1032lszq","slide":5,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/cfa9w3m9","slide":5,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/judg7ads","slide":5,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/u9knih4b","slide":5,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/1orytsvu","slide":5,"text":"04 Core Function","textPreview":"04 Core Function","textChars":16,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/c7u54zid","slide":5,"text":"核心功能 1：太阳系展览馆","textPreview":"核心功能 1：太阳系展览馆","textChars":13,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/jm1cfa9w","slide":5,"text":"面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。","textPreview":"面向课堂、展馆和研学的可交互行星展台，把“看模型”升级成“动手探索”。","textChars":35,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/u18jqh0f","slide":5,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/5gbq1ory","slide":5,"bbox":[70,242,354,262]}
+{"kind":"shape","id":"sh/c3ylc7u5","slide":5,"bbox":[76,458,342,40]}
+{"kind":"textbox","id":"sh/1kre1w7m","slide":5,"text":"底部星体托盘：可增减预制体","textPreview":"底部星体托盘：可增减预制体","textChars":13,"textLines":1,"bbox":[86,466,322,28]}
+{"kind":"shape","id":"sh/uxc3ylc7","slide":5,"bbox":[463,242,354,262]}
+{"kind":"shape","id":"sh/crmhk3q5","slide":5,"bbox":[469,458,342,40]}
+{"kind":"textbox","id":"sh/1cfa9w3m","slide":5,"text":"星环与卫星：拖出后展示细节","textPreview":"星环与卫星：拖出后展示细节","textChars":13,"textLines":1,"bbox":[479,466,322,28]}
+{"kind":"shape","id":"sh/ulwval87","slide":5,"bbox":[856,242,354,262]}
+{"kind":"shape","id":"sh/8nqxs72x","slide":5,"bbox":[862,458,342,40]}
+{"kind":"textbox","id":"sh/18jqh0fe","slide":5,"text":"信息面板：物理参数与交互滑条","textPreview":"信息面板：物理参数与交互滑条","textChars":14,"textLines":1,"bbox":[872,466,322,28]}
+{"kind":"shape","id":"sh/7qpg3ex0","slide":5,"bbox":[96,542,1086,82]}
+{"kind":"textbox","id":"sh/i5sneloj","slide":5,"text":"功能价值","textPreview":"功能价值","textChars":4,"textLines":1,"bbox":[126,566,120,26]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":5,"text":"统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。","textPreview":"统一尺寸预览、拖拽放大、星环卫星展示、自转/公转倍率与温度反馈，让用户在一个场景里理解太阳系结构与行星环境差异。","textChars":56,"textLines":1,"bbox":[250,562,860,38]}
+{"kind":"image","id":"im/vmtwra5g","slide":5,"name":"","geometry":"roundRect","alt":"展览馆.png","bbox":[76,248,342,214]}
+{"kind":"image","id":"im/cbulwval","slide":5,"name":"","geometry":"roundRect","alt":"展览馆详情.png","bbox":[469,248,342,214]}
+{"kind":"image","id":"im/czed8v6p","slide":5,"name":"","geometry":"roundRect","alt":"展览馆详情2.png","bbox":[862,248,342,214]}
+{"kind":"notes","id":"nt/diowrf","slide":5,"text":""}
+{"kind":"slide","id":"sl/6kc5w9","slide":6,"title":"05 How It Works","textShapes":13}
+{"kind":"shape","id":"sh/vy90je9c","slide":6,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/oj2t83it","slide":6,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/d4vmtwra","slide":6,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/61032lsz","slide":6,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/vmtwra5g","slide":6,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/o7qpg3ex","slide":6,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/dsji5sne","slide":6,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/6tovahoz","slide":6,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/vahoza1g","slide":6,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/7qpg3ex0","slide":6,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/i5sneloj","slide":6,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/pwb2hwfy","slide":6,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/0bi9s36h","slide":6,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/7y1kre1w","slide":6,"text":"05 How It Works","textPreview":"05 How It Works","textChars":15,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/ed8v6psf","slide":6,"text":"操作说明 1：从托盘拖出一颗星球","textPreview":"操作说明 1：从托盘拖出一颗星球","textChars":16,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/p4r65wju","slide":6,"text":"交互设计尽量贴近 Rokid 眼镜的射线与手势使用习惯。","textPreview":"交互设计尽量贴近 Rokid 眼镜的射线与手势使用习惯。","textChars":28,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/wjudg7ad","slide":6,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/ih4byhgn","slide":6,"bbox":[96,246,42,42]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":6,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[96,251,42,28]}
+{"kind":"textbox","id":"sh/fepkzupw","slide":6,"text":"选择星球","textPreview":"选择星球","textChars":4,"textLines":1,"bbox":[152,244,514,30]}
+{"kind":"textbox","id":"sh/4zidonyd","slide":6,"text":"在底部毛玻璃托盘中通过射线或手势选中行星，名称会随选择状态渐隐。","textPreview":"在底部毛玻璃托盘中通过射线或手势选中行星，名称会随选择状态渐隐。","textChars":32,"textLines":1,"bbox":[152,278,514,70]}
+{"kind":"shape","id":"sh/xkf6dcbu","slide":6,"bbox":[96,350,42,42]}
+{"kind":"textbox","id":"sh/mlkjm1cf","slide":6,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[96,355,42,28]}
+{"kind":"textbox","id":"sh/f6dcbulw","slide":6,"text":"拖出观察","textPreview":"拖出观察","textChars":4,"textLines":1,"bbox":[152,348,514,30]}
+{"kind":"textbox","id":"sh/4r65wjud","slide":6,"text":"拖出托盘后生成大模型，托盘自动收拢空位；星环、卫星和信息面板逐渐出现。","textPreview":"拖出托盘后生成大模型，托盘自动收拢空位；星环、卫星和信息面板逐渐出现。","textChars":35,"textLines":1,"bbox":[152,382,514,70]}
+{"kind":"shape","id":"sh/xc3ylc7u","slide":6,"bbox":[96,454,42,42]}
+{"kind":"textbox","id":"sh/m94fu18j","slide":6,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[96,459,42,28]}
+{"kind":"textbox","id":"sh/fu18jqh0","slide":6,"text":"调参实验","textPreview":"调参实验","textChars":4,"textLines":1,"bbox":[152,452,514,30]}
+{"kind":"textbox","id":"sh/1032lszq","slide":6,"text":"用滑条改变自转、公转倍率，观察温度和材质颜色变化，形成简单的物理探索。","textPreview":"用滑条改变自转、公转倍率，观察温度和材质颜色变化，形成简单的物理探索。","textChars":35,"textLines":1,"bbox":[152,486,514,70]}
+{"kind":"shape","id":"sh/cfa9w3m9","slide":6,"bbox":[738,524,430,78]}
+{"kind":"textbox","id":"sh/judg7ads","slide":6,"text":"适合场景：展馆讲解、课堂演示、亲子科普、研学活动中的分组操作。","textPreview":"适合场景：展馆讲解、课堂演示、亲子科普、研学活动中的分组操作。","textChars":31,"textLines":1,"bbox":[766,548,374,30]}
+{"kind":"image","id":"im/83itgfml","slide":6,"name":"","geometry":"roundRect","alt":"展览馆.png","bbox":[738,244,430,252]}
+{"kind":"notes","id":"nt/6kc5w9","slide":6,"text":""}
+{"kind":"slide","id":"sl/i0np89","slide":7,"title":"06 Core Function","textShapes":8}
+{"kind":"shape","id":"sh/q1orytsv","slide":7,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/xs72x4na","slide":7,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/87ed8bat","slide":7,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/je9cvixc","slide":7,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/qtcj6tov","slide":7,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/1gvy90je","slide":7,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/8z25kb6x","slide":7,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/fa9w3m94","slide":7,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/qpg3ex0n","slide":7,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/wjudg7ad","slide":7,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/p4r65wju","slide":7,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/ed8v6psf","slide":7,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/7y1kre1w","slide":7,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/0bi9s36h","slide":7,"text":"06 Core Function","textPreview":"06 Core Function","textChars":16,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":7,"text":"核心功能 2：Atlas AR 真实观星","textPreview":"核心功能 2：Atlas AR 真实观星","textChars":20,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/i5sneloj","slide":7,"text":"根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。","textPreview":"根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。","textChars":41,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/7qpg3ex0","slide":7,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/0z61032l","slide":7,"bbox":[70,242,354,262]}
+{"kind":"shape","id":"sh/donyd0z6","slide":7,"bbox":[76,458,342,40]}
+{"kind":"textbox","id":"sh/k3q5o7qp","slide":7,"text":"真实天空：星座、行星与太阳位置","textPreview":"真实天空：星座、行星与太阳位置","textChars":15,"textLines":1,"bbox":[86,466,322,28]}
+{"kind":"shape","id":"sh/vixczed8","slide":7,"bbox":[463,242,354,262]}
+{"kind":"shape","id":"sh/dcbulwva","slide":7,"bbox":[469,458,342,40]}
+{"kind":"textbox","id":"sh/kre1w7mp","slide":7,"text":"信息面板：方位、高度与可见性","textPreview":"信息面板：方位、高度与可见性","textChars":14,"textLines":1,"bbox":[479,466,322,28]}
+{"kind":"shape","id":"sh/val87ed8","slide":7,"bbox":[856,242,354,262]}
+{"kind":"shape","id":"sh/d8bat47y","slide":7,"bbox":[862,458,342,40]}
+{"kind":"textbox","id":"sh/knih4byh","slide":7,"text":"地点 / 时间 / 寻星任务","textPreview":"地点 / 时间 / 寻星任务","textChars":14,"textLines":1,"bbox":[872,466,322,28]}
+{"kind":"shape","id":"sh/yhgn29gr","slide":7,"bbox":[96,542,1086,82]}
+{"kind":"textbox","id":"sh/n29gr2p8","slide":7,"text":"功能价值","textPreview":"功能价值","textChars":4,"textLines":1,"bbox":[126,566,120,26]}
+{"kind":"textbox","id":"sh/gn29gr2p","slide":7,"text":"用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。","textPreview":"用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。","textChars":54,"textLines":1,"bbox":[250,562,860,38]}
+{"kind":"image","id":"im/mp0bi9s3","slide":7,"name":"","geometry":"roundRect","alt":"atlas.png","bbox":[76,248,342,214]}
+{"kind":"image","id":"im/1kre1w7m","slide":7,"name":"","geometry":"roundRect","alt":"atlas2.png","bbox":[469,248,342,214]}
+{"kind":"image","id":"im/1cfa9w3m","slide":7,"name":"","geometry":"roundRect","alt":"atlas3.png","bbox":[862,248,342,214]}
+{"kind":"notes","id":"nt/i0np89","slide":7,"text":""}
+{"kind":"slide","id":"sl/qdrtbz","slide":8,"title":"07 How It Works","textShapes":13}
+{"kind":"shape","id":"sh/vixczed8","slide":8,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/k3q5o7qp","slide":8,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/donyd0z6","slide":8,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/6psfil0r","slide":8,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/val87ed8","slide":8,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/kre1w7mp","slide":8,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/dcbulwva","slide":8,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/2lszqtcj","slide":8,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/v6psfil0","slide":8,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/bq1oryts","slide":8,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/m58z25kb","slide":8,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/twra5gbq","slide":8,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/4byhgn29","slide":8,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/b2hwfyxo","slide":8,"text":"07 How It Works","textPreview":"07 How It Works","textChars":15,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/mhk3q5o7","slide":8,"text":"操作说明 2：在真实方位中完成寻星","textPreview":"操作说明 2：在真实方位中完成寻星","textChars":17,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/t83itgfm","slide":8,"text":"观星场景保留真实天文逻辑，同时降低普通用户的入门门槛。","textPreview":"观星场景保留真实天文逻辑，同时降低普通用户的入门门槛。","textChars":27,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/4nap4r65","slide":8,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/mp0bi9s3","slide":8,"bbox":[96,236,42,42]}
+{"kind":"textbox","id":"sh/uxc3ylc7","slide":8,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[96,241,42,28]}
+{"kind":"textbox","id":"sh/ji5snelo","slide":8,"text":"选择地点与时间","textPreview":"选择地点与时间","textChars":7,"textLines":1,"bbox":[152,234,504,30]}
+{"kind":"textbox","id":"sh/c3ylc7u5","slide":8,"text":"在城市按钮中切换观测地；时间推演条可查看日出日落、行星和星座的变化。","textPreview":"在城市按钮中切换观测地；时间推演条可查看日出日落、行星和星座的变化。","textChars":34,"textLines":1,"bbox":[152,268,504,70]}
+{"kind":"shape","id":"sh/1kre1w7m","slide":8,"bbox":[96,340,42,42]}
+{"kind":"textbox","id":"sh/ulwval87","slide":8,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[96,345,42,28]}
+{"kind":"textbox","id":"sh/j6tovaho","slide":8,"text":"抬头寻找目标","textPreview":"抬头寻找目标","textChars":6,"textLines":1,"bbox":[152,338,504,30]}
+{"kind":"textbox","id":"sh/crmhk3q5","slide":8,"text":"头部转动即改变视角，星座连线、名称、太阳轨迹和地平线辅助辨认方向。","textPreview":"头部转动即改变视角，星座连线、名称、太阳轨迹和地平线辅助辨认方向。","textChars":33,"textLines":1,"bbox":[152,372,504,70]}
+{"kind":"shape","id":"sh/1cfa9w3m","slide":8,"bbox":[96,444,42,42]}
+{"kind":"textbox","id":"sh/qh0fepkz","slide":8,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[96,449,42,28]}
+{"kind":"textbox","id":"sh/j2t83itg","slide":8,"text":"点击查看与完成任务","textPreview":"点击查看与完成任务","textChars":9,"textLines":1,"bbox":[152,442,504,30]}
+{"kind":"textbox","id":"sh/pkzupwb2","slide":8,"text":"射线点击星球或星座总称后展开信息面板；寻星任务根据点击目标给出正确/错误反馈。","textPreview":"射线点击星球或星座总称后展开信息面板；寻星任务根据点击目标给出正确/错误反馈。","textChars":39,"textLines":1,"bbox":[152,476,504,70]}
+{"kind":"shape","id":"sh/0z61032l","slide":8,"bbox":[720,552,468,72]}
+{"kind":"textbox","id":"sh/7ed8bat4","slide":8,"text":"从“我看见一片星空”变成“我知道它在哪里、何时出现、为什么可见”。","textPreview":"从“我看见一片星空”变成“我知道它在哪里、何时出现、为什么可见”。","textChars":33,"textLines":1,"bbox":[748,574,412,28]}
+{"kind":"image","id":"im/onyd0z61","slide":8,"name":"","geometry":"roundRect","alt":"atlas3.png","bbox":[720,236,468,290]}
+{"kind":"notes","id":"nt/qdrtbz","slide":8,"text":""}
+{"kind":"slide","id":"sl/poqekl","slide":9,"title":"08 Innovation","textShapes":39}
+{"kind":"shape","id":"sh/itgfmlkj","slide":9,"bbox":[1040,72,4,4]}
+{"kind":"shape","id":"sh/pkzupwb2","slide":9,"bbox":[1160,118,3,3]}
+{"kind":"shape","id":"sh/0z61032l","slide":9,"bbox":[980,182,2.4,2.4]}
+{"kind":"shape","id":"sh/72x4nap4","slide":9,"bbox":[1110,250,4,4]}
+{"kind":"shape","id":"sh/ih4byhgn","slide":9,"bbox":[1198,348,2.8,2.8]}
+{"kind":"shape","id":"sh/p8nqxs72","slide":9,"bbox":[1025,438,3,3]}
+{"kind":"shape","id":"sh/0nuxc3yl","slide":9,"bbox":[1158,548,4,4]}
+{"kind":"shape","id":"sh/7y1kre1w","slide":9,"bbox":[930,610,2.4,2.4]}
+{"kind":"shape","id":"sh/ed8v6psf","slide":9,"bbox":[70,650,2.8,2.8]}
+{"kind":"shape","id":"sh/8v6psfil","slide":9,"bbox":[178,590,2.4,2.4]}
+{"kind":"shape","id":"sh/xczed8v6","slide":9,"bbox":[1210,60,2.4,2.4]}
+{"kind":"shape","id":"sh/qpg3ex0n","slide":9,"bbox":[910,130,260,160]}
+{"kind":"shape","id":"sh/fa9w3m94","slide":9,"bbox":[1170,290,-130,210]}
+{"kind":"textbox","id":"sh/8jqh0fep","slide":9,"text":"08 Innovation","textPreview":"08 Innovation","textChars":13,"textLines":1,"bbox":[70,46,520,28]}
+{"kind":"textbox","id":"sh/x4nap4r6","slide":9,"text":"创新：把观星、展览和科教任务合成闭环","textPreview":"创新：把观星、展览和科教任务合成闭环","textChars":18,"textLines":1,"bbox":[70,82,760,70]}
+{"kind":"textbox","id":"sh/qd4vmtwr","slide":9,"text":"手机观星 App 擅长信息查询，传统展项擅长展示；Atlas 的突破点在于头戴式 AR 与可交互科教内容的结合。","textPreview":"手机观星 App 擅长信息查询，传统展项擅长展示；Atlas 的突破点在于头戴式 AR 与可交互科教内容的结合。","textChars":56,"textLines":1,"bbox":[72,148,850,44]}
+{"kind":"shape","id":"sh/fyxobm58","slide":9,"bbox":[70,198,170,4]}
+{"kind":"shape","id":"sh/87ed8bat","slide":9,"bbox":[78,224,180,54]}
+{"kind":"textbox","id":"sh/xs72x4na","slide":9,"text":"比较维度","textPreview":"比较维度","textChars":4,"textLines":1,"bbox":[86,236,164,34]}
+{"kind":"shape","id":"sh/lwval87e","slide":9,"bbox":[276,224,204,54]}
+{"kind":"textbox","id":"sh/wb2hwfyx","slide":9,"text":"手机观星 App","textPreview":"手机观星 App","textChars":8,"textLines":1,"bbox":[284,236,188,34]}
+{"kind":"shape","id":"sh/3q5o7qpg","slide":9,"bbox":[498,224,208,54]}
+{"kind":"textbox","id":"sh/e9cvixcz","slide":9,"text":"桌面/投影天象","textPreview":"桌面/投影天象","textChars":7,"textLines":1,"bbox":[506,236,192,34]}
+{"kind":"shape","id":"sh/loj2t83i","slide":9,"bbox":[724,224,206,54]}
+{"kind":"textbox","id":"sh/w3m94fu1","slide":9,"text":"普通 AR 展示","textPreview":"普通 AR 展示","textChars":8,"textLines":1,"bbox":[732,236,190,34]}
+{"kind":"shape","id":"sh/3itgfmlk","slide":9,"bbox":[948,224,236,54]}
+{"kind":"textbox","id":"sh/ex0nuxc3","slide":9,"text":"Atlas","textPreview":"Atlas","textChars":5,"textLines":1,"bbox":[956,236,220,34]}
+{"kind":"shape","id":"sh/lkjm1cfa","slide":9,"bbox":[78,286,180,54]}
+{"kind":"textbox","id":"sh/szqtcj6t","slide":9,"text":"真实时间方位","textPreview":"真实时间方位","textChars":6,"textLines":1,"bbox":[86,298,164,34]}
+{"kind":"shape","id":"sh/6tovahoz","slide":9,"bbox":[276,286,204,54]}
+{"kind":"textbox","id":"sh/vahoza1g","slide":9,"text":"支持","textPreview":"支持","textChars":2,"textLines":1,"bbox":[284,298,188,34]}
+{"kind":"shape","id":"sh/ovahoza1","slide":9,"bbox":[498,286,208,54]}
+{"kind":"textbox","id":"sh/dg7adsji","slide":9,"text":"可模拟","textPreview":"可模拟","textChars":3,"textLines":1,"bbox":[506,298,192,34]}
+{"kind":"shape","id":"sh/6hcrmhk3","slide":9,"bbox":[724,286,206,54]}
+{"kind":"textbox","id":"sh/z25kb6xk","slide":9,"text":"部分支持","textPreview":"部分支持","textChars":4,"textLines":1,"bbox":[732,298,190,34]}
+{"kind":"shape","id":"sh/onyd0z61","slide":9,"bbox":[948,286,236,54]}
+{"kind":"textbox","id":"sh/d8v6psfi","slide":9,"text":"支持并贴合视角","textPreview":"支持并贴合视角","textChars":7,"textLines":1,"bbox":[956,298,220,34]}
+{"kind":"shape","id":"sh/6dcbulwv","slide":9,"bbox":[78,344,180,54]}
+{"kind":"textbox","id":"sh/vy90je9c","slide":9,"text":"免手持体验","textPreview":"免手持体验","textChars":5,"textLines":1,"bbox":[86,356,164,34]}
+{"kind":"shape","id":"sh/fu18jqh0","slide":9,"bbox":[276,344,204,54]}
+{"kind":"textbox","id":"sh/m94fu18j","slide":9,"text":"弱","textPreview":"弱","textChars":1,"textLines":1,"bbox":[284,356,188,34]}
+{"kind":"shape","id":"sh/x0nuxc3y","slide":9,"bbox":[498,344,208,54]}
+{"kind":"textbox","id":"sh/4fu18jqh","slide":9,"text":"强","textPreview":"强","textChars":1,"textLines":1,"bbox":[506,356,192,34]}
+{"kind":"shape","id":"sh/fil0rqd4","slide":9,"bbox":[724,344,206,54]}
+{"kind":"textbox","id":"sh/qxs72x4n","slide":9,"text":"部分","textPreview":"部分","textChars":2,"textLines":1,"bbox":[732,356,190,34]}
+{"kind":"shape","id":"sh/xobm58z2","slide":9,"bbox":[948,344,236,54]}
+{"kind":"textbox","id":"sh/83itgfml","slide":9,"text":"强：眼镜内观看","textPreview":"强：眼镜内观看","textChars":7,"textLines":1,"bbox":[956,356,220,34]}
+{"kind":"shape","id":"sh/fepkzupw","slide":9,"bbox":[78,402,180,54]}
+{"kind":"textbox","id":"sh/mtwra5gb","slide":9,"text":"太阳系交互","textPreview":"太阳系交互","textChars":5,"textLines":1,"bbox":[86,414,164,34]}
+{"kind":"shape","id":"sh/0nuxc3yl","slide":9,"bbox":[276,402,204,54]}
+{"kind":"textbox","id":"sh/p8nqxs72","slide":9,"text":"弱","textPreview":"弱","textChars":1,"textLines":1,"bbox":[284,414,188,34]}
+{"kind":"shape","id":"sh/ih4byhgn","slide":9,"bbox":[498,402,208,54]}
+{"kind":"textbox","id":"sh/72x4nap4","slide":9,"text":"弱","textPreview":"弱","textChars":1,"textLines":1,"bbox":[506,414,192,34]}
+{"kind":"shape","id":"sh/0z61032l","slide":9,"bbox":[724,402,206,54]}
+{"kind":"textbox","id":"sh/pkzupwb2","slide":9,"text":"展示为主","textPreview":"展示为主","textChars":4,"textLines":1,"bbox":[732,414,190,34]}
+{"kind":"shape","id":"sh/itgfmlkj","slide":9,"bbox":[948,402,236,54]}
+{"kind":"textbox","id":"sh/7ed8bat4","slide":9,"text":"可抓取、调参、看面板","textPreview":"可抓取、调参、看面板","textChars":10,"textLines":1,"bbox":[956,414,220,34]}
+{"kind":"shape","id":"sh/0bi9s36h","slide":9,"bbox":[78,460,180,54]}
+{"kind":"textbox","id":"sh/pwb2hwfy","slide":9,"text":"科教任务","textPreview":"科教任务","textChars":4,"textLines":1,"bbox":[86,472,164,34]}
+{"kind":"shape","id":"sh/94fu18jq","slide":9,"bbox":[276,460,204,54]}
+{"kind":"textbox","id":"sh/kjm1cfa9","slide":9,"text":"少量","textPreview":"少量","textChars":2,"textLines":1,"bbox":[284,472,188,34]}
+{"kind":"shape","id":"sh/r2p8nqxs","slide":9,"bbox":[498,460,208,54]}
+{"kind":"textbox","id":"sh/2hwfyxob","slide":9,"text":"依赖讲解","textPreview":"依赖讲解","textChars":4,"textLines":1,"bbox":[506,472,192,34]}
+{"kind":"shape","id":"sh/9gr2p8nq","slide":9,"bbox":[724,460,206,54]}
+{"kind":"textbox","id":"sh/gvy90je9","slide":9,"text":"少量","textPreview":"少量","textChars":2,"textLines":1,"bbox":[732,472,190,34]}
+{"kind":"shape","id":"sh/ra5gbq1o","slide":9,"bbox":[948,460,236,54]}
+{"kind":"textbox","id":"sh/2p8nqxs7","slide":9,"text":"寻星任务 + 即时反馈","textPreview":"寻星任务 + 即时反馈","textChars":11,"textLines":1,"bbox":[956,472,220,34]}
+{"kind":"shape","id":"sh/9knih4by","slide":9,"bbox":[78,518,180,54]}
+{"kind":"textbox","id":"sh/kzupwb2h","slide":9,"text":"课堂/展馆部署","textPreview":"课堂/展馆部署","textChars":7,"textLines":1,"bbox":[86,530,164,34]}
+{"kind":"shape","id":"sh/u18jqh0f","slide":9,"bbox":[276,518,204,54]}
+{"kind":"textbox","id":"sh/jm1cfa9w","slide":9,"text":"个人设备","textPreview":"个人设备","textChars":4,"textLines":1,"bbox":[284,530,188,34]}
+{"kind":"shape","id":"sh/c7u54zid","slide":9,"bbox":[498,518,208,54]}
+{"kind":"textbox","id":"sh/1orytsvu","slide":9,"text":"场地成本高","textPreview":"场地成本高","textChars":5,"textLines":1,"bbox":[506,530,192,34]}
+{"kind":"shape","id":"sh/u9knih4b","slide":9,"bbox":[724,518,206,54]}
+{"kind":"textbox","id":"sh/judg7ads","slide":9,"text":"需定制","textPreview":"需定制","textChars":3,"textLines":1,"bbox":[732,530,190,34]}
+{"kind":"shape","id":"sh/cfa9w3m9","slide":9,"bbox":[948,518,236,54]}
+{"kind":"textbox","id":"sh/1032lszq","slide":9,"text":"轻量 AR 场景复用","textPreview":"轻量 AR 场景复用","textChars":10,"textLines":1,"bbox":[956,530,220,34]}
+{"kind":"shape","id":"sh/udg7adsj","slide":9,"bbox":[78,576,180,54]}
+{"kind":"textbox","id":"sh/nyd0z610","slide":9,"text":"中文内容与本地地点","textPreview":"中文内容与本地地点","textChars":9,"textLines":1,"bbox":[86,588,164,34]}
+{"kind":"shape","id":"sh/r2p8nqxs","slide":9,"bbox":[276,576,204,54]}
+{"kind":"textbox","id":"sh/2hwfyxob","slide":9,"text":"部分","textPreview":"部分","textChars":2,"textLines":1,"bbox":[284,588,188,34]}
+{"kind":"shape","id":"sh/94fu18jq","slide":9,"bbox":[498,576,208,54]}
+{"kind":"textbox","id":"sh/kjm1cfa9","slide":9,"text":"需制作","textPreview":"需制作","textChars":3,"textLines":1,"bbox":[506,588,192,34]}
+{"kind":"shape","id":"sh/ra5gbq1o","slide":9,"bbox":[724,576,206,54]}
+{"kind":"textbox","id":"sh/2p8nqxs7","slide":9,"text":"需制作","textPreview":"需制作","textChars":3,"textLines":1,"bbox":[732,588,190,34]}
+{"kind":"shape","id":"sh/9gr2p8nq","slide":9,"bbox":[948,576,236,54]}
+{"kind":"textbox","id":"sh/gvy90je9","slide":9,"text":"内置城市与中文星座","textPreview":"内置城市与中文星座","textChars":9,"textLines":1,"bbox":[956,588,220,34]}
+{"kind":"shape","id":"sh/re1w7mp0","slide":9,"bbox":[80,644,1116,42]}
+{"kind":"textbox","id":"sh/2t83itgf","slide":9,"text":"突破点：用真实天文计算保证可信度，用 AR 空间感解决“看不懂天空”，用任务与物理实验提升科教参与度。","textPreview":"突破点：用真实天文计算保证可信度，用 AR 空间感解决“看不懂天空”，用任务与物理实验提升科教参与度。","textChars":51,"textLines":1,"bbox":[110,655,1056,24]}
+{"kind":"notes","id":"nt/poqekl","slide":9,"text":""}
+{"kind":"slide","id":"sl/3dtukw","slide":10,"title":"Atlas 的价值","textShapes":9}
+{"kind":"shape","id":"sh/val87ed8","slide":10,"bbox":[0,0,1280,720]}
+{"kind":"textbox","id":"sh/6psfil0r","slide":10,"text":"Atlas 的价值","textPreview":"Atlas 的价值","textChars":9,"textLines":1,"bbox":[78,88,520,64]}
+{"kind":"textbox","id":"sh/donyd0z6","slide":10,"text":"让星空从屏幕走到眼前","textPreview":"让星空从屏幕走到眼前","textChars":10,"textLines":1,"bbox":[80,156,640,48]}
+{"kind":"shape","id":"sh/k3q5o7qp","slide":10,"bbox":[86,260,540,78]}
+{"kind":"textbox","id":"sh/vixczed8","slide":10,"text":"面向科教","textPreview":"面向科教","textChars":4,"textLines":1,"bbox":[116,278,150,30]}
+{"kind":"textbox","id":"sh/2x4nap4r","slide":10,"text":"把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。","textPreview":"把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。","textChars":30,"textLines":1,"bbox":[272,278,310,42]}
+{"kind":"shape","id":"sh/d0z61032","slide":10,"bbox":[86,372,540,78]}
+{"kind":"textbox","id":"sh/kf6dcbul","slide":10,"text":"面向爱好者","textPreview":"面向爱好者","textChars":5,"textLines":1,"bbox":[116,390,150,30]}
+{"kind":"textbox","id":"sh/ylc7u54z","slide":10,"text":"提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。","textPreview":"提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。","textChars":30,"textLines":1,"bbox":[272,390,310,42]}
+{"kind":"shape","id":"sh/r65wjudg","slide":10,"bbox":[86,484,540,78]}
+{"kind":"textbox","id":"sh/gr2p8nqx","slide":10,"text":"面向展馆","textPreview":"面向展馆","textChars":4,"textLines":1,"bbox":[116,502,150,30]}
+{"kind":"textbox","id":"sh/9cvixcze","slide":10,"text":"太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。","textPreview":"太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。","textChars":31,"textLines":1,"bbox":[272,502,310,42]}
+{"kind":"textbox","id":"sh/yxobm58z","slide":10,"text":"下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。","textPreview":"下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。","textChars":41,"textLines":1,"bbox":[80,634,850,30]}
+{"kind":"image","id":"im/1w7mp0bi","slide":10,"name":"","geometry":"rect","alt":"atlas.png","bbox":[0,0,1280,720]}
+{"kind":"notes","id":"nt/3dtukw","slide":10,"text":""}

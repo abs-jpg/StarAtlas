@@ -1,0 +1,991 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/i0np89",
+    "id": "i0np89",
+    "slide": 7,
+    "layoutId": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#02060D",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/q1orytsv",
+      "id": "1",
+      "bbox": [
+        1040,
+        72,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xs72x4na",
+      "id": "2",
+      "bbox": [
+        1160,
+        118,
+        3,
+        3
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/87ed8bat",
+      "id": "3",
+      "bbox": [
+        980,
+        182,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/je9cvixc",
+      "id": "4",
+      "bbox": [
+        1110,
+        250,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qtcj6tov",
+      "id": "5",
+      "bbox": [
+        1198,
+        348,
+        2.8,
+        2.8
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/1gvy90je",
+      "id": "6",
+      "bbox": [
+        1025,
+        438,
+        3,
+        3
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8z25kb6x",
+      "id": "7",
+      "bbox": [
+        1158,
+        548,
+        4,
+        4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fa9w3m94",
+      "id": "8",
+      "bbox": [
+        930,
+        610,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qpg3ex0n",
+      "id": "9",
+      "bbox": [
+        70,
+        650,
+        2.8,
+        2.8
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/wjudg7ad",
+      "id": "10",
+      "bbox": [
+        178,
+        590,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/p4r65wju",
+      "id": "11",
+      "bbox": [
+        1210,
+        60,
+        2.4,
+        2.4
+      ],
+      "geometry": "ellipse",
+      "fillColor": "#E8F6FF",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ed8v6psf",
+      "id": "12",
+      "bbox": [
+        910,
+        130,
+        260,
+        160
+      ],
+      "geometry": "line",
+      "lineColor": "#2A7FFF",
+      "lineWidth": 1.4
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7y1kre1w",
+      "id": "13",
+      "bbox": [
+        1170,
+        290,
+        -130,
+        210
+      ],
+      "geometry": "line",
+      "lineColor": "#2A7FFF",
+      "lineWidth": 1.4
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0bi9s36h",
+      "id": "14",
+      "bbox": [
+        70,
+        46,
+        520,
+        28
+      ],
+      "geometry": "rect",
+      "text": "06 Core Function",
+      "textPreview": "06 Core Function",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "06 Core Function"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "06 Core Function",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "06 Core Function",
+              "fontSize": 16,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/pwb2hwfy",
+      "id": "15",
+      "bbox": [
+        70,
+        82,
+        760,
+        70
+      ],
+      "geometry": "rect",
+      "text": "核心功能 2：Atlas AR 真实观星",
+      "textPreview": "核心功能 2：Atlas AR 真实观星",
+      "resolvedFontSize": 42,
+      "resolvedTextStyle": {
+        "fontSize": 42,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "核心功能 2：Atlas AR 真实观星"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "核心功能 2：Atlas AR 真实观星",
+          "resolvedTextStyle": {
+            "fontSize": 42,
+            "color": "#F8FBFF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "核心功能 2：Atlas AR 真实观星",
+              "fontSize": 42,
+              "color": "#F8FBFF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i5sneloj",
+      "id": "16",
+      "bbox": [
+        72,
+        148,
+        850,
+        44
+      ],
+      "geometry": "rect",
+      "text": "根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。",
+      "textPreview": "根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。",
+      "resolvedFontSize": 19,
+      "resolvedTextStyle": {
+        "fontSize": 19,
+        "typeface": "+mn-lt",
+        "color": "#B8C7D9",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。",
+          "resolvedTextStyle": {
+            "fontSize": 19,
+            "color": "#B8C7D9"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "根据观测地点、日期时间和天体坐标，把天空中的星座、行星、太阳与月亮放到真实方位上。",
+              "fontSize": 19,
+              "color": "#B8C7D9"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/7qpg3ex0",
+      "id": "17",
+      "bbox": [
+        70,
+        198,
+        170,
+        4
+      ],
+      "geometry": "rect",
+      "fillColor": "#FF9B24",
+      "lineColor": "#FF9B24",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0z61032l",
+      "id": "18",
+      "bbox": [
+        70,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 19,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/mp0bi9s3",
+      "id": "19",
+      "bbox": [
+        76,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "atlas.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "53ce5dd3-510e-41eb-af68-1b72d73e713e",
+        "contentType": "image/png",
+        "byteLength": 425753
+      }
+    },
+    {
+      "order": 20,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/donyd0z6",
+      "id": "20",
+      "bbox": [
+        76,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 21,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/k3q5o7qp",
+      "id": "21",
+      "bbox": [
+        86,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "真实天空：星座、行星与太阳位置",
+      "textPreview": "真实天空：星座、行星与太阳位置",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "真实天空：星座、行星与太阳位置"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "真实天空：星座、行星与太阳位置",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "真实天空：星座、行星与太阳位置",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 22,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vixczed8",
+      "id": "22",
+      "bbox": [
+        463,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 23,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/1kre1w7m",
+      "id": "23",
+      "bbox": [
+        469,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "atlas2.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "8da1b56a-858c-4251-bc3b-c08bef3181cf",
+        "contentType": "image/png",
+        "byteLength": 831111
+      }
+    },
+    {
+      "order": 24,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dcbulwva",
+      "id": "24",
+      "bbox": [
+        469,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 25,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kre1w7mp",
+      "id": "25",
+      "bbox": [
+        479,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "信息面板：方位、高度与可见性",
+      "textPreview": "信息面板：方位、高度与可见性",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "信息面板：方位、高度与可见性"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "信息面板：方位、高度与可见性",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "信息面板：方位、高度与可见性",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 26,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/val87ed8",
+      "id": "26",
+      "bbox": [
+        856,
+        242,
+        354,
+        262
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#05090F",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 27,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/1cfa9w3m",
+      "id": "27",
+      "bbox": [
+        862,
+        248,
+        342,
+        214
+      ],
+      "geometry": "roundRect",
+      "alt": "atlas3.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "roundRect",
+        "adjustmentList": [
+          {
+            "name": "adj",
+            "formula": "val 5607"
+          }
+        ]
+      },
+      "asset": {
+        "assetId": "df055b03-003d-4a3f-afb9-a339a7e6149d",
+        "contentType": "image/png",
+        "byteLength": 349008
+      }
+    },
+    {
+      "order": 28,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d8bat47y",
+      "id": "28",
+      "bbox": [
+        862,
+        458,
+        342,
+        40
+      ],
+      "geometry": "rect",
+      "fillColor": "#07131D",
+      "lineWidth": 0
+    },
+    {
+      "order": 29,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/knih4byh",
+      "id": "29",
+      "bbox": [
+        872,
+        466,
+        322,
+        28
+      ],
+      "geometry": "rect",
+      "text": "地点 / 时间 / 寻星任务",
+      "textPreview": "地点 / 时间 / 寻星任务",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "center",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "地点 / 时间 / 寻星任务"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "地点 / 时间 / 寻星任务",
+          "resolvedTextStyle": {
+            "fontSize": 16,
+            "color": "#F8FBFF",
+            "bold": true,
+            "alignment": "center"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "地点 / 时间 / 寻星任务",
+              "fontSize": 16,
+              "color": "#F8FBFF",
+              "bold": true,
+              "alignment": "center"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 30,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/yhgn29gr",
+      "id": "30",
+      "bbox": [
+        96,
+        542,
+        1086,
+        82
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#07131D",
+      "lineColor": "#28445F",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 31,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/n29gr2p8",
+      "id": "31",
+      "bbox": [
+        126,
+        566,
+        120,
+        26
+      ],
+      "geometry": "rect",
+      "text": "功能价值",
+      "textPreview": "功能价值",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "fontSize": 20,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "功能价值"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "功能价值",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "功能价值",
+              "fontSize": 20,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 32,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gn29gr2p",
+      "id": "32",
+      "bbox": [
+        250,
+        562,
+        860,
+        38
+      ],
+      "geometry": "rect",
+      "text": "用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。",
+      "textPreview": "用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "用户可以转头寻找目标、切换城市坐标、推演前后 24"
+          },
+          {
+            "index": 2,
+            "text": "小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#F8FBFF"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "用户可以转头寻找目标、切换城市坐标、推演前后 24 小时，并通过寻星任务把观察过程变成即时反馈的游戏化学习。",
+              "fontSize": 18,
+              "color": "#F8FBFF"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

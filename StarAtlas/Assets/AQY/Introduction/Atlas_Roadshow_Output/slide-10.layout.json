@@ -1,0 +1,706 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/3dtukw",
+    "id": "3dtukw",
+    "slide": 10,
+    "layoutId": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+    "masterLayoutName": "Master",
+    "backgroundColor": "#02060D",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "+mn-lt"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "73f870c3-ac4e-48b2-8a93-d2813422603e",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "f14a4f49-b6e2-480d-8925-977c7c493958",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/1w7mp0bi",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect",
+      "alt": "atlas.png",
+      "contentType": "image/png",
+      "imageFit": "cover",
+      "imageMask": {
+        "geometry": "rect"
+      },
+      "asset": {
+        "assetId": "e8d2e897-6694-4cd2-a8e8-c398ca5d45f6",
+        "contentType": "image/png",
+        "byteLength": 425753
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/val87ed8",
+      "id": "2",
+      "bbox": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "geometry": "rect",
+      "fillColor": "#02060D",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6psfil0r",
+      "id": "3",
+      "bbox": [
+        78,
+        88,
+        520,
+        64
+      ],
+      "geometry": "rect",
+      "text": "Atlas 的价值",
+      "textPreview": "Atlas 的价值",
+      "resolvedFontSize": 46,
+      "resolvedTextStyle": {
+        "fontSize": 46,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Atlas 的价值"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Atlas 的价值",
+          "resolvedTextStyle": {
+            "fontSize": 46,
+            "color": "#F8FBFF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "Atlas 的价值",
+              "fontSize": 46,
+              "color": "#F8FBFF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/donyd0z6",
+      "id": "4",
+      "bbox": [
+        80,
+        156,
+        640,
+        48
+      ],
+      "geometry": "rect",
+      "text": "让星空从屏幕走到眼前",
+      "textPreview": "让星空从屏幕走到眼前",
+      "resolvedFontSize": 28,
+      "resolvedTextStyle": {
+        "fontSize": 28,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "让星空从屏幕走到眼前"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "让星空从屏幕走到眼前",
+          "resolvedTextStyle": {
+            "fontSize": 28,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "让星空从屏幕走到眼前",
+              "fontSize": 28,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/k3q5o7qp",
+      "id": "5",
+      "bbox": [
+        86,
+        260,
+        540,
+        78
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#07131D",
+      "lineColor": "#FF9B24",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vixczed8",
+      "id": "6",
+      "bbox": [
+        116,
+        278,
+        150,
+        30
+      ],
+      "geometry": "rect",
+      "text": "面向科教",
+      "textPreview": "面向科教",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#FF9B24",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面向科教"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面向科教",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#FF9B24",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面向科教",
+              "fontSize": 24,
+              "color": "#FF9B24",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2x4nap4r",
+      "id": "7",
+      "bbox": [
+        272,
+        278,
+        310,
+        42
+      ],
+      "geometry": "rect",
+      "text": "把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。",
+      "textPreview": "把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "把抽象天文知识转成可观察、可点击、"
+          },
+          {
+            "index": 2,
+            "text": "可操作的 AR 空间体验。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "color": "#F8FBFF"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "把抽象天文知识转成可观察、可点击、可操作的 AR 空间体验。",
+              "fontSize": 17,
+              "color": "#F8FBFF"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d0z61032",
+      "id": "8",
+      "bbox": [
+        86,
+        372,
+        540,
+        78
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#07131D",
+      "lineColor": "#58C7FF",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kf6dcbul",
+      "id": "9",
+      "bbox": [
+        116,
+        390,
+        150,
+        30
+      ],
+      "geometry": "rect",
+      "text": "面向爱好者",
+      "textPreview": "面向爱好者",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#58C7FF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面向爱好者"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面向爱好者",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#58C7FF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面向爱好者",
+              "fontSize": 24,
+              "color": "#58C7FF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ylc7u54z",
+      "id": "10",
+      "bbox": [
+        272,
+        390,
+        310,
+        42
+      ],
+      "geometry": "rect",
+      "text": "提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。",
+      "textPreview": "提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "提供真实方位、可见性、时间推演和寻"
+          },
+          {
+            "index": 2,
+            "text": "星任务，降低观星入门门槛。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "color": "#F8FBFF"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "提供真实方位、可见性、时间推演和寻星任务，降低观星入门门槛。",
+              "fontSize": 17,
+              "color": "#F8FBFF"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/r65wjudg",
+      "id": "11",
+      "bbox": [
+        86,
+        484,
+        540,
+        78
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#07131D",
+      "lineColor": "#58C7FF",
+      "lineWidth": 1.2
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gr2p8nqx",
+      "id": "12",
+      "bbox": [
+        116,
+        502,
+        150,
+        30
+      ],
+      "geometry": "rect",
+      "text": "面向展馆",
+      "textPreview": "面向展馆",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "+mn-lt",
+        "color": "#58C7FF",
+        "bold": true,
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "面向展馆"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "面向展馆",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "color": "#58C7FF",
+            "bold": true
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "面向展馆",
+              "fontSize": 24,
+              "color": "#58C7FF",
+              "bold": true
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9cvixcze",
+      "id": "13",
+      "bbox": [
+        272,
+        502,
+        310,
+        42
+      ],
+      "geometry": "rect",
+      "text": "太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。",
+      "textPreview": "太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "+mn-lt",
+        "color": "#F8FBFF",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "太阳系展览馆可作为沉浸式讲解入口，"
+          },
+          {
+            "index": 2,
+            "text": "支持后续扩展星球与课程内容。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。",
+          "resolvedTextStyle": {
+            "fontSize": 17,
+            "color": "#F8FBFF"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "太阳系展览馆可作为沉浸式讲解入口，支持后续扩展星球与课程内容。",
+              "fontSize": 17,
+              "color": "#F8FBFF"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/yxobm58z",
+      "id": "14",
+      "bbox": [
+        80,
+        634,
+        850,
+        30
+      ],
+      "geometry": "rect",
+      "text": "下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。",
+      "textPreview": "下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "+mn-lt",
+        "color": "#B8C7D9",
+        "alignment": "left",
+        "insets": {
+          "top": 4.8,
+          "right": 9.6,
+          "bottom": 4.8,
+          "left": 9.6
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "color": "#B8C7D9"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "下一步：完善课程模板、接入更多天体数据、优化 Rokid 实机交互与展馆部署流程。",
+              "fontSize": 18,
+              "color": "#B8C7D9"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

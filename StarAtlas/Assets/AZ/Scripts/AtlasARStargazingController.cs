@@ -144,6 +144,7 @@ namespace AZ.Atlas
         [SerializeField] private float infoPanelHorizontalOffset = 0.48f;
         [SerializeField] private float infoPanelVerticalOffset = 0.03f;
         [SerializeField, Min(0.1f)] private float infoPanelFollowSmoothing = 10f;
+        [SerializeField, Min(0f)] private float infoPanelVerticalFollowDeadZone = 0.2f;
         [SerializeField, Range(0.2f, 4f)] private float constellationNameHitBoxScale = 1f;
 
         private readonly Dictionary<string, GameObject> planetInstances = new Dictionary<string, GameObject>();
@@ -2158,7 +2159,8 @@ namespace AZ.Atlas
                 infoPanelDistance,
                 infoPanelHorizontalOffset,
                 infoPanelVerticalOffset,
-                infoPanelFollowSmoothing);
+                infoPanelFollowSmoothing,
+                infoPanelVerticalFollowDeadZone);
 
             if (focusController.SetConstellationNameHitBoxScale(GetConstellationNameHitBoxScale()))
             {
@@ -2201,6 +2203,7 @@ namespace AZ.Atlas
                 infoPanelHorizontalOffset,
                 infoPanelVerticalOffset,
                 infoPanelFollowSmoothing,
+                infoPanelVerticalFollowDeadZone,
                 GetConstellationNameHitBoxScale(),
                 this);
         }

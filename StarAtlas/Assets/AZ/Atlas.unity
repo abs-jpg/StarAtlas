@@ -5037,8 +5037,9 @@ MonoBehaviour:
   focusInfoCatalog: {fileID: 11400000, guid: af0db7c477a94f6ca30de06c9c89ad68, type: 2}
   infoPanelDistance: 1.3
   infoPanelHorizontalOffset: 0
-  infoPanelVerticalOffset: 0
+  infoPanelVerticalOffset: 0.1
   infoPanelFollowSmoothing: 10
+  infoPanelVerticalFollowDeadZone: 0.2
   constellationNameHitBoxScale: 3
 --- !u!114 &1579284919
 MonoBehaviour:
